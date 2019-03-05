@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "476406724275",
+    "firebase_url": "https://netclub-71ce1.firebaseio.com",
+    "project_id": "netclub-71ce1",
+    "storage_bucket": "netclub-71ce1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:476406724275:android:f9e98301e3a17c1e",
+        "android_client_info": {
+          "package_name": "com.example.georgesamuel.netclub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "476406724275-034dccvi8hm3me1iqks47hoainvibt7j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.georgesamuel.netclub",
+            "certificate_hash": "2f01c6ed829eb1420d54d3c3d0d8ec81ea107781"
+          }
+        },
+        {
+          "client_id": "476406724275-7kv35s80di0g8l8gjbous7ufg6eadccj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIu3YNP7UPypR3ZqB0F04_vhWaM9G80hU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "476406724275-7kv35s80di0g8l8gjbous7ufg6eadccj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
