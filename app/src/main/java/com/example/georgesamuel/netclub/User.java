@@ -1,10 +1,16 @@
 package com.example.georgesamuel.netclub;
 
-public class User {
+import java.io.Serializable;
 
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 10L;
     private String userName;
     private String userImageUrl;
     private String userImageThumbUrl;
+    private String userPhone;
+    private String userBirthday;
+    private Boolean userSelectCategories;
 
     public User(){
 
@@ -33,4 +39,30 @@ public class User {
     public void setUserImageThumbUrl(String userImageThumbUrl) {
         this.userImageThumbUrl = userImageThumbUrl;
     }
+
+    public String getUserPhone() {
+        return userPhone;
+    }
+
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
+    }
+
+    public String getUserBirthday() {
+        return userBirthday;
+    }
+
+    public void setUserBirthday(String userBirthday) {
+        this.userBirthday = userBirthday;
+    }
+
+    public Boolean getUserSelectCategories() {
+        return userSelectCategories;
+    }
+
+    public void setUserSelectCategories(Boolean userSelectCategories) {
+        this.userSelectCategories = userSelectCategories;
+    }
+
+
 }

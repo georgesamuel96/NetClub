@@ -55,7 +55,7 @@ public class UsersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar_cyclic);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         firestore = FirebaseFirestore.getInstance();
         saveUserInstance = new SaveUserInstance();
@@ -72,6 +72,7 @@ public class UsersFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+        // Get users when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -79,17 +80,19 @@ public class UsersFragment extends Fragment {
 
                 Boolean reachedBottom = !recyclerView.canScrollVertically(1);
                 if(reachedBottom){
-                    loadMorePost();
+                    loadMoreUsers();
                     System.out.println(true);
                 }
             }
         });
 
+        // Get users for first time
         if(saveUserInstance.getIsFirstLoad()) {
 
             saveUserInstance.setIsFirstLoad(false);
             progressBar.setVisibility(View.VISIBLE);
 
+            progressBar.setVisibility(View.VISIBLE);
             Query query = firestore.collection("Users").limit(20);
             query.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
                 @Override
@@ -109,26 +112,25 @@ public class UsersFragment extends Fragment {
                                 User user = new User();
                                 user.setUserName(userMap.get("name").toString());
                                 user.setUserImageUrl(userMap.get("profile_url").toString());
-                                user.setUserImageUrl(userMap.get("profileThumb_url").toString());
+                                user.setUserImageUrl(userMap.get("profileThumb").toString());
                                 userList.add(user);
                                 adapter.notifyDataSetChanged();
                             }
                         }
                         saveUserInstance.setList(userList);
-                        progressBar.setVisibility(View.INVISIBLE);
                     }
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             });
 
         }
 
-
-
         return view;
     }
 
-    private void loadMorePost() {
+    private void loadMoreUsers() {
 
+        progressBar.setVisibility(View.VISIBLE);
         Query query = firestore.collection("Users")
                 .startAfter(lastVisible).limit(20);
         query.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
@@ -158,6 +160,7 @@ public class UsersFragment extends Fragment {
                     progressBar.setVisibility(View.INVISIBLE);
 
                 }
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
 

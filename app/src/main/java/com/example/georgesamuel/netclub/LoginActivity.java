@@ -17,6 +17,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -24,9 +28,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText loginPassText;
     private Button loginBtn;
     private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
     private TextView register;
     private AlertDialog.Builder alertBuilder;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         register = (TextView) findViewById(R.id.register);
 
         mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         alertBuilder = new AlertDialog.Builder(this);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -74,9 +79,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     });
-                }
-                else{
-
                 }
             }
         });
@@ -118,10 +120,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            sendToMain();
-        }
+
     }
 
     private void sendToMain() {

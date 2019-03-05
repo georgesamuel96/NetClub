@@ -13,20 +13,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" android:theme="@style/MyAppTheme"></activity>
         <activity
-            android:name=".LoginActivity"
-            android:screenOrientation="portrait">
+            android:name=".MainActivity"
+            android:theme="@style/MyAppTheme" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".RegisterFirstPageActivity"></activity>
+        <activity android:name=".RegisterFirstPageActivity" />
+        <activity android:name=".RegisterSecondPageActivity" />
+        <activity android:name=".CategoriesActivity"></activity>
     </application>
 
 </manifest>
