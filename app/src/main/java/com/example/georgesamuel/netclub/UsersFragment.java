@@ -81,7 +81,6 @@ public class UsersFragment extends Fragment {
                 Boolean reachedBottom = !recyclerView.canScrollVertically(1);
                 if(reachedBottom){
                     loadMoreUsers();
-                    System.out.println(true);
                 }
             }
         });
@@ -90,7 +89,6 @@ public class UsersFragment extends Fragment {
         if(saveUserInstance.getIsFirstLoad()) {
 
             saveUserInstance.setIsFirstLoad(false);
-            progressBar.setVisibility(View.VISIBLE);
 
             progressBar.setVisibility(View.VISIBLE);
             Query query = firestore.collection("Users").limit(20);
@@ -103,7 +101,6 @@ public class UsersFragment extends Fragment {
                         lastVisible = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
                         saveUserInstance.setDocumentSnapshot(lastVisible);
-                        userList.clear();
 
                         for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                             if (doc.getType() == DocumentChange.Type.ADDED) {
@@ -146,12 +143,11 @@ public class UsersFragment extends Fragment {
                     for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                         if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                            String blogPostId = doc.getDocument().getId();
                             Map<String, Object> userMap = doc.getDocument().getData();
                             User user = new User();
                             user.setUserName(userMap.get("name").toString());
                             user.setUserImageUrl(userMap.get("profile_url").toString());
-                            user.setUserImageUrl(userMap.get("profileThumb_url").toString());
+                            user.setUserImageUrl(userMap.get("profileThumb").toString());
                             userList.add(user);
                             adapter.notifyDataSetChanged();
                         }
@@ -163,7 +159,6 @@ public class UsersFragment extends Fragment {
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
-
     }
 
 }

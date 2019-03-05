@@ -4,13 +4,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class SaveUserInstance {
+public class SaveMentorInstance {
 
     private static Boolean isFirstLoad = true;
     private static DocumentSnapshot documentSnapshot;
-    private static ArrayList<User> list = new ArrayList<>();
+    private static ArrayList<Mentor> list = new ArrayList<>();
 
-    public SaveUserInstance(){
+    public SaveMentorInstance(){
 
     }
 
@@ -19,7 +19,7 @@ public class SaveUserInstance {
     }
 
     public void setIsFirstLoad(Boolean isFirstLoad) {
-        SaveUserInstance.isFirstLoad = isFirstLoad;
+        SaveMentorInstance.isFirstLoad = isFirstLoad;
     }
 
     public DocumentSnapshot getDocumentSnapshot() {
@@ -27,14 +27,14 @@ public class SaveUserInstance {
     }
 
     public void setDocumentSnapshot(DocumentSnapshot documentSnapshot) {
-        SaveUserInstance.documentSnapshot = documentSnapshot;
+        SaveMentorInstance.documentSnapshot = documentSnapshot;
     }
 
-    public ArrayList<User> getList() {
+    public ArrayList<Mentor> getList() {
         return list;
     }
 
-    public void setList(ArrayList<User> list) {
-        SaveUserInstance.list = list;
+    public void setList(ArrayList<Mentor> list) {
+        SaveMentorInstance.list = list;
     }
 }

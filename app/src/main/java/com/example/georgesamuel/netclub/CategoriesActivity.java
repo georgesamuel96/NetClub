@@ -42,6 +42,7 @@ public class CategoriesActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
     private String currentUserId;
+    private SaveUserInstance userInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class CategoriesActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
         currentUser = (User) getIntent().getSerializableExtra("user");
+        userInstance = new SaveUserInstance();
 
         currentUserId = firebaseUser.getUid();
         Map<String, Object> userMap = new HashMap<>();
@@ -70,6 +72,11 @@ public class CategoriesActivity extends AppCompatActivity {
         userMap.put("profile_url", currentUser.getUserImageUrl());
         userMap.put("profileThumb", currentUser.getUserImageThumbUrl());
         userMap.put("categorySelected", currentUser.getUserSelectCategories());
+
+        if(userInstance.getIsFirstLoad())
+            userInstance.getList().add(currentUser);
+        else
+            userInstance.getList().add(0, currentUser);
 
         progressBar.setVisibility(View.VISIBLE);
         firestore.collection("Users").document(currentUserId).set(userMap)
@@ -110,25 +117,6 @@ public class CategoriesActivity extends AppCompatActivity {
             }
         });
 
-
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String itemSelectedId = listView.getItemAtPosition(position).toString();
-                Toast.makeText(CategoriesActivity.this, itemSelectedId, Toast.LENGTH_LONG).show();
-                int itemId = Integer.parseInt(itemSelectedId);
-                Boolean checked = categoryList.get(itemId).getcategoryChecked();
-                categoryList.get(itemId).setcategoryChecked(!checked);
-                System.out.println(itemId);
-                if(!checked){
-                    countCategories++;
-                }
-                else{
-                    countCategories--;
-                }
-            }
-        });*/
     }
 
     @Override
