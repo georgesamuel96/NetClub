@@ -36,7 +36,8 @@
         <activity android:name=".MoreDetailsMentorActivity" />
         <activity android:name=".DatesMentorActivity" />
         <activity android:name=".AddDateActivity" />
-        <activity android:name=".MentorCategoriesActivity"></activity>
+        <activity android:name=".MentorCategoriesActivity" />
+        <activity android:name=".PaymentMethodActivity"></activity>
     </application>
 
 </manifest>

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Mentor implements Serializable {
 
     private static final long serialVersionUID = 10L;
+    private String id;
     private String name;
     private String content;
     private String image_url;
@@ -20,6 +21,14 @@ public class Mentor implements Serializable {
 
     public Mentor(){
 
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

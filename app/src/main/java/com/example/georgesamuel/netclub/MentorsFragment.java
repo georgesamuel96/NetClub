@@ -130,7 +130,7 @@ public class MentorsFragment extends Fragment {
                                     mentor.setName(mentorMap.get("name").toString());
                                     mentor.setImage_url(mentorMap.get("profile_url").toString());
                                     mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
-                                    //mentor.setCategory(mentorMap.get("category").toString());
+                                    mentor.setId(doc.getDocument().getId());
                                     mentor.setContent(mentorMap.get("content").toString());
 
                                     mentorList.add(mentor);
@@ -172,7 +172,7 @@ public class MentorsFragment extends Fragment {
                             mentor.setName(mentorMap.get("name").toString());
                             mentor.setImage_url(mentorMap.get("profile_url").toString());
                             mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
-                            //mentor.setCategory(mentorMap.get("category").toString());
+                            mentor.setId(doc.getDocument().getId());
                             mentor.setContent(mentorMap.get("content").toString());
 
                             mentorList.add(mentor);
