@@ -41,7 +41,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
         myViewHolder.setIsRecyclable(false);
 
         myViewHolder.mentorName.setText(mentorList.get(i).getName());
-        myViewHolder.mentorCategory.setText(mentorList.get(i).getCategory());
+        //myViewHolder.mentorCategory.setText(mentorList.get(i).getCategory());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.placeholder);
         Glide.with(context).applyDefaultRequestOptions(requestOptions).load(mentorList.get(i).getImage_url()).thumbnail(
@@ -57,6 +57,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
                 context.startActivity(i);
             }
         });
+        myViewHolder.mentorContent.setText(mentorList.get(i).getContent());
     }
 
     @Override
@@ -70,6 +71,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
         TextView mentorCategory;
         Button bookBtn;
         CircleImageView mentorImage;
+        TextView mentorContent;
 
         public MyViewHolder(View view){
             super(view);
@@ -78,6 +80,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
             mentorImage = (CircleImageView) view.findViewById(R.id.mentor_image);
             bookBtn = (Button) view.findViewById(R.id.book_btn);
             mentorCategory = (TextView) view.findViewById(R.id.mentor_category);
+            mentorContent = (TextView) view.findViewById(R.id.mentor_content);
         }
     }
 }

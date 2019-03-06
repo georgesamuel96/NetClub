@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         user = new User();
 
+        Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
         if(currentUser != null) {
 
             homeFragment = new HomeFragment();
@@ -65,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
             usersFragment = new UsersFragment();
             mentorsFragment = new MentorsFragment();
 
-            replaceFragment(homeFragment);
+            if(!checkMentorFragment)
+                replaceFragment(homeFragment);
+            else
+                replaceFragment(mentorsFragment);
 
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,8 +73,9 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        if(currentUser.getUid() == "BASSEM"){
+        if(currentUser.getUid().equals("1igdvK8SH3QIGJxmCJBAUc1qqgc2")){
             fab.show();
+
         }
 
         if(!saveMentorInstance.getIsFirstLoad()) {
@@ -101,7 +103,7 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        // Get users for first time
+        // Get Mentors for first time
         if(saveMentorInstance.getIsFirstLoad()) {
 
             saveMentorInstance.setIsFirstLoad(false);
@@ -112,27 +114,31 @@ public class MentorsFragment extends Fragment {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                    if (!queryDocumentSnapshots.isEmpty()) {
+                    if(e == null) {
 
-                        lastVisible = queryDocumentSnapshots.getDocuments()
-                                .get(queryDocumentSnapshots.size() - 1);
-                        saveMentorInstance.setDocumentSnapshot(lastVisible);
+                        if (!queryDocumentSnapshots.isEmpty()) {
 
-                        for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                            if (doc.getType() == DocumentChange.Type.ADDED) {
+                            lastVisible = queryDocumentSnapshots.getDocuments()
+                                    .get(queryDocumentSnapshots.size() - 1);
+                            saveMentorInstance.setDocumentSnapshot(lastVisible);
 
-                                Map<String, Object> mentorMap = doc.getDocument().getData();
-                                Mentor mentor = new Mentor();
-                                mentor.setName(mentorMap.get("name").toString());
-                                mentor.setImage_url(mentorMap.get("profile_url").toString());
-                                mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
-                                mentor.setCategory(mentorMap.get("category").toString());
+                            for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                                if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                                mentorList.add(mentor);
-                                adapter.notifyDataSetChanged();
+                                    Map<String, Object> mentorMap = doc.getDocument().getData();
+                                    Mentor mentor = new Mentor();
+                                    mentor.setName(mentorMap.get("name").toString());
+                                    mentor.setImage_url(mentorMap.get("profile_url").toString());
+                                    mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
+                                    //mentor.setCategory(mentorMap.get("category").toString());
+                                    mentor.setContent(mentorMap.get("content").toString());
+
+                                    mentorList.add(mentor);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
+                            saveMentorInstance.setList(mentorList);
                         }
-                        saveMentorInstance.setList(mentorList);
                     }
                     progressBar.setVisibility(View.INVISIBLE);
                 }
@@ -166,7 +172,8 @@ public class MentorsFragment extends Fragment {
                             mentor.setName(mentorMap.get("name").toString());
                             mentor.setImage_url(mentorMap.get("profile_url").toString());
                             mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
-                            mentor.setCategory(mentorMap.get("category").toString());
+                            //mentor.setCategory(mentorMap.get("category").toString());
+                            mentor.setContent(mentorMap.get("content").toString());
 
                             mentorList.add(mentor);
                             adapter.notifyDataSetChanged();
@@ -184,7 +191,6 @@ public class MentorsFragment extends Fragment {
 
     private void addMentor() {
         getActivity().startActivity(new Intent(getContext(), AddMentorActivity.class));
-        getActivity().finish();
     }
 
 }

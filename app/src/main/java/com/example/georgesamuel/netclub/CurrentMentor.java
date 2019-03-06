@@ -2,23 +2,21 @@ package com.example.georgesamuel.netclub;
 
 import android.util.Pair;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Mentor implements Serializable {
+public class CurrentMentor {
 
-    private static final long serialVersionUID = 10L;
-    private String name;
-    private String content;
-    private String image_url;
-    private String imageThumb_url;
-    private String description;
-    private String email;
-    private String phone;
-    private ArrayList<String> dates = new ArrayList<>();
-    private ArrayList<Pair<String, String>> categories = new ArrayList<>();
+    private static String name;
+    private static String content;
+    private static String image_url;
+    private static String imageThumb_url;
+    private static String description;
+    private static String email;
+    private static String phone;
+    private static ArrayList<String> dates = new ArrayList<>();
+    private static ArrayList<Pair<String, String>> categories = new ArrayList<>();
 
-    public Mentor(){
+    public CurrentMentor(){
 
     }
 
@@ -93,4 +91,5 @@ public class Mentor implements Serializable {
     public void setCategories(ArrayList<Pair<String, String>> categories) {
         this.categories = categories;
     }
+
 }

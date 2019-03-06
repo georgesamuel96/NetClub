@@ -32,7 +32,11 @@
         <activity android:name=".RegisterSecondPageActivity" />
         <activity android:name=".CategoriesActivity" />
         <activity android:name=".MentorDetailsActivity" />
-        <activity android:name=".AddMentorActivity"></activity>
+        <activity android:name=".AddMentorActivity" />
+        <activity android:name=".MoreDetailsMentorActivity" />
+        <activity android:name=".DatesMentorActivity" />
+        <activity android:name=".AddDateActivity" />
+        <activity android:name=".MentorCategoriesActivity"></activity>
     </application>
 
 </manifest>

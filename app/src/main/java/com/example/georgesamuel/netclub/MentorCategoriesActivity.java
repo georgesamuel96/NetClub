@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -18,7 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CategoriesActivity extends AppCompatActivity {
+public class MentorCategoriesActivity extends AppCompatActivity {
 
     private android.support.v7.widget.Toolbar toolbar;
     private ListView listView;
@@ -36,17 +35,17 @@ public class CategoriesActivity extends AppCompatActivity {
     private ArrayList<ChooseCategory> categoryList = new ArrayList<>();
     private FirebaseFirestore firestore;
     private ProgressBar progressBar;
-    private User currentUser;
+    private CurrentMentor currentMentor;
     private AlertDialog.Builder alertBuilder;
-    private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
-    private String currentUserId;
-    private SaveUserInstance userInstance;
+    private String currentMentorId;
+    private SaveMentorInstance mentorInstance;
+    private HashMap<String, String> hashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_categories);
+        setContentView(R.layout.activity_mentor_categories);
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -59,38 +58,9 @@ public class CategoriesActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
 
-        currentUser = (User) getIntent().getSerializableExtra("user");
-        userInstance = new SaveUserInstance();
-
-        currentUserId = firebaseUser.getUid();
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("name", currentUser.getUserName());
-        userMap.put("birthday", currentUser.getUserBirthday());
-        userMap.put("phone", currentUser.getUserPhone());
-        userMap.put("profile_url", currentUser.getUserImageUrl());
-        userMap.put("profileThumb", currentUser.getUserImageThumbUrl());
-        userMap.put("categorySelected", currentUser.getUserSelectCategories());
-
-        if(userInstance.getIsFirstLoad())
-            userInstance.getList().add(currentUser);
-        else
-            userInstance.getList().add(0, currentUser);
-
-        progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(currentUserId).set(userMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                        else{
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                });
+        currentMentor = new CurrentMentor();
+        mentorInstance = new SaveMentorInstance();
 
         adapter = new ChooseCategoryAdapter(getApplicationContext(), categoryList);
         listView.setAdapter(adapter);
@@ -116,7 +86,6 @@ public class CategoriesActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override
@@ -132,43 +101,17 @@ public class CategoriesActivity extends AppCompatActivity {
             Boolean itemChecked = (adapter.itemsChecked());
             categoryList = adapter.getCheckedList();
             if(itemChecked){
+
                 progressBar.setVisibility(View.VISIBLE);
                 for(ChooseCategory category : categoryList){
                     if(category.getcategoryChecked()){
-                        Map<String, Object> categoryMap = new HashMap<>();
-                        categoryMap.put("name", category.getCategoryName());
-                        firestore.collection("Users")
-                                .document(currentUserId)
-                                .collection("selectedCategory")
-                                .document(category.getCategoryId())
-                                .set(categoryMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                    startActivity(new Intent(CategoriesActivity.this, MainActivity.class));
-                                    finish();
-                                }
-                                else{
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                        });
+                        currentMentor.getCategories().add(Pair.create(category.getCategoryName(), category.getCategoryId()));
                     }
                 }
-                progressBar.setVisibility(View.VISIBLE);
-                firestore.collection("Users").document(currentUserId).update("categorySelected", true)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                                else {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                        });
+                progressBar.setVisibility(View.INVISIBLE);
+                Intent i = new Intent(MentorCategoriesActivity.this, MoreDetailsMentorActivity.class);
+                //i.putExtra("mentorr", mentorr);
+                startActivity(i);
             }
             else{
                 alertBuilder.setTitle("Category");

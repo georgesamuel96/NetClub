@@ -54,7 +54,6 @@ public class ChooseCategoryAdapter extends BaseAdapter {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                    System.out.println(isChecked);
                     categoryList.get(position).setcategoryChecked(isChecked);
                     if(isChecked)
                         countCategoriesChecked++;
