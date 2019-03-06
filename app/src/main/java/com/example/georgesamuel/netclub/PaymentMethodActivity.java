@@ -50,38 +50,44 @@ public class PaymentMethodActivity extends AppCompatActivity {
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                progressBar.setVisibility(View.VISIBLE);
-                firestore.collection("Registration").document(registrationId).update("paymentMethod",
-                        list.get(position).second).addOnCompleteListener(new OnCompleteListener<Void>() {
+                alertBuilder.setTitle("Successful Registration");
+                alertBuilder.setMessage("You will revieve message with details");
+                alertBuilder.setCancelable(false);
+                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            alertBuilder.setTitle("Successful Registration");
-                            alertBuilder.setMessage("You will revieve message with details");
-                            alertBuilder.setCancelable(false);
-                            alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    intent.putExtra("TOP", true);
-                                    startActivity(intent);
-
-                                    dialog.cancel();
+                        progressBar.setVisibility(View.VISIBLE);
+                        firestore.collection("Registration").document(registrationId).update("paymentMethod",
+                                list.get(position).second).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    progressBar.setVisibility(View.INVISIBLE);
                                 }
-                            });
-                            AlertDialog alertDialog = alertBuilder.create();
-                            alertDialog.show();
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                        else{
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
+                                else{
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        });
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.putExtra("TOP", true);
+                        startActivity(intent);
+
+                        dialog.cancel();
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
                     }
                 });
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.show();
             }
         });
     }
