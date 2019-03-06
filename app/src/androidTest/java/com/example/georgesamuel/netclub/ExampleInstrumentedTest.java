@@ -1,4 +1,4 @@
-package com.example.georgesamuel.netclub;
+package com.egcoder.georgesamuel.netclub;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -15,12 +15,12 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class ExampleInstrumentedTest {
+public class egcoderInstrumentedTest {
     @Test
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.georgesamuel.netclub", appContext.getPackageName());
+        assertEquals("com.egcoder.georgesamuel.netclub", appContext.getPackageName());
     }
 }
