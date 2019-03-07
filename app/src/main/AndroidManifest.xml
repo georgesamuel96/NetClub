@@ -8,7 +8,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -37,7 +37,8 @@
         <activity android:name=".DatesMentorActivity" />
         <activity android:name=".AddDateActivity" />
         <activity android:name=".MentorCategoriesActivity" />
-        <activity android:name=".PaymentMethodActivity"></activity>
+        <activity android:name=".PaymentMethodActivity" />
+        <activity android:name=".EditUserProfileActivity"></activity>
     </application>
 
 </manifest>
