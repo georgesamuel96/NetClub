@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.georgesamuel.netclub">
+    package="com.egcoders.technologysolutions.netclub">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.egcoders.technologysolutions.netclub.MainActivity"
             android:theme="@style/MyAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,22 +23,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.egcoders.technologysolutions.netclub.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".RegisterFirstPageActivity" />
-        <activity android:name=".RegisterSecondPageActivity" />
-        <activity android:name=".CategoriesActivity" />
-        <activity android:name=".MentorDetailsActivity" />
-        <activity android:name=".AddMentorActivity" />
-        <activity android:name=".MoreDetailsMentorActivity" />
-        <activity android:name=".DatesMentorActivity" />
-        <activity android:name=".AddDateActivity" />
-        <activity android:name=".MentorCategoriesActivity" />
-        <activity android:name=".PaymentMethodActivity" />
-        <activity android:name=".EditUserProfileActivity"></activity>
+        <activity android:name="com.egcoders.technologysolutions.netclub.RegisterFirstPageActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.RegisterSecondPageActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.CategoriesActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.MentorDetailsActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.AddMentorActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.MoreDetailsMentorActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.DatesMentorActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.AddDateActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.MentorCategoriesActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.PaymentMethodActivity" />
+        <activity android:name="com.egcoders.technologysolutions.netclub.EditUserProfileActivity"></activity>
     </application>
 
 </manifest>
