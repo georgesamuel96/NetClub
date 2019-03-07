@@ -33,12 +33,20 @@ public class AddDateActivity extends AppCompatActivity {
                     mentor.getDates().add(date.getText().toString().trim());
                     date.setText("");
                     Intent i = new Intent(AddDateActivity.this, DatesMentorActivity.class);
-                    //i.putExtra("mentor", mentor);
                     startActivity(i);
                     finish();
                 }
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent i = new Intent(AddDateActivity.this, DatesMentorActivity.class);
+        startActivity(i);
+        finish();
     }
 }

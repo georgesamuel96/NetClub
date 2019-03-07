@@ -29,8 +29,7 @@ public class MoreDetailsMentorActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mentor.setContent(content.getText().toString());
                 mentor.setDescription(description.getText().toString());
-                Intent i = new Intent(MoreDetailsMentorActivity.this, DatesMentorActivity.class);
-                //i.putExtra("mentor", mentor);
+                Intent i = new Intent(MoreDetailsMentorActivity.this, MentorCategoriesActivity.class);
                 startActivity(i);
 
             }

@@ -43,7 +43,6 @@ import id.zelory.compressor.Compressor;
 
 public class EditUserProfileActivity extends AppCompatActivity {
 
-    private String currentUserId;
     private CircleImageView userImage;
     private EditText userName, userEmail, userPhone;
     private EditText userBirthday;
@@ -55,6 +54,7 @@ public class EditUserProfileActivity extends AppCompatActivity {
     private Bitmap compressedImageFile;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
+    private SaveUserInstance userInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,34 +72,23 @@ public class EditUserProfileActivity extends AppCompatActivity {
         userEmail.setClickable(false);
 
         mAuth = FirebaseAuth.getInstance();
-        currentUserId = mAuth.getCurrentUser().getUid();
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         alertBuilder = new AlertDialog.Builder(this);
+        userInstance = new SaveUserInstance();
 
         progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(currentUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    Map<String, Object> userMap = task.getResult().getData();
-                    userEmail.setText(mAuth.getCurrentUser().getEmail());
-                    userBirthday.setText(userMap.get("birthday").toString());
-                    userPhone.setText(userMap.get("phone").toString());
-                    userName.setText(userMap.get("name").toString());
-                    RequestOptions requestOptions = new RequestOptions();
-                    requestOptions.placeholder(R.drawable.profile);
-                    Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions)
-                            .load(userMap.get("profile_url")).thumbnail(Glide.with(EditUserProfileActivity.this)
-                                    .load(userMap.get("profileThumb"))).into(userImage);
+        userEmail.setText(userInstance.getEmail());
+        userBirthday.setText(userInstance.getBirthday());
+        userPhone.setText(userInstance.getPhone());
+        userName.setText(userInstance.getName());
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.profile);
+        Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(userInstance.getProfile_url()).thumbnail(
+                Glide.with(EditUserProfileActivity.this).load(userInstance.getProfileThumb_url())
+        ).into(userImage);
 
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-                else{
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
+        progressBar.setVisibility(View.INVISIBLE);
 
         changeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,107 +100,150 @@ public class EditUserProfileActivity extends AppCompatActivity {
                 phone = userPhone.getText().toString().trim();
                 randomName = Long.toString(System.currentTimeMillis());
 
-                if(!missingValue(name, birthday, phone)){
+                if(!missingValue(name, birthday, phone)) {
 
                     progressBar.setVisibility(View.VISIBLE);
                     final StorageReference userProfileReference = storageReference.child("profile_images")
                             .child(randomName + ".jpg");
-                    UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
-                    Task<Uri> userProfileUriTask = userProfileUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                        @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            if(!task.isSuccessful())
-                            {
-                                alertBuilder.setTitle("Upload Image");
-                                alertBuilder.setMessage(task.getException().getMessage());
-                                alertBuilder.setCancelable(false);
-                                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                                AlertDialog alertDialog = alertBuilder.create();
-                                alertDialog.show();
-                                return null;
+
+                    if (userImageURI != null) {
+                        UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
+                        Task<Uri> userProfileUriTask = userProfileUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    alertBuilder.setTitle("Upload Image");
+                                    alertBuilder.setMessage(task.getException().getMessage());
+                                    alertBuilder.setCancelable(false);
+                                    alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                                    AlertDialog alertDialog = alertBuilder.create();
+                                    alertDialog.show();
+                                    return null;
+                                }
+                                return userProfileReference.getDownloadUrl();
                             }
-                            return userProfileReference.getDownloadUrl();
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if(task.isSuccessful()){
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
 
-                                downloadUri = task.getResult();
+                                    downloadUri = task.getResult();
 
-                                File newImageFile = new File(userImageURI.getPath());
-                                try {
-                                    compressedImageFile = new Compressor(EditUserProfileActivity.this)
-                                            .compressToBitmap(newImageFile);
-                                }
-                                catch (IOException e){
-                                    e.printStackTrace();
-                                }
-                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                                byte[] thumbData = baos.toByteArray();
-
-                                final StorageReference userProfileThumbReference = storageReference.child("profile_images/thumbs").
-                                        child(randomName + ".jpg");
-                                UploadTask userProfileThumbUploadTask = userProfileThumbReference
-                                        .putBytes(thumbData);
-                                Task<Uri> userProfileThumbUriTask = userProfileThumbUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                    @Override
-                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                        if(!task.isSuccessful()) {
-                                            return null;
-                                        }
-                                        else {
-                                            return userProfileThumbReference.getDownloadUrl();
-                                        }
+                                    File newImageFile = new File(userImageURI.getPath());
+                                    try {
+                                        compressedImageFile = new Compressor(EditUserProfileActivity.this)
+                                                .compressToBitmap(newImageFile);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
                                     }
-                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        if(task.isSuccessful()){
+                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                    compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                    byte[] thumbData = baos.toByteArray();
 
-                                            downloadThumbUri = task.getResult();
-                                            Map<String, Object> userMap = new HashMap<>();
-                                            userMap.put("name", name);
-                                            userMap.put("birthday", birthday);
-                                            userMap.put("phone", phone);
-                                            userMap.put("profile_url", downloadUri.toString());
-                                            userMap.put("profileThumb", downloadThumbUri.toString());
-
-                                            firestore.collection("Users").document(currentUserId).update(userMap)
-                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            if(task.isSuccessful()){
-                                                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                intent.putExtra("TOP", true);
-                                                                startActivity(intent);
-                                                                progressBar.setVisibility(View.INVISIBLE);
-                                                            }
-                                                            else{
-                                                                progressBar.setVisibility(View.INVISIBLE);
-                                                            }
-                                                        }
-                                                    });
+                                    final StorageReference userProfileThumbReference = storageReference.child("profile_images/thumbs").
+                                            child(randomName + ".jpg");
+                                    UploadTask userProfileThumbUploadTask = userProfileThumbReference
+                                            .putBytes(thumbData);
+                                    Task<Uri> userProfileThumbUriTask = userProfileThumbUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                        @Override
+                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                            if (!task.isSuccessful()) {
+                                                return null;
+                                            } else {
+                                                return userProfileThumbReference.getDownloadUrl();
+                                            }
                                         }
-                                        else{
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            if (task.isSuccessful()) {
+
+                                                downloadThumbUri = task.getResult();
+                                                Map<String, Object> userMap = new HashMap<>();
+                                                userMap.put("name", name);
+                                                userMap.put("birthday", birthday);
+                                                userMap.put("phone", phone);
+                                                userMap.put("profile_url", downloadUri.toString());
+                                                userMap.put("profileThumb", downloadThumbUri.toString());
+
+                                                userInstance.setName(name);
+                                                userInstance.setBirthday(birthday);
+                                                userInstance.setPhone(phone);
+                                                userInstance.setProfile_url(downloadUri.toString());
+                                                userInstance.setProfileThumb_url(downloadThumbUri.toString());
+
+                                                if (!userInstance.getIsFirstLoad()) {
+                                                    userInstance.getList().get(0).setUserName(name);
+                                                    userInstance.getList().get(0).setUserImageUrl(downloadUri.toString());
+                                                    userInstance.getList().get(0).setUserImageThumbUrl(downloadThumbUri.toString());
+                                                }
+
+                                                firestore.collection("Users").document(userInstance.getId()).update(userMap)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if(task.isSuccessful()){
+                                                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                    intent.putExtra("TOP", true);
+                                                                    startActivity(intent);
+                                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                                }
+                                                                else{
+                                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                                }
+                                                            }
+                                                        });
+
+
+                                            } else {
+                                                progressBar.setVisibility(View.INVISIBLE);
+                                            }
+                                        }
+                                    });
+
+                                } else {
+                                    progressBar.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        });
+                    }
+
+                    else {
+
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("name", name);
+                        userMap.put("birthday", birthday);
+                        userMap.put("phone", phone);
+
+                        userInstance.setName(name);
+                        userInstance.setBirthday(birthday);
+                        userInstance.setPhone(phone);
+
+                        if (!userInstance.getIsFirstLoad()) {
+                            userInstance.getList().get(0).setUserName(name);
+                        }
+                        firestore.collection("Users").document(userInstance.getId()).update(userMap)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            intent.putExtra("TOP", true);
+                                            startActivity(intent);
+                                            progressBar.setVisibility(View.INVISIBLE);
+                                        } else {
                                             progressBar.setVisibility(View.INVISIBLE);
                                         }
                                     }
                                 });
-
-                            }
-                            else{
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
-                        }
-                    });
+                    }
                 }
             }
         });

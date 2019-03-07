@@ -1,6 +1,7 @@
 package com.egcoders.technologysolutions.netclub;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -32,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private CategoriesFragment categoriesFragment;
     private UsersFragment usersFragment;
     private MentorsFragment mentorsFragment;
-    private FirebaseUser currentUser;
     private FirebaseFirestore firestore;
-    private User user;
+    private SaveUserInstance userInstance;
+    private SharedPreferenceConfig preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        currentUser = mAuth.getCurrentUser();
-        user = new User();
+        userInstance = new SaveUserInstance();
 
         Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
-        if(currentUser != null) {
+        preferences = new SharedPreferenceConfig(getApplicationContext());
+        if(!preferences.getSharedPrefConfig().equals("Empty")) {
 
+            userInstance.setId(preferences.getSharedPrefConfig());
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
             usersFragment = new UsersFragment();
@@ -75,15 +77,18 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
                     if (menuItem.getItemId() == R.id.home) {
+                        getSupportActionBar().setTitle("NetClub");
                         replaceFragment(homeFragment);
                         return true;
                     } else if (menuItem.getItemId() == R.id.categories) {
                         replaceFragment(categoriesFragment);
                         return true;
                     } else if (menuItem.getItemId() == R.id.users) {
+                        getSupportActionBar().setTitle("Users");
                         replaceFragment(usersFragment);
                         return true;
                     } else if (menuItem.getItemId() == R.id.mentors) {
+                        getSupportActionBar().setTitle("Mentors");
                         replaceFragment(mentorsFragment);
                         return true;
                     }
@@ -114,10 +119,12 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.profile) {
 
+                    getSupportActionBar().setTitle(userInstance.getName());
                     fragment = new ProfileFragment();
                 }
                 else if (itemId == R.id.about_us) {
 
+                    getSupportActionBar().setTitle("About Us");
                     fragment = new AboutUsFragment();
                 }
                 else if (itemId == R.id.share) {
@@ -126,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (itemId == R.id.log_out) {
 
+                    preferences.setSharedPrefConfig("Empty");
                     mAuth.signOut();
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
@@ -161,9 +169,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(currentUser != null){
+        if(!preferences.getSharedPrefConfig().equals("Empty")){
 
-            firestore.collection("Users").document(currentUser.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            firestore.collection("Users").document(userInstance.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
@@ -172,15 +180,22 @@ public class MainActivity extends AppCompatActivity {
                         Object categorySelected = userMap.get("categorySelected");
 
                         if(categorySelected.equals(true)){
-
+                            userInstance.setCategorySelected(true);
+                            userInstance.setName(userMap.get("name").toString());
+                            userInstance.setEmail(userMap.get("email").toString());
+                            userInstance.setBirthday(userMap.get("birthday").toString());
+                            userInstance.setPhone(userMap.get("phone").toString());
+                            userInstance.setProfile_url(userMap.get("profile_url").toString());
+                            userInstance.setProfileThumb_url(userMap.get("profileThumb").toString());
                         }
                         else{
-                            user.setUserName(userMap.get("name").toString());
-                            user.setUserBirthday(userMap.get("birthday").toString());
-                            user.setUserPhone(userMap.get("phone").toString());
-                            user.setUserSelectCategories(false);
-                            user.setUserImageUrl(userMap.get("profile_url").toString());
-                            user.setUserImageThumbUrl(userMap.get("profileThumb").toString());
+                            userInstance.setCategorySelected(false);
+                            userInstance.setName(userMap.get("name").toString());
+                            userInstance.setEmail(userMap.get("email").toString());
+                            userInstance.setBirthday(userMap.get("birthday").toString());
+                            userInstance.setPhone(userMap.get("phone").toString());
+                            userInstance.setProfile_url(userMap.get("profile_url").toString());
+                            userInstance.setProfileThumb_url(userMap.get("profileThumb").toString());
 
                             sendToCategories();
                         }
@@ -198,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendToCategories() {
         Intent i = new Intent(MainActivity.this, CategoriesActivity.class);
-        i.putExtra("user", user);
+        //i.putExtra("user", user);
         startActivity(i);
         finish();
     }

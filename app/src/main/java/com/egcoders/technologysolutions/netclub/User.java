@@ -11,6 +11,7 @@ public class User implements Serializable {
     private String userPhone;
     private String userBirthday;
     private Boolean userSelectCategories;
+    private String userEmail;
 
     public User(){
 
@@ -64,5 +65,11 @@ public class User implements Serializable {
         this.userSelectCategories = userSelectCategories;
     }
 
+    public String getUserEmail() {
+        return userEmail;
+    }
 
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 }

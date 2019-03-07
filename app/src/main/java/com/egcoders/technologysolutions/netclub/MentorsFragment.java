@@ -36,7 +36,7 @@ public class MentorsFragment extends Fragment {
 
     private FloatingActionButton fab;
     private FirebaseFirestore firestore;
-    private FirebaseUser currentUser;
+    //private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
@@ -44,6 +44,7 @@ public class MentorsFragment extends Fragment {
     private DocumentSnapshot lastVisible;
     private ArrayList<Mentor> mentorList = new ArrayList<>();
     private MentorAdapter adapter;
+    private SaveUserInstance userInstance;
 
     public MentorsFragment() {
         // Required empty public constructor
@@ -58,12 +59,12 @@ public class MentorsFragment extends Fragment {
 
         firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         saveMentorInstance = new SaveMentorInstance();
 
         fab = (FloatingActionButton) view.findViewById(R.id.add_mentor);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        userInstance = new SaveUserInstance();
         
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,22 +73,22 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        if(currentUser.getUid().equals("1igdvK8SH3QIGJxmCJBAUc1qqgc2")){
+        if(userInstance.getId().equals("")){
             fab.show();
 
-        }
-
-        if(!saveMentorInstance.getIsFirstLoad()) {
-
-            lastVisible = saveMentorInstance.getDocumentSnapshot();
-            mentorList = saveMentorInstance.getList();
         }
 
         adapter = new MentorAdapter(mentorList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
+        if(!saveMentorInstance.getIsFirstLoad()) {
+
+            lastVisible = saveMentorInstance.getDocumentSnapshot();
+            mentorList = saveMentorInstance.getList();
+            adapter.notifyDataSetChanged();
+        }
 
         // Get mentors when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -139,9 +140,10 @@ public class MentorsFragment extends Fragment {
                             saveMentorInstance.setList(mentorList);
                         }
                     }
-                    progressBar.setVisibility(View.INVISIBLE);
+
                 }
             });
+            progressBar.setVisibility(View.INVISIBLE);
 
         }
 

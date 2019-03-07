@@ -143,24 +143,17 @@ public class AddMentorActivity extends AppCompatActivity {
 
                                             dowbloadThumbUri = task.getResult();
 
-                                            Intent i = new Intent(AddMentorActivity.this, MentorCategoriesActivity.class);
+                                            Intent i = new Intent(AddMentorActivity.this, MoreDetailsMentorActivity.class);
                                             mentor.setName(name);
                                             mentor.setEmail(email);
                                             mentor.setPhone(phone);
                                             mentor.setImage_url(downloadUri.toString());
                                             mentor.setImageThumb_url(dowbloadThumbUri.toString());
 
-                                            /*HashMap<String, String> hashMap = new HashMap<>();
-                                            hashMap.put("name", name);
-                                            hashMap.put("email", email);
-                                            hashMap.put("phone", phone);
-                                            hashMap.put("profile_url", downloadUri.toString());
-                                            hashMap.put("profileThumb_url", dowbloadThumbUri.toString());*/
-
-                                            //i.putExtra("mentor", mentor);
                                             startActivity(i);
+                                            progressBar.setVisibility(View.INVISIBLE);
                                         } else {
-
+                                            progressBar.setVisibility(View.INVISIBLE);
                                         }
                                     }
                                 });

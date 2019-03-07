@@ -153,21 +153,23 @@ public class DatesMentorActivity extends AppCompatActivity {
             _mentor.setDescription(mentor.getDescription());
             _mentor.setPhone(mentor.getPhone());
             _mentor.setDates(mentor.getDates());
-
-            if(mentorInstance.getIsFirstLoad())
-                mentorInstance.getList().add(_mentor);
-            else
-                mentorInstance.getList().add(0, _mentor);
+            _mentor.setId(currentMentorId);
 
             mentor.getDates().clear();
             mentor.getCategories().clear();
 
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("TOP", true);
-            startActivity(intent);
+
+            finish();
         }
 
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        mentor.getDates().clear();
+        mentor.getCategories().clear();
     }
 }

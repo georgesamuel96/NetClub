@@ -106,9 +106,9 @@ public class MentorCategoriesActivity extends AppCompatActivity {
                     }
                 }
                 progressBar.setVisibility(View.INVISIBLE);
-                Intent i = new Intent(MentorCategoriesActivity.this, MoreDetailsMentorActivity.class);
-                //i.putExtra("mentorr", mentorr);
+                Intent i = new Intent(MentorCategoriesActivity.this, DatesMentorActivity.class);
                 startActivity(i);
+                finish();
             }
             else{
                 alertBuilder.setTitle("Category");
@@ -127,4 +127,11 @@ public class MentorCategoriesActivity extends AppCompatActivity {
 
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+    }
+
 }

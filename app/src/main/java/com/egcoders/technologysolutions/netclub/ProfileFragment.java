@@ -35,9 +35,10 @@ public class ProfileFragment extends Fragment {
     private Button editBtn;
     private TextView email, birthday, phone, name;
     private CircleImageView profile;
-    private FirebaseUser currentUser;
-    private String userId;
+    //private FirebaseUser currentUser;
+    //private String userId;
     private ProgressBar progressBar;
+    private SaveUserInstance userInstance;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -59,16 +60,29 @@ public class ProfileFragment extends Fragment {
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         firestore = FirebaseFirestore.getInstance();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        userId = currentUser.getUid();
+        //currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        //userId = currentUser.getUid();
+        userInstance = new SaveUserInstance();
 
         progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        email.setText(userInstance.getEmail());
+        birthday.setText(userInstance.getBirthday());
+        phone.setText(userInstance.getPhone());
+        name.setText(userInstance.getName());
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.profile);
+        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(userInstance.getProfile_url()).thumbnail(
+                Glide.with(getContext()).load(userInstance.getProfileThumb_url())
+        ).into(profile);
+        progressBar.setVisibility(View.INVISIBLE);
+
+        /*progressBar.setVisibility(View.VISIBLE);
+        firestore.collection("Users").document(userInstance.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     Map<String, Object> userMap = task.getResult().getData();
-                    email.setText(currentUser.getEmail());
+                    email.setText(userInstance.getEmail());
                     birthday.setText(userMap.get("birthday").toString());
                     phone.setText(userMap.get("phone").toString());
                     name.setText(userMap.get("name").toString());
@@ -83,7 +97,7 @@ public class ProfileFragment extends Fragment {
                     progressBar.setVisibility(View.INVISIBLE);
                 }
             }
-        });
+        });*/
 
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override

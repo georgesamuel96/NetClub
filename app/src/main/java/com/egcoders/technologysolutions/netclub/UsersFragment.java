@@ -106,8 +106,16 @@ public class UsersFragment extends Fragment {
                                 user.setUserName(userMap.get("name").toString());
                                 user.setUserImageUrl(userMap.get("profile_url").toString());
                                 user.setUserImageUrl(userMap.get("profileThumb").toString());
-                                userList.add(user);
-                                adapter.notifyDataSetChanged();
+
+                                if(doc.getDocument().getId().equals(saveUserInstance.getId())){
+                                    userList.add(0, user);
+                                    adapter.notifyDataSetChanged();
+                                }
+                                else {
+
+                                    userList.add(user);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         }
                         saveUserInstance.setList(userList);
@@ -144,8 +152,16 @@ public class UsersFragment extends Fragment {
                             user.setUserName(userMap.get("name").toString());
                             user.setUserImageUrl(userMap.get("profile_url").toString());
                             user.setUserImageUrl(userMap.get("profileThumb").toString());
-                            userList.add(user);
-                            adapter.notifyDataSetChanged();
+
+                            if(doc.getDocument().getId().equals(saveUserInstance.getId())){
+                                userList.add(0, user);
+                                adapter.notifyDataSetChanged();
+                            }
+                            else {
+
+                                userList.add(user);
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     }
                     saveUserInstance.setList(userList);

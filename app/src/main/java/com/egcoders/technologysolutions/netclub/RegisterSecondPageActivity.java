@@ -53,6 +53,8 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Bitmap compressedImageFile;
     private String currentUserId;
+    private SaveUserInstance saveUserInstance;
+    private SharedPreferenceConfig preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,8 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        saveUserInstance = new SaveUserInstance();
+        preference = new SharedPreferenceConfig(getApplicationContext());
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +95,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
 
                                 currentUserId = task.getResult().getUser().getUid();
+                                saveUserInstance.setId(currentUserId);
                                 final StorageReference userProfileReference = storageReference.child("profile_images")
                                         .child(currentUserId + ".jpg");
                                 UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
@@ -155,14 +160,18 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                                                         downloadThumbUri = task.getResult();
 
                                                         Intent i = new Intent(RegisterSecondPageActivity.this, CategoriesActivity.class);
-                                                        User user = new User();
-                                                        user.setUserName(userName);
-                                                        user.setUserBirthday(birthday);
-                                                        user.setUserPhone(phone);
-                                                        user.setUserSelectCategories(false);
-                                                        user.setUserImageUrl(downloadUri.toString());
-                                                        user.setUserImageThumbUrl(downloadThumbUri.toString());
-                                                        i.putExtra("user", user);
+
+
+                                                        preference.setSharedPrefConfig(saveUserInstance.getId());
+                                                        saveUserInstance.setName(userName);
+                                                        saveUserInstance.setEmail(email);
+                                                        saveUserInstance.setBirthday(birthday);
+                                                        saveUserInstance.setPhone(phone);
+                                                        saveUserInstance.setCategorySelected(false);
+                                                        saveUserInstance.setProfile_url(downloadThumbUri.toString());
+                                                        saveUserInstance.setProfileThumb_url(downloadThumbUri.toString());
+                                                        saveUserInstance.setId(currentUserId);
+
                                                         startActivity(i);
                                                         finish();
                                                     }

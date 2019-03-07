@@ -32,11 +32,11 @@ public class CategoriesActivity extends AppCompatActivity {
     private ArrayList<ChooseCategory> categoryList = new ArrayList<>();
     private FirebaseFirestore firestore;
     private ProgressBar progressBar;
-    private User currentUser;
+    private User user;
     private AlertDialog.Builder alertBuilder;
-    private FirebaseUser firebaseUser;
+    //private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
-    private String currentUserId;
+    //private String currentUserId;
     private SaveUserInstance userInstance;
 
     @Override
@@ -55,27 +55,35 @@ public class CategoriesActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
+        //firebaseUser = mAuth.getCurrentUser();
 
-        currentUser = (User) getIntent().getSerializableExtra("user");
+        user = new User();
         userInstance = new SaveUserInstance();
 
-        currentUserId = firebaseUser.getUid();
+        //currentUserId = firebaseUser.getUid();
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("name", currentUser.getUserName());
-        userMap.put("birthday", currentUser.getUserBirthday());
-        userMap.put("phone", currentUser.getUserPhone());
-        userMap.put("profile_url", currentUser.getUserImageUrl());
-        userMap.put("profileThumb", currentUser.getUserImageThumbUrl());
-        userMap.put("categorySelected", currentUser.getUserSelectCategories());
+        userMap.put("name", userInstance.getName());
+        userMap.put("birthday", userInstance.getBirthday());
+        userMap.put("phone", userInstance.getPhone());
+        userMap.put("profile_url", userInstance.getProfile_url());
+        userMap.put("profileThumb", userInstance.getProfileThumb_url());
+        userMap.put("categorySelected", userInstance.getCategorySelected());
+        userMap.put("email", userInstance.getEmail());
 
+        user.setUserName(userInstance.getName());
+        user.setUserBirthday(userInstance.getBirthday());
+        user.setUserPhone(userInstance.getPhone());
+        user.setUserImageUrl(userInstance.getProfile_url());
+        user.setUserImageThumbUrl(userInstance.getProfileThumb_url());
+        user.setUserSelectCategories(userInstance.getCategorySelected());
+        user.setUserEmail(userInstance.getEmail());
         if(userInstance.getIsFirstLoad())
-            userInstance.getList().add(currentUser);
+            userInstance.getList().add(user);
         else
-            userInstance.getList().add(0, currentUser);
+            userInstance.getList().add(0, user);
 
         progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(currentUserId).set(userMap)
+        firestore.collection("Users").document(userInstance.getId()).set(userMap)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -134,7 +142,7 @@ public class CategoriesActivity extends AppCompatActivity {
                         Map<String, Object> categoryMap = new HashMap<>();
                         categoryMap.put("name", category.getCategoryName());
                         firestore.collection("Users")
-                                .document(currentUserId)
+                                .document(userInstance.getId())
                                 .collection("selectedCategory")
                                 .document(category.getCategoryId())
                                 .set(categoryMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -152,12 +160,14 @@ public class CategoriesActivity extends AppCompatActivity {
                         });
                     }
                 }
+
                 progressBar.setVisibility(View.VISIBLE);
-                firestore.collection("Users").document(currentUserId).update("categorySelected", true)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                firestore.collection("Users").document(userInstance.getId()).update("categorySelected",
+                        true).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
+                                    userInstance.setCategorySelected(true);
                                     progressBar.setVisibility(View.INVISIBLE);
                                 }
                                 else {
