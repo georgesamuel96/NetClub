@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,9 +23,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MentorDetailsActivity extends AppCompatActivity {
+public class MentorDatesActivity extends AppCompatActivity {
 
     private String mentorId;
     private String mentorName;
@@ -35,11 +37,17 @@ public class MentorDetailsActivity extends AppCompatActivity {
     private ListView listView;
     private ProgressBar progressBar;
     private AlertDialog.Builder alertBuilder;
+    private ArrayList<String> datesByUser = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mentor_details);
+
+        Boolean backPressed = getIntent().getBooleanExtra("back", false);
+        if(backPressed){
+            finish();
+        }
 
         mentorId = getIntent().getStringExtra("mentorId");
 
@@ -107,8 +115,11 @@ public class MentorDetailsActivity extends AppCompatActivity {
             datesList = adapter.getCheckedList();
             if (itemChecked) {
                 progressBar.setVisibility(View.VISIBLE);
+                final String registerId = Long.toString(System.currentTimeMillis());
                 for (ChooseCategory category : datesList) {
                     if (category.getcategoryChecked()) {
+
+                        datesByUser.add(category.getCategoryName());
 
                         final Map<String, Object> registerMap = new HashMap<>();
                         registerMap.put("date", category.getCategoryName());
@@ -130,21 +141,21 @@ public class MentorDetailsActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             if(task.isSuccessful()){
                                                 Map<String, Object> mentorMap = task.getResult().getData();
-                                                registerMap.put("mentorName", mentorMap.get("name"));
+                                                registerMap.put("mentorName", mentorMap.get("name").toString());
                                                 registerMap.put("mentorPhone", mentorMap.get("phone").toString());
 
                                                 registerMap.put("paymentMethod", "");
 
-                                                final String registerId = Long.toString(System.currentTimeMillis());
+
                                                 firestore.collection("Registration").document(registerId)
                                                         .set(registerMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if(task.isSuccessful()){
-                                                            Intent i = new Intent(MentorDetailsActivity.this, PaymentMethodActivity.class);
+                                                            /*Intent i = new Intent(MentorDatesActivity.this, PaymentMethodActivity.class);
                                                             i.putExtra("registrationId", registerId);
                                                             startActivity(i);
-                                                            finish();
+                                                            finish();*/
                                                         }
                                                         else{
 
@@ -169,6 +180,11 @@ public class MentorDetailsActivity extends AppCompatActivity {
 
                     }
                 }
+                Intent i = new Intent(MentorDatesActivity.this, PaymentMethodActivity.class);
+                i.putExtra("registrationId", registerId);
+                i.putStringArrayListExtra("dates", datesByUser);
+                startActivity(i);
+                finish();
                 progressBar.setVisibility(View.INVISIBLE);
             }
 

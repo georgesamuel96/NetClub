@@ -66,8 +66,8 @@ public class LoginActivity extends AppCompatActivity {
                                 alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        loginEmailText.setText("");
-                                        loginPassText.setText("");
+                                        /*loginEmailText.setText("");
+                                        loginPassText.setText("");*/
                                         dialog.cancel();
                                     }
                                 });
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if(email.equals("") || password.equals("")){
 
-            alertBuilder.setTitle("Missing Value");
+            /*alertBuilder.setTitle("Missing Value");
             alertBuilder.setMessage("There is missing value email, password or both");
             alertBuilder.setCancelable(false);
             alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -106,7 +106,14 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();
+            alertDialog.show();*/
+
+            if(email.equals("")) {
+                loginEmailText.setError("Enter your email");
+            }
+            else{
+                loginPassText.setError("Enter your password");
+            }
 
             return true;
         }

@@ -60,10 +60,10 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
                 Glide.with(context).load(mentorList.get(i).getImageThumb_url())
         ).into(myViewHolder.mentorImage);
 
-        myViewHolder.bookBtn.setOnClickListener(new View.OnClickListener() {
+        myViewHolder.seeMoreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(context, MentorDetailsActivity.class);
+                Intent i = new Intent(context, DetailsMentorActivity.class);
                 i.putExtra("mentorId", mentorId);
                 context.startActivity(i);
             }
@@ -103,7 +103,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
 
         TextView mentorName;
         TextView mentorCategory;
-        Button bookBtn;
+        Button seeMoreBtn;
         CircleImageView mentorImage;
         TextView mentorContent;
 
@@ -112,7 +112,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
 
             mentorName = (TextView) view.findViewById(R.id.mentor_name);
             mentorImage = (CircleImageView) view.findViewById(R.id.mentor_image);
-            bookBtn = (Button) view.findViewById(R.id.book_btn);
+            seeMoreBtn = (Button) view.findViewById(R.id.seeMore_btn);
             mentorCategory = (TextView) view.findViewById(R.id.mentor_category);
             mentorContent = (TextView) view.findViewById(R.id.mentor_content);
         }

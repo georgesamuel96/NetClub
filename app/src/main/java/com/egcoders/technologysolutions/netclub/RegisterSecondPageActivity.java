@@ -241,7 +241,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
 
         if(userName.equals("") || date.equals("") || phone.equals("") || userImageURI == null){
 
-            alertBuilder.setTitle("Missing Value");
+            /*alertBuilder.setTitle("Missing Value");
             alertBuilder.setMessage("There is missing value");
             alertBuilder.setCancelable(false);
             alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -254,7 +254,29 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                 }
             });
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();
+            alertDialog.show();*/
+            if(userName.equals("")){
+                userNameText.setError("Enter your name");
+            }
+            else if(date.equals("")){
+                birthdayText.setError("Enter your birthday");
+            }
+            else if(phone.equals("")){
+                phoneText.setError("Enter Your phone");
+            }
+            else{
+                alertBuilder.setTitle("Your photo");
+                alertBuilder.setMessage("Choose your photo");
+                alertBuilder.setCancelable(false);
+                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.show();
+            }
 
             return true;
         }

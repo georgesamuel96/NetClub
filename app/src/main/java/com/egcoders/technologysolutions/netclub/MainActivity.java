@@ -75,14 +75,11 @@ public class MainActivity extends AppCompatActivity {
         Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
         preferences = new SharedPreferenceConfig(getApplicationContext());
         if(!preferences.getSharedPrefConfig().equals("Empty")) {
-
             userInstance.setId(preferences.getSharedPrefConfig());
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
             usersFragment = new UsersFragment();
             mentorsFragment = new MentorsFragment();
-
-            System.out.println(userInstance.getIsActivityFirstLoad());
 
             if(userInstance.getIsActivityFirstLoad()){
 
@@ -123,10 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
 
-            if(!checkMentorFragment)
-                replaceFragment(homeFragment);
-            else
-                replaceFragment(mentorsFragment);
+            replaceFragment(usersFragment);
 
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override

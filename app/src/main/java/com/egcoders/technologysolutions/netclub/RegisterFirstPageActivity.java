@@ -116,7 +116,7 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
 
         if(email.equals("") || password.equals("") || confirmPass.equals("")){
 
-            alertBuilder.setTitle("Missing Value");
+            /*alertBuilder.setTitle("Missing Value");
             alertBuilder.setMessage("There is missing value");
             alertBuilder.setCancelable(false);
             alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -129,7 +129,16 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
                 }
             });
             AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();
+            alertDialog.show();*/
+            if(email.equals("")){
+                emailText.setError("Enter your email");
+            }
+            else if(password.equals("")){
+                passwordText.setError("Enter your password");
+            }
+            else{
+                confirmPasswordText.setError("Enter confirm password");
+            }
 
             return true;
         }

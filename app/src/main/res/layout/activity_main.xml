@@ -27,7 +27,9 @@
             android:layout_height="match_parent"
             android:id="@+id/frame"
             android:layout_below="@id/toolbar"
-            android:layout_marginBottom="@dimen/_48sdp"/>
+            android:layout_marginBottom="@dimen/_48sdp">
+
+        </FrameLayout>
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_menu"

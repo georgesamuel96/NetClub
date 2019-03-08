@@ -158,7 +158,9 @@ public class DatesMentorActivity extends AppCompatActivity {
             mentor.getDates().clear();
             mentor.getCategories().clear();
 
-
+            Intent i = new Intent(DatesMentorActivity.this, MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
             finish();
         }
 

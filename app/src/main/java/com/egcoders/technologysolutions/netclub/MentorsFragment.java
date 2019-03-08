@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -73,8 +75,14 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        if(userInstance.getId().equals("")){
+        if(userInstance.getEmail().equals("georgee@gmail.com")){
             fab.show();
+        }
+
+        if(!saveMentorInstance.getIsFirstLoad()) {
+
+            lastVisible = saveMentorInstance.getDocumentSnapshot();
+            mentorList = saveMentorInstance.getList();
 
         }
 
@@ -82,13 +90,8 @@ public class MentorsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
-
-        if(!saveMentorInstance.getIsFirstLoad()) {
-
-            lastVisible = saveMentorInstance.getDocumentSnapshot();
-            mentorList = saveMentorInstance.getList();
-            adapter.notifyDataSetChanged();
-        }
+        adapter.notifyDataSetChanged();
+        System.out.println(mentorList.size());
 
         // Get mentors when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -117,7 +120,7 @@ public class MentorsFragment extends Fragment {
                     if(e == null) {
 
                         if (!queryDocumentSnapshots.isEmpty()) {
-
+                            System.out.println("MentorsFragment3");
                             lastVisible = queryDocumentSnapshots.getDocuments()
                                     .get(queryDocumentSnapshots.size() - 1);
                             saveMentorInstance.setDocumentSnapshot(lastVisible);

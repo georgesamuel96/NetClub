@@ -14,9 +14,12 @@ import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PaymentMethodActivity extends AppCompatActivity {
 
@@ -27,6 +30,8 @@ public class PaymentMethodActivity extends AppCompatActivity {
     private PaymentMethodAdapter adapter;
     private AlertDialog.Builder alertBuilder;
     private ProgressBar progressBar;
+    private SaveUserInstance userInstance;
+    private ArrayList<String> datesByUser = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_payment_method);
 
         registrationId = getIntent().getStringExtra("registrationId");
+        datesByUser = (ArrayList<String>) getIntent().getSerializableExtra("dates");
         firestore = FirebaseFirestore.getInstance();
 
         listView = (ListView) findViewById(R.id.list_view);
@@ -41,6 +47,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
 
         firestore = FirebaseFirestore.getInstance();
         alertBuilder = new AlertDialog.Builder(this);
+        userInstance = new SaveUserInstance();
 
         list.add(Pair.create(R.drawable.fawry, "Fawry"));
         list.add(Pair.create(R.drawable.aman, "Amaan"));
@@ -60,19 +67,38 @@ public class PaymentMethodActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
 
                         progressBar.setVisibility(View.VISIBLE);
+                        for(String date : datesByUser) {
+
+                            Map<String, Object> dateMap = new HashMap<>();
+                            dateMap.put("date", date);
+                            firestore.collection("Registration").document(registrationId)
+                                    .collection("selectedDates").add(dateMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    if(task.isSuccessful()){
+
+                                    }
+                                    else{
+
+                                    }
+                                }
+                            });
+                        }
+
                         firestore.collection("Registration").document(registrationId).update("paymentMethod",
                                 list.get(position).second).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
-                                    progressBar.setVisibility(View.INVISIBLE);
+
                                 }
                                 else{
-                                    progressBar.setVisibility(View.INVISIBLE);
+
                                 }
                             }
                         });
 
+                        userInstance.setIsActivityFirstLoad(true);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.putExtra("TOP", true);
@@ -90,5 +116,15 @@ public class PaymentMethodActivity extends AppCompatActivity {
                 alertDialog.show();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent i = new Intent(PaymentMethodActivity.this, MentorDatesActivity.class);
+        i.putExtra("back", true);
+        startActivity(i);
+        finish();
     }
 }
