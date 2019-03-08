@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class SaveUserInstance {
 
     private static Boolean isFirstLoad = true;
+    private static Boolean isActivityFirstLoad = true;
     private static DocumentSnapshot documentSnapshot;
     private static ArrayList<User> list = new ArrayList<>();
     private static String name;
@@ -28,6 +29,14 @@ public class SaveUserInstance {
 
     public void setIsFirstLoad(Boolean isFirstLoad) {
         SaveUserInstance.isFirstLoad = isFirstLoad;
+    }
+
+    public Boolean getIsActivityFirstLoad() {
+        return isActivityFirstLoad;
+    }
+
+    public void setIsActivityFirstLoad(Boolean isActivityFirstLoad) {
+        SaveUserInstance.isActivityFirstLoad = isActivityFirstLoad;
     }
 
     public DocumentSnapshot getDocumentSnapshot() {

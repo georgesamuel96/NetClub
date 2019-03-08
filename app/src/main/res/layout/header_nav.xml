@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_148sdp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/header"
+        android:scaleType="fitXY"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_header"
+        android:layout_width="@dimen/_54sdp"
+        android:layout_height="@dimen/_54sdp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name_header"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_below="@id/profile_header"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:fontFamily="monospace"
+        android:text="George Samuel"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12ssp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_header" />
+
+    <TextView
+        android:id="@+id/email_header"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_below="@id/name_header"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:fontFamily="monospace"
+        android:text="george.samuel90@yahoo.com"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12ssp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_header" />
+
+</android.support.constraint.ConstraintLayout>

@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView register;
     private AlertDialog.Builder alertBuilder;
     private FirebaseFirestore firestore;
+    private SharedPreferenceConfig preferenceConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         alertBuilder = new AlertDialog.Builder(this);
+        preferenceConfig = new SharedPreferenceConfig(this);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,15 +113,9 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-
-    }
-
     private void sendToMain() {
 
+        preferenceConfig.setSharedPrefConfig(FirebaseAuth.getInstance().getCurrentUser().getUid());
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
     }
