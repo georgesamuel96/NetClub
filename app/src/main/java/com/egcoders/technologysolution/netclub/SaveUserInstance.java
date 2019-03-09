@@ -10,14 +10,14 @@ public class SaveUserInstance {
     private static Boolean isActivityFirstLoad = true;
     private static DocumentSnapshot documentSnapshot;
     private static ArrayList<User> list = new ArrayList<>();
-    private static String name;
+    /*private static String name;
     private static String email;
     private static String birthday;
     private static String profile_url;
     private static String profileThumb_url;
     private static String phone;
     private static String id;
-    private static Boolean categorySelected;
+    private static Boolean categorySelected;*/
 
     public SaveUserInstance(){
 
@@ -55,7 +55,7 @@ public class SaveUserInstance {
         SaveUserInstance.list = list;
     }
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
@@ -117,5 +117,5 @@ public class SaveUserInstance {
 
     public void setCategorySelected(Boolean categorySelected){
         SaveUserInstance.categorySelected = categorySelected;
-    }
+    }*/
 }

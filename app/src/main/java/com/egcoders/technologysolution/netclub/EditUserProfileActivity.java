@@ -2,6 +2,8 @@ package com.egcoders.technologysolution.netclub;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,8 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -34,7 +38,10 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -43,17 +50,20 @@ import id.zelory.compressor.Compressor;
 public class EditUserProfileActivity extends AppCompatActivity {
 
     private CircleImageView userImage;
-    private EditText userName, userEmail, userPhone;
-    private EditText userBirthday;
+    private EditText userName, userPhone;
+    private TextView userBirthday, userEmail;
     private FirebaseFirestore firestore;
     private Button changeBtn;
     private Uri userImageURI, downloadUri, downloadThumbUri;
     private AlertDialog.Builder alertBuilder;
     private StorageReference storageReference;
     private Bitmap compressedImageFile;
-    private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private SaveUserInstance userInstance;
+    private SharedPreferenceConfig preferenceConfig;
+    private ProgressDialog progressDialog;
+    private Boolean userImageChanged = false;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +72,40 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
         userImage = (CircleImageView) findViewById(R.id.user_profile);
         userName = (EditText) findViewById(R.id.user_name);
-        userEmail = (EditText) findViewById(R.id.user_email);
+        userEmail = (TextView) findViewById(R.id.user_email);
         userPhone = (EditText) findViewById(R.id.user_phone);
-        userBirthday = (EditText) findViewById(R.id.user_birthday);
+        userBirthday = (TextView) findViewById(R.id.user_birthday);
         changeBtn = (Button) findViewById(R.id.change_btn);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        userEmail.setClickable(false);
+        userBirthday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar currentDate = Calendar.getInstance();
+                int mYear = currentDate.get(Calendar.YEAR);
+                int mMonth = currentDate.get(Calendar.MONTH);
+                int mDay = currentDate.get(Calendar.DAY_OF_MONTH);
 
+                DatePickerDialog mDatePicker = new DatePickerDialog(EditUserProfileActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                                Calendar myCalendar = Calendar.getInstance();
+                                myCalendar.set(Calendar.YEAR, selectedyear);
+                                myCalendar.set(Calendar.MONTH, selectedmonth);
+                                myCalendar.set(Calendar.DAY_OF_MONTH, selectedday);
+                                String myFormat = "dd/MM/yyyy";
+                                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
+                                userBirthday.setText(sdf.format(myCalendar.getTime()));
+
+                            }
+                        }, mYear, mMonth, mDay);
+                mDatePicker.show();
+            }
+        });
+
+        progressDialog = new ProgressDialog(this);
+        preferenceConfig = new SharedPreferenceConfig(this);
+        final Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -77,14 +113,14 @@ public class EditUserProfileActivity extends AppCompatActivity {
         userInstance = new SaveUserInstance();
 
         progressBar.setVisibility(View.VISIBLE);
-        userEmail.setText(userInstance.getEmail());
-        userBirthday.setText(userInstance.getBirthday());
-        userPhone.setText(userInstance.getPhone());
-        userName.setText(userInstance.getName());
+        userEmail.setText(currentUserMap.get("email").toString());
+        userBirthday.setText(currentUserMap.get("birthday").toString());
+        userPhone.setText(currentUserMap.get("phone").toString());
+        userName.setText(currentUserMap.get("name").toString());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.profile);
-        Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(userInstance.getProfile_url()).thumbnail(
-                Glide.with(EditUserProfileActivity.this).load(userInstance.getProfileThumb_url())
+        Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(currentUserMap.get("profileUrl").toString()).thumbnail(
+                Glide.with(EditUserProfileActivity.this).load(currentUserMap.get("profileThumbUrl").toString())
         ).into(userImage);
 
         progressBar.setVisibility(View.INVISIBLE);
@@ -101,7 +137,10 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
                 if(!missingValue(name, birthday, phone)) {
 
-                    progressBar.setVisibility(View.VISIBLE);
+                    progressDialog.setCancelable(false);
+                    progressDialog.setTitle("Submit changing");
+                    progressDialog.setMessage("Loading");
+                    progressDialog.show();
                     final StorageReference userProfileReference = storageReference.child("profile_images")
                             .child(randomName + ".jpg");
 
@@ -170,19 +209,17 @@ public class EditUserProfileActivity extends AppCompatActivity {
                                                 userMap.put("profile_url", downloadUri.toString());
                                                 userMap.put("profileThumb", downloadThumbUri.toString());
 
-                                                userInstance.setName(name);
-                                                userInstance.setBirthday(birthday);
-                                                userInstance.setPhone(phone);
-                                                userInstance.setProfile_url(downloadUri.toString());
-                                                userInstance.setProfileThumb_url(downloadThumbUri.toString());
-
-                                                if (!userInstance.getIsFirstLoad()) {
+                                                String url = currentUserMap.get("profileUrl").toString();
+                                                if (userInstance.getList().get(0).getUserImageUrl().equals(url)) {
                                                     userInstance.getList().get(0).setUserName(name);
                                                     userInstance.getList().get(0).setUserImageUrl(downloadUri.toString());
                                                     userInstance.getList().get(0).setUserImageThumbUrl(downloadThumbUri.toString());
                                                 }
 
-                                                firestore.collection("Users").document(userInstance.getId()).update(userMap)
+                                                preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
+                                                        downloadUri.toString(), downloadThumbUri.toString(), true);
+
+                                                firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(userMap)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -191,28 +228,27 @@ public class EditUserProfileActivity extends AppCompatActivity {
                                                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                                     intent.putExtra("TOP", true);
                                                                     startActivity(intent);
-                                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                                    progressDialog.dismiss();
                                                                 }
                                                                 else{
-                                                                    progressBar.setVisibility(View.INVISIBLE);
+                                                                    progressDialog.dismiss();
                                                                 }
                                                             }
                                                         });
 
 
                                             } else {
-                                                progressBar.setVisibility(View.INVISIBLE);
+                                                progressDialog.dismiss();
                                             }
                                         }
                                     });
 
                                 } else {
-                                    progressBar.setVisibility(View.INVISIBLE);
+                                    progressDialog.dismiss();
                                 }
                             }
                         });
                     }
-
                     else {
 
                         Map<String, Object> userMap = new HashMap<>();
@@ -220,14 +256,16 @@ public class EditUserProfileActivity extends AppCompatActivity {
                         userMap.put("birthday", birthday);
                         userMap.put("phone", phone);
 
-                        userInstance.setName(name);
-                        userInstance.setBirthday(birthday);
-                        userInstance.setPhone(phone);
-
-                        if (!userInstance.getIsFirstLoad()) {
+                        String url = currentUserMap.get("profileUrl").toString();
+                        if (userInstance.getList().get(0).getUserImageUrl().equals(url)) {
                             userInstance.getList().get(0).setUserName(name);
                         }
-                        firestore.collection("Users").document(userInstance.getId()).update(userMap)
+
+                        preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
+                                currentUserMap.get("profileUrl").toString(), currentUserMap.get("profileThumbUrl").toString(),
+                                true);
+
+                        firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(userMap)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -236,9 +274,9 @@ public class EditUserProfileActivity extends AppCompatActivity {
                                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             intent.putExtra("TOP", true);
                                             startActivity(intent);
-                                            progressBar.setVisibility(View.INVISIBLE);
+                                            progressDialog.dismiss();
                                         } else {
-                                            progressBar.setVisibility(View.INVISIBLE);
+                                            progressDialog.dismiss();
                                         }
                                     }
                                 });
@@ -271,17 +309,15 @@ public class EditUserProfileActivity extends AppCompatActivity {
 
         if(name.equals("") || date.equals("") || phone.equals("")){
 
-            alertBuilder.setTitle("Missing Value");
-            alertBuilder.setMessage("There is missing value");
-            alertBuilder.setCancelable(false);
-            alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();
+            if(name.equals("")){
+                userName.setError("Enter your name");
+            }
+            else if(date.equals("")){
+                userBirthday.setError("Enter your birthday");
+            }
+            else{
+                userPhone.setError("Enter your phone");
+            }
 
             return true;
         }
@@ -301,6 +337,7 @@ public class EditUserProfileActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 userImageURI = result.getUri();
                 userImage.setImageURI(userImageURI);
+                userImageChanged = true;
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }

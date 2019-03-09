@@ -49,7 +49,7 @@ public class MentorDatesActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         listView = (ListView) findViewById(R.id.list_view);
         adapter = new ChooseCategoryAdapter(getApplicationContext(), datesList);
@@ -126,66 +126,60 @@ public class MentorDatesActivity extends AppCompatActivity {
                     if (category.getcategoryChecked()) {
 
                         datesByUser.add(category.getCategoryName());
-
-                        final Map<String, Object> registerMap = new HashMap<>();
-                        registerMap.put("date", category.getCategoryName());
-                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                        String currentUserId = currentUser.getUid();
-
-                        // Get current user
-                        firestore.collection("Users").document(currentUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                if(task.isSuccessful()){
-                                    Map<String, Object> userMap = task.getResult().getData();
-                                    registerMap.put("userName", userMap.get("name").toString());
-                                    registerMap.put("userPhone", userMap.get("phone").toString());
-
-                                    // Get currentMentor
-                                    firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            if(task.isSuccessful()){
-                                                Map<String, Object> mentorMap = task.getResult().getData();
-                                                registerMap.put("mentorName", mentorMap.get("name").toString());
-                                                registerMap.put("mentorPhone", mentorMap.get("phone").toString());
-
-                                                registerMap.put("paymentMethod", "");
-
-
-                                                firestore.collection("Registration").document(registerId)
-                                                        .set(registerMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                        if(task.isSuccessful()){
-                                                            /*Intent i = new Intent(MentorDatesActivity.this, PaymentMethodActivity.class);
-                                                            i.putExtra("registrationId", registerId);
-                                                            startActivity(i);
-                                                            finish();*/
-                                                        }
-                                                        else{
-
-                                                        }
-                                                    }
-                                                });
-                                            }
-                                            else{
-
-                                            }
-                                        }
-                                    });
-
-
-                                }
-                                else {
-
-                                }
-                            }
-                        });
-
-
                     }
                 }
+
+                final Map<String, Object> registerMap = new HashMap<>();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                String currentUserId = currentUser.getUid();
+
+                // Get current user
+                firestore.collection("Users").document(currentUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Map<String, Object> userMap = task.getResult().getData();
+                            registerMap.put("userName", userMap.get("name").toString());
+                            registerMap.put("userPhone", userMap.get("phone").toString());
+
+                            // Get currentMentor
+                            firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        Map<String, Object> mentorMap = task.getResult().getData();
+                                        registerMap.put("mentorName", mentorMap.get("name").toString());
+                                        registerMap.put("mentorPhone", mentorMap.get("phone").toString());
+
+                                        registerMap.put("paymentMethod", "");
+
+
+                                        firestore.collection("Registration").document(registerId)
+                                                .set(registerMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()){
+
+                                                }
+                                                else{
+
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else{
+
+                                    }
+                                }
+                            });
+
+                        }
+                        else {
+
+                        }
+                    }
+                });
+
                 Intent i = new Intent(MentorDatesActivity.this, PaymentMethodActivity.class);
                 i.putExtra("registrationId", registerId);
                 i.putStringArrayListExtra("dates", datesByUser);

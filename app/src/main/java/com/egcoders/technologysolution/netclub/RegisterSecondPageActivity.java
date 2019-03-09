@@ -2,6 +2,7 @@ package com.egcoders.technologysolution.netclub;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,8 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,7 +37,10 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -43,8 +49,8 @@ import id.zelory.compressor.Compressor;
 public class RegisterSecondPageActivity extends AppCompatActivity {
 
     private EditText userNameText;
-    private EditText birthdayText;
     private EditText phoneText;
+    private TextView birthdayText;
     private Button register;
     private CircleImageView userImage;
     private AlertDialog.Builder alertBuilder;
@@ -56,7 +62,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private Bitmap compressedImageFile;
     private String currentUserId;
-    private SaveUserInstance saveUserInstance;
+    //private SaveUserInstance saveUserInstance;
     private SharedPreferenceConfig preference;
     private ProgressDialog progressDialog;
 
@@ -70,7 +76,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
         password = getIntent().getStringExtra("password");
 
         userNameText = (EditText) findViewById(R.id.user_name);
-        birthdayText = (EditText) findViewById(R.id.date);
+        birthdayText = (TextView) findViewById(R.id.date);
         phoneText = (EditText) findViewById(R.id.phone);
         register = (Button) findViewById(R.id.register);
         userImage = (CircleImageView) findViewById(R.id.user_image);
@@ -80,8 +86,33 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        saveUserInstance = new SaveUserInstance();
+        //saveUserInstance = new SaveUserInstance();
         preference = new SharedPreferenceConfig(getApplicationContext());
+
+        birthdayText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar currentDate = Calendar.getInstance();
+                int mYear = currentDate.get(Calendar.YEAR);
+                int mMonth = currentDate.get(Calendar.MONTH);
+                int mDay = currentDate.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog mDatePicker = new DatePickerDialog(RegisterSecondPageActivity.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        Calendar myCalendar = Calendar.getInstance();
+                        myCalendar.set(Calendar.YEAR, selectedyear);
+                        myCalendar.set(Calendar.MONTH, selectedmonth);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, selectedday);
+                        String myFormat = "dd/MM/yyyy";
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
+                        birthdayText.setText(sdf.format(myCalendar.getTime()));
+
+                    }
+                }, mYear, mMonth, mDay);
+                mDatePicker.show();
+            }
+        });
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,7 +135,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
 
                                 currentUserId = task.getResult().getUser().getUid();
-                                saveUserInstance.setId(currentUserId);
+                                preference.setSharedPrefConfig(currentUserId);
                                 final StorageReference userProfileReference = storageReference.child("profile_images")
                                         .child(currentUserId + ".jpg");
                                 UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
@@ -168,27 +199,30 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
 
                                                         downloadThumbUri = task.getResult();
 
-                                                        preference.setSharedPrefConfig(saveUserInstance.getId());
+                                                        /*preference.setSharedPrefConfig(saveUserInstance.getId());
                                                         saveUserInstance.setName(userName);
                                                         saveUserInstance.setEmail(email);
                                                         saveUserInstance.setBirthday(birthday);
                                                         saveUserInstance.setPhone(phone);
                                                         saveUserInstance.setCategorySelected(false);
                                                         saveUserInstance.setProfile_url(downloadThumbUri.toString());
-                                                        saveUserInstance.setProfileThumb_url(downloadThumbUri.toString());
+                                                        saveUserInstance.setProfileThumb_url(downloadThumbUri.toString());*/
 
-                                                        Map<String, Object> userMap = new HashMap<>();
-                                                        userMap.put("name", saveUserInstance.getName());
-                                                        userMap.put("birthday", saveUserInstance.getBirthday());
-                                                        userMap.put("phone", saveUserInstance.getPhone());
-                                                        userMap.put("profile_url", saveUserInstance.getProfile_url());
-                                                        userMap.put("profileThumb", saveUserInstance.getProfileThumb_url());
-                                                        userMap.put("categorySelected", saveUserInstance.getCategorySelected());
-                                                        userMap.put("email", saveUserInstance.getEmail());
+                                                        preference.setCurrentUser(userName, email, phone, birthday,
+                                                                downloadUri.toString(), downloadThumbUri.toString(), false);
+
+                                                        Map<String, Object> userMap = preference.getCurrentUser();
+                                                        userMap.put("name", userName);
+                                                        userMap.put("birthday", birthday);
+                                                        userMap.put("phone", phone);
+                                                        userMap.put("profile_url", downloadUri.toString());
+                                                        userMap.put("profileThumb", downloadThumbUri.toString());
+                                                        userMap.put("categorySelected", false);
+                                                        userMap.put("email", email);
 
 
                                                         //progressBar.setVisibility(View.VISIBLE);
-                                                        firestore.collection("Users").document(saveUserInstance.getId()).set(userMap)
+                                                        firestore.collection("Users").document(preference.getSharedPrefConfig()).set(userMap)
                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
@@ -227,9 +261,6 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                                 alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        userNameText.setText("");
-                                        birthdayText.setText("");
-                                        phoneText.setText("");
                                         dialog.cancel();
                                     }
                                 });
@@ -280,7 +311,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
             else if(phone.equals("")){
                 phoneText.setError("Enter Your phone");
             }
-            else{
+            else if(userImageURI == null){
                 alertBuilder.setTitle("Your photo");
                 alertBuilder.setMessage("Choose your photo");
                 alertBuilder.setCancelable(false);
@@ -321,7 +352,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 userImageURI = result.getUri();
                 userImage.setImageURI(userImageURI);
-                //isChanged = true;
+                System.out.println(userImageURI);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }

@@ -1,6 +1,7 @@
 package com.egcoders.technologysolution.netclub;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -30,13 +31,15 @@ public class CategoriesActivity extends AppCompatActivity {
     private ChooseCategoryAdapter adapter;
     private ArrayList<ChooseCategory> categoryList = new ArrayList<>();
     private FirebaseFirestore firestore;
-    private ProgressBar progressBar;
+    //private ProgressBar progressBar;
+    private ProgressDialog progressDialog;
     private User user;
     private AlertDialog.Builder alertBuilder;
     //private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
     //private String currentUserId;
-    private SaveUserInstance userInstance;
+    //private SaveUserInstance userInstance;
+    private SharedPreferenceConfig preferenceConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,27 +50,32 @@ public class CategoriesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         alertBuilder = new AlertDialog.Builder(this);
+        preferenceConfig = new SharedPreferenceConfig(this);
+        progressDialog = new ProgressDialog(this);
+
 
         listView = (ListView) findViewById(R.id.list_view);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        //progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        user = new User();
 
         firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         //firebaseUser = mAuth.getCurrentUser();
 
-        user = new User();
-        userInstance = new SaveUserInstance();
+
+        //userInstance = new SaveUserInstance();
 
         //currentUserId = firebaseUser.getUid();
 
-        user.setUserName(userInstance.getName());
+        /*user.setUserName(userInstance.getName());
         user.setUserBirthday(userInstance.getBirthday());
         user.setUserPhone(userInstance.getPhone());
         user.setUserImageUrl(userInstance.getProfile_url());
         user.setUserImageThumbUrl(userInstance.getProfileThumb_url());
         user.setUserSelectCategories(userInstance.getCategorySelected());
-        user.setUserEmail(userInstance.getEmail());
+        user.setUserEmail(userInstance.getEmail());*/
         /*if(userInstance.getIsFirstLoad())
             userInstance.getList().add(user);
         else
@@ -78,7 +86,10 @@ public class CategoriesActivity extends AppCompatActivity {
         adapter = new ChooseCategoryAdapter(getApplicationContext(), categoryList);
         listView.setAdapter(adapter);
 
-        progressBar.setVisibility(View.VISIBLE);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Categories");
+        progressDialog.setMessage("Loading");
+        progressDialog.show();
         firestore.collection("Categories").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -92,10 +103,10 @@ public class CategoriesActivity extends AppCompatActivity {
                         categoryList.add(category);
                         adapter.notifyDataSetChanged();
                     }
-                    progressBar.setVisibility(View.INVISIBLE);
+                    progressDialog.dismiss();
                 }
                 else{
-                    progressBar.setVisibility(View.INVISIBLE);
+                    progressDialog.dismiss();
                 }
             }
         });
@@ -115,45 +126,52 @@ public class CategoriesActivity extends AppCompatActivity {
             Boolean itemChecked = (adapter.itemsChecked());
             categoryList = adapter.getCheckedList();
             if(itemChecked){
-                progressBar.setVisibility(View.VISIBLE);
+                progressDialog.setCancelable(false);
+                progressDialog.setTitle("Submit your choosing");
+                progressDialog.setMessage("Loading");
+                progressDialog.show();
+
+                firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig())
+                        .update("categorySelected", true).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+
+                            Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
+                            preferenceConfig.setCurrentUser(currentUserMap.get("name").toString(),
+                                    currentUserMap.get("email").toString(), currentUserMap.get("phone").toString(),
+                                    currentUserMap.get("birthday").toString(), currentUserMap.get("profileUrl").toString(),
+                                    currentUserMap.get("profileThumbUrl").toString(), true);
+                        }
+                        else {
+                        }
+                    }
+                });
+
                 for(ChooseCategory category : categoryList){
                     if(category.getcategoryChecked()){
                         Map<String, Object> categoryMap = new HashMap<>();
                         categoryMap.put("name", category.getCategoryName());
                         firestore.collection("Users")
-                                .document(userInstance.getId())
+                                .document(preferenceConfig.getSharedPrefConfig())
                                 .collection("selectedCategory")
                                 .document(category.getCategoryId())
                                 .set(categoryMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
-                                    progressBar.setVisibility(View.INVISIBLE);
+                                    progressDialog.dismiss();
                                     startActivity(new Intent(CategoriesActivity.this, MainActivity.class));
                                     finish();
                                 }
                                 else{
-                                    progressBar.setVisibility(View.INVISIBLE);
+                                    progressDialog.dismiss();
                                 }
                             }
                         });
                     }
                 }
 
-                progressBar.setVisibility(View.VISIBLE);
-                firestore.collection("Users").document(userInstance.getId()).update("categorySelected",
-                        true).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    userInstance.setCategorySelected(true);
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                                else {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                }
-                            }
-                        });
             }
             else{
                 alertBuilder.setTitle("Category");

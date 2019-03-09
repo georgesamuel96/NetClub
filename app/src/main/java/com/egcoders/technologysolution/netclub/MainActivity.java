@@ -1,5 +1,6 @@
 package com.egcoders.technologysolution.netclub;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -42,8 +43,10 @@ public class MainActivity extends AppCompatActivity {
     private SaveUserInstance userInstance;
     private SharedPreferenceConfig preferences;
     private View headerView;
-    private TextView headerEmail;
+    private TextView headerEmail, headerName;
     private CircleImageView headerProfile;
+    private String currentUserId;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
         headerView = navView.getHeaderView(0);
         headerEmail = (TextView) headerView.findViewById(R.id.email_header);
+        headerName = (TextView) headerView.findViewById(R.id.name_header);
         headerProfile = (CircleImageView) headerView.findViewById(R.id.profile_header);
 
-
+        progressDialog = new ProgressDialog(this);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         userInstance = new SaveUserInstance();
@@ -74,59 +78,55 @@ public class MainActivity extends AppCompatActivity {
         Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
         preferences = new SharedPreferenceConfig(getApplicationContext());
         if(!preferences.getSharedPrefConfig().equals("Empty")) {
-            userInstance.setId(preferences.getSharedPrefConfig());
+
+            currentUserId = preferences.getSharedPrefConfig();
+            Map<String, Object> currentUserMap = preferences.getCurrentUser();
+
+            headerEmail.setText(currentUserMap.get("email").toString());
+            headerEmail.setVisibility(View.VISIBLE);
+            headerName.setText(currentUserMap.get("name").toString());
+            RequestOptions requestOptions = new RequestOptions();
+            requestOptions.placeholder(R.drawable.profile);
+            Glide.with(getApplicationContext()).applyDefaultRequestOptions(requestOptions)
+                    .load(currentUserMap.get("profileUrl").toString()).thumbnail(Glide.with(getApplicationContext())
+                    .load(currentUserMap.get("profileThumbUrl").toString())).into(headerProfile);
+
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Loading");
+            firestore.collection("Users").document(currentUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(!task.getResult().exists())
+                    {
+                        progressDialog.dismiss();
+                        sendToLogin();
+                    }
+                    else
+                    {
+                        progressDialog.dismiss();
+                        if(task.isSuccessful()){
+                            replaceFragment(usersFragment);
+                        }
+                        else{
+
+                        }
+                    }
+                }
+            });
+
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
             usersFragment = new UsersFragment();
             mentorsFragment = new MentorsFragment();
 
-            if(userInstance.getIsActivityFirstLoad()){
+            /*if(userInstance.getIsActivityFirstLoad()){
 
                 userInstance.setIsActivityFirstLoad(false);
-                firestore.collection("Users").document(userInstance.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.getResult().exists()) {
-
-                            if (task.isSuccessful()) {
-                                Map<String, Object> userMap = task.getResult().getData();
-                                userInstance.setName(userMap.get("name").toString());
-                                userInstance.setEmail(userMap.get("email").toString());
-                                userInstance.setBirthday(userMap.get("birthday").toString());
-                                userInstance.setPhone(userMap.get("phone").toString());
-                                userInstance.setProfile_url(userMap.get("profileThumb").toString());
-                                userInstance.setProfileThumb_url(userMap.get("profileThumb").toString());
-
-                                headerEmail.setText(userInstance.getEmail());
-                                RequestOptions requestOptions = new RequestOptions();
-                                requestOptions.placeholder(R.drawable.profile);
-                                Glide.with(getApplicationContext()).applyDefaultRequestOptions(requestOptions)
-                                        .load(userInstance.getProfile_url()).thumbnail(Glide.with(getApplicationContext())
-                                        .load(userInstance.getProfileThumb_url())).into(headerProfile);
-
-                                if (userMap.get("categorySelected").equals(true)) {
-                                    userInstance.setCategorySelected(true);
-                                } else {
-                                    userInstance.setCategorySelected(false);
-                                    sendToCategories();
-                                }
-                            }
-                            else{
-
-                            }
-
-                        }
-                        else{
-
-                            preferences.setSharedPrefConfig("Empty");
-                            sendToLogin();
-                        }
-
-                    }
-                });
 
                 replaceFragment(usersFragment);
-            }
+            }*/
+
+
 
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -178,7 +178,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (itemId == R.id.profile) {
 
-                    getSupportActionBar().setTitle(userInstance.getName());
+                    Map<String, Object> currentUser = preferences.getCurrentUser();
+                    String currentUserName = currentUser.get("name").toString();
+                    getSupportActionBar().setTitle(currentUserName);
                     fragment = new ProfileFragment();
                 }
                 else if (itemId == R.id.about_us) {
@@ -188,7 +190,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (itemId == R.id.share) {
 
-                    //fragment = new AboutUsFragment();
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(sharingIntent, "Share using"));
                 }
                 else if (itemId == R.id.log_out) {
 
@@ -234,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendToLogin() {
 
+        preferences.setSharedPrefConfig("Empty");
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
     }

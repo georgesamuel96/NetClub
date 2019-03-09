@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Map;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -30,7 +32,8 @@ public class ProfileFragment extends Fragment {
     //private FirebaseUser currentUser;
     //private String userId;
     private ProgressBar progressBar;
-    private SaveUserInstance userInstance;
+    //private SaveUserInstance userInstance;
+    private SharedPreferenceConfig preferenceConfig;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -54,18 +57,19 @@ public class ProfileFragment extends Fragment {
         firestore = FirebaseFirestore.getInstance();
         //currentUser = FirebaseAuth.getInstance().getCurrentUser();
         //userId = currentUser.getUid();
-        userInstance = new SaveUserInstance();
+        //userInstance = new SaveUserInstance();
+        preferenceConfig = new SharedPreferenceConfig(getContext());
+        Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
 
         progressBar.setVisibility(View.VISIBLE);
-        email.setText(userInstance.getEmail());
-        birthday.setText(userInstance.getBirthday());
-        phone.setText(userInstance.getPhone());
-        name.setText(userInstance.getName());
+        email.setText(currentUserMap.get("email").toString());
+        birthday.setText(currentUserMap.get("birthday").toString());
+        phone.setText(currentUserMap.get("phone").toString());
+        name.setText(currentUserMap.get("name").toString());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.profile);
-        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(userInstance.getProfile_url()).thumbnail(
-                Glide.with(getContext()).load(userInstance.getProfileThumb_url())
-        ).into(profile);
+        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUserMap.get("profileUrl").toString())
+                .thumbnail(Glide.with(getContext()).load(currentUserMap.get("profileThumbUrl").toString())).into(profile);
         progressBar.setVisibility(View.INVISIBLE);
 
         /*progressBar.setVisibility(View.VISIBLE);

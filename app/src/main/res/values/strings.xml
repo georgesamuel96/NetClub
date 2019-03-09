@@ -5,4 +5,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="preference">com.egcoders.technologysolutions.netclub_preference</string>
     <string name="status_preference">com.egcoders.technologysolutions.netclub_status_preference</string>
+    <string name="name_currenetUser">com.egcoders.technologysolutions.netclub_name_currenetUser</string>
+    <string name="email_currenetUser">com.egcoders.technologysolutions.netclub_email_currenetUser</string>
+    <string name="phone_currenetUser">com.egcoders.technologysolutions.netclub_phone_currenetUser</string>
+    <string name="birthday_currenetUser">com.egcoders.technologysolutions.netclub_birthday_currenetUser</string>
+    <string name="profileUrl_currenetUser">com.egcoders.technologysolutions.netclub_profileUrl_currenetUser</string>
+    <string name="profileThumbUrl_currenetUser">com.egcoders.technologysolutions.netclub_profileThumbUrl_currenetUser</string>
+    <string name="categorySelected_currenetUser">com.egcoders.technologysolutions.netclub_categorySelected_currenetUser</string>
+
 </resources>

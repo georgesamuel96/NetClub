@@ -43,7 +43,8 @@ public class MentorsFragment extends Fragment {
     private DocumentSnapshot lastVisible;
     private ArrayList<Mentor> mentorList = new ArrayList<>();
     private MentorAdapter adapter;
-    private SaveUserInstance userInstance;
+    private SharedPreferenceConfig preferenceConfig;
+    //private SaveUserInstance userInstance;
 
     public MentorsFragment() {
         // Required empty public constructor
@@ -63,7 +64,8 @@ public class MentorsFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.add_mentor);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        userInstance = new SaveUserInstance();
+        //userInstance = new SaveUserInstance();
+        preferenceConfig = new SharedPreferenceConfig(getContext());
         
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +74,9 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        if(userInstance.getEmail().equals("georges012441@@gmail.com")){
+        Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
+        if(currentUserMap.get("email").equals("bassemhosny93@gmail.com") ||
+                currentUserMap.get("email").equals("andro.nady2015@gmail.com")){
             fab.show();
         }
 

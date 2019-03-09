@@ -37,7 +37,7 @@ public class UsersFragment extends Fragment {
     private ProgressBar progressBar;
     private SaveUserInstance saveUserInstance;
     private DocumentSnapshot lastVisible;
-    private int counter = 0;
+    private SharedPreferenceConfig preferenceConfig;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -55,6 +55,7 @@ public class UsersFragment extends Fragment {
 
         firestore = FirebaseFirestore.getInstance();
         saveUserInstance = new SaveUserInstance();
+        preferenceConfig = new SharedPreferenceConfig(getContext());
 
         if(!saveUserInstance.getIsFirstLoad()) {
 
@@ -108,7 +109,7 @@ public class UsersFragment extends Fragment {
                                     user.setUserImageUrl(userMap.get("profile_url").toString());
                                     user.setUserImageUrl(userMap.get("profileThumb").toString());
 
-                                    if (doc.getDocument().getId().equals(saveUserInstance.getId())) {
+                                    if (doc.getDocument().getId().equals(preferenceConfig.getSharedPrefConfig())) {
                                         userList.add(0, user);
                                         adapter.notifyDataSetChanged();
                                     } else {
@@ -139,35 +140,36 @@ public class UsersFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                if (!queryDocumentSnapshots.isEmpty()) {
+                if(e == null) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
 
-                    lastVisible = queryDocumentSnapshots.getDocuments()
-                            .get(queryDocumentSnapshots.size() - 1);
-                    saveUserInstance.setDocumentSnapshot(lastVisible);
+                        lastVisible = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+                        saveUserInstance.setDocumentSnapshot(lastVisible);
 
-                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                        if (doc.getType() == DocumentChange.Type.ADDED) {
+                        for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                            if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                            Map<String, Object> userMap = doc.getDocument().getData();
-                            User user = new User();
-                            user.setUserName(userMap.get("name").toString());
-                            user.setUserImageUrl(userMap.get("profile_url").toString());
-                            user.setUserImageUrl(userMap.get("profileThumb").toString());
+                                Map<String, Object> userMap = doc.getDocument().getData();
+                                User user = new User();
+                                user.setUserName(userMap.get("name").toString());
+                                user.setUserImageUrl(userMap.get("profile_url").toString());
+                                user.setUserImageUrl(userMap.get("profileThumb").toString());
 
-                            if(doc.getDocument().getId().equals(saveUserInstance.getId())){
-                                userList.add(0, user);
-                                adapter.notifyDataSetChanged();
-                            }
-                            else {
+                                if (doc.getDocument().getId().equals(preferenceConfig.getSharedPrefConfig())) {
+                                    userList.add(0, user);
+                                    adapter.notifyDataSetChanged();
+                                } else {
 
-                                userList.add(user);
-                                adapter.notifyDataSetChanged();
+                                    userList.add(user);
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         }
-                    }
-                    saveUserInstance.setList(userList);
-                    progressBar.setVisibility(View.INVISIBLE);
+                        saveUserInstance.setList(userList);
+                        //progressBar.setVisibility(View.INVISIBLE);
 
+                    }
                 }
                 progressBar.setVisibility(View.INVISIBLE);
             }

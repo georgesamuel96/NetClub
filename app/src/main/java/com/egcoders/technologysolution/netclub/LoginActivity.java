@@ -12,11 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -63,8 +68,47 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                progressDialog.dismiss();
-                                sendToMain();
+
+                                final String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                                firestore.collection("Users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if(task.getResult().exists()) {
+
+                                            if (task.isSuccessful()) {
+
+                                                Map<String, Object> userMap = task.getResult().getData();
+
+                                                String name, email, phone, birthday, profileUrl, profileThumbUrl;
+                                                Boolean categorySelected;
+
+                                                name = userMap.get("name").toString();
+                                                email = userMap.get("email").toString();
+                                                phone = userMap.get("phone").toString();
+                                                birthday = userMap.get("birthday").toString();
+                                                profileUrl = userMap.get("profile_url").toString();
+                                                profileThumbUrl = userMap.get("profileThumb").toString();
+                                                categorySelected = (Boolean) userMap.get("categorySelected");
+
+                                                preferenceConfig.setSharedPrefConfig(userId);
+                                                preferenceConfig.setCurrentUser(name, email, phone, birthday, profileUrl, profileThumbUrl, categorySelected);
+                                                sendToMain();
+                                            }
+                                            else{
+
+                                            }
+
+                                        }
+                                        else{
+
+                                            preferenceConfig.setSharedPrefConfig("Empty");
+                                            progressDialog.dismiss();
+                                        }
+
+                                    }
+                                });
+
                             }
                             else{
 
@@ -116,7 +160,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void sendToMain() {
 
-        preferenceConfig.setSharedPrefConfig(FirebaseAuth.getInstance().getCurrentUser().getUid());
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
     }
