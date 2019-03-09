@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private SaveUserInstance userInstance;
     private SharedPreferenceConfig preferences;
     private View headerView;
-    private TextView headerEmail, headerName;
+    private TextView headerEmail;
     private CircleImageView headerProfile;
 
     @Override
@@ -63,13 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
         headerView = navView.getHeaderView(0);
         headerEmail = (TextView) headerView.findViewById(R.id.email_header);
-        headerName = (TextView) headerView.findViewById(R.id.name_header);
         headerProfile = (CircleImageView) headerView.findViewById(R.id.profile_header);
 
 
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         userInstance = new SaveUserInstance();
+
 
         Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
         preferences = new SharedPreferenceConfig(getApplicationContext());
@@ -86,40 +86,47 @@ public class MainActivity extends AppCompatActivity {
                 firestore.collection("Users").document(userInstance.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.isSuccessful()){
+                        if(task.getResult().exists()) {
 
-                            Map<String, Object> userMap = task.getResult().getData();
-                            userInstance.setName(userMap.get("name").toString());
-                            userInstance.setEmail(userMap.get("email").toString());
-                            userInstance.setBirthday(userMap.get("birthday").toString());
-                            userInstance.setPhone(userMap.get("phone").toString());
-                            userInstance.setProfile_url(userMap.get("profileThumb").toString());
-                            userInstance.setProfileThumb_url(userMap.get("profileThumb").toString());
+                            if (task.isSuccessful()) {
+                                Map<String, Object> userMap = task.getResult().getData();
+                                userInstance.setName(userMap.get("name").toString());
+                                userInstance.setEmail(userMap.get("email").toString());
+                                userInstance.setBirthday(userMap.get("birthday").toString());
+                                userInstance.setPhone(userMap.get("phone").toString());
+                                userInstance.setProfile_url(userMap.get("profileThumb").toString());
+                                userInstance.setProfileThumb_url(userMap.get("profileThumb").toString());
 
-                            headerName.setText(userInstance.getName());
-                            headerEmail.setText(userInstance.getEmail());
-                            RequestOptions requestOptions = new RequestOptions();
-                            requestOptions.placeholder(R.drawable.profile);
-                            Glide.with(getApplicationContext()).applyDefaultRequestOptions(requestOptions)
-                                    .load(userInstance.getProfile_url()).thumbnail(Glide.with(getApplicationContext())
-                            .load(userInstance.getProfileThumb_url())).into(headerProfile);
+                                headerEmail.setText(userInstance.getEmail());
+                                RequestOptions requestOptions = new RequestOptions();
+                                requestOptions.placeholder(R.drawable.profile);
+                                Glide.with(getApplicationContext()).applyDefaultRequestOptions(requestOptions)
+                                        .load(userInstance.getProfile_url()).thumbnail(Glide.with(getApplicationContext())
+                                        .load(userInstance.getProfileThumb_url())).into(headerProfile);
 
-                            if(userMap.get("categorySelected").equals(true)){
-                                userInstance.setCategorySelected(true);
+                                if (userMap.get("categorySelected").equals(true)) {
+                                    userInstance.setCategorySelected(true);
+                                } else {
+                                    userInstance.setCategorySelected(false);
+                                    sendToCategories();
+                                }
                             }
                             else{
-                                userInstance.setCategorySelected(false);
-                                sendToCategories();
+
                             }
+
                         }
                         else{
 
+                            preferences.setSharedPrefConfig("Empty");
+                            sendToLogin();
                         }
+
                     }
                 });
-            }
 
-            replaceFragment(usersFragment);
+                replaceFragment(usersFragment);
+            }
 
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -145,6 +152,9 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             });
+        }
+        else{
+            sendToLogin();
         }
 
     }

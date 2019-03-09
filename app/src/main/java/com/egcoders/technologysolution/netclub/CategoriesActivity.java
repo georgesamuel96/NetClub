@@ -60,14 +60,6 @@ public class CategoriesActivity extends AppCompatActivity {
         userInstance = new SaveUserInstance();
 
         //currentUserId = firebaseUser.getUid();
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("name", userInstance.getName());
-        userMap.put("birthday", userInstance.getBirthday());
-        userMap.put("phone", userInstance.getPhone());
-        userMap.put("profile_url", userInstance.getProfile_url());
-        userMap.put("profileThumb", userInstance.getProfileThumb_url());
-        userMap.put("categorySelected", userInstance.getCategorySelected());
-        userMap.put("email", userInstance.getEmail());
 
         user.setUserName(userInstance.getName());
         user.setUserBirthday(userInstance.getBirthday());
@@ -76,24 +68,12 @@ public class CategoriesActivity extends AppCompatActivity {
         user.setUserImageThumbUrl(userInstance.getProfileThumb_url());
         user.setUserSelectCategories(userInstance.getCategorySelected());
         user.setUserEmail(userInstance.getEmail());
-        if(userInstance.getIsFirstLoad())
+        /*if(userInstance.getIsFirstLoad())
             userInstance.getList().add(user);
         else
-            userInstance.getList().add(0, user);
+            userInstance.getList().add(0, user);*/
 
-        progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(userInstance.getId()).set(userMap)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                        else{
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                });
+
 
         adapter = new ChooseCategoryAdapter(getApplicationContext(), categoryList);
         listView.setAdapter(adapter);

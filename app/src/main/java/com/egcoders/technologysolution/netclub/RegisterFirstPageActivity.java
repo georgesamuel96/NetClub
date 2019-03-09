@@ -37,6 +37,10 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
         nextImage = (ImageView) findViewById(R.id.next);
 
         mAuth = FirebaseAuth.getInstance();
+        Boolean backPressed = getIntent().getBooleanExtra("backPressed", false);
+        if(backPressed){
+            emailText.setText(getIntent().getStringExtra("email"));
+        }
 
         nextImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,43 +60,6 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
                         i.putExtra("password", password);
                         startActivity(i);
                         finish();
-
-                       /* mAuth.signInAnonymously().addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-
-                                    mAuth.getCurrentUser().updateEmail(email);
-                                    mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                                                          }
-                                            else{
-                                                alertBuilder.setTitle("Email Error");
-                                                alertBuilder.setMessage(task.getException().getMessage());
-                                                alertBuilder.setCancelable(false);
-                                                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        passwordText.setText("");
-                                                        confirmPasswordText.setText("");
-                                                        dialog.cancel();
-                                                    }
-                                                });
-                                                AlertDialog alertDialog = alertBuilder.create();
-                                                alertDialog.show();
-                                            }
-                                        }
-                                    });
-
-                                }
-                                else {
-
-                                }
-                            }
-                        });*/
-
                     }
                     else{
                         alertBuilder.setTitle("Authentication Error");
@@ -118,20 +85,6 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
 
         if(email.equals("") || password.equals("") || confirmPass.equals("")){
 
-            /*alertBuilder.setTitle("Missing Value");
-            alertBuilder.setMessage("There is missing value");
-            alertBuilder.setCancelable(false);
-            alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    emailText.setText("");
-                    passwordText.setText("");
-                    confirmPasswordText.setText("");
-                    dialog.cancel();
-                }
-            });
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();*/
             if(email.equals("")){
                 emailText.setError("Enter your email");
             }

@@ -9,6 +9,7 @@ public class SaveMentorInstance {
     private static Boolean isFirstLoad = true;
     private static DocumentSnapshot documentSnapshot;
     private static ArrayList<Mentor> list = new ArrayList<>();
+    private static String bookMentorId;
 
     public SaveMentorInstance(){
 
@@ -36,5 +37,13 @@ public class SaveMentorInstance {
 
     public void setList(ArrayList<Mentor> list) {
         SaveMentorInstance.list = list;
+    }
+
+    public String getBookMentorId() {
+        return bookMentorId;
+    }
+
+    public void setBookMentorId(String bookMentorId) {
+        SaveMentorInstance.bookMentorId = bookMentorId;
     }
 }

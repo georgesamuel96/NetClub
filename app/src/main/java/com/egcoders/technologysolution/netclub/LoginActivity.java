@@ -1,6 +1,7 @@
 package com.egcoders.technologysolution.netclub;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private AlertDialog.Builder alertBuilder;
     private FirebaseFirestore firestore;
     private SharedPreferenceConfig preferenceConfig;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn = (Button) findViewById(R.id.loginBtn);
         register = (TextView) findViewById(R.id.register);
 
+        progressDialog = new ProgressDialog(this);
         mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         alertBuilder = new AlertDialog.Builder(this);
@@ -51,23 +54,28 @@ public class LoginActivity extends AppCompatActivity {
                 String loginPass = loginPassText.getText().toString().trim();
 
                 if(!missingValue(loginEmail, loginPass)){
+
+                    progressDialog.setCancelable(false);
+                    progressDialog.setTitle("Email Verification");
+                    progressDialog.setMessage("Loading");
+                    progressDialog.show();
                     mAuth.signInWithEmailAndPassword(loginEmail, loginPass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
+                                progressDialog.dismiss();
                                 sendToMain();
                             }
                             else{
-                                String errorMessage = task.getException().getMessage();
 
+                                progressDialog.dismiss();
+                                String errorMessage = task.getException().getMessage();
                                 alertBuilder.setTitle("Exception");
                                 alertBuilder.setMessage(errorMessage);
                                 alertBuilder.setCancelable(false);
                                 alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        /*loginEmailText.setText("");
-                                        loginPassText.setText("");*/
                                         dialog.cancel();
                                     }
                                 });
@@ -93,20 +101,6 @@ public class LoginActivity extends AppCompatActivity {
     private Boolean missingValue(String email, String password){
 
         if(email.equals("") || password.equals("")){
-
-            /*alertBuilder.setTitle("Missing Value");
-            alertBuilder.setMessage("There is missing value email, password or both");
-            alertBuilder.setCancelable(false);
-            alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    loginEmailText.setText("");
-                    loginPassText.setText("");
-                    dialog.cancel();
-                }
-            });
-            AlertDialog alertDialog = alertBuilder.create();
-            alertDialog.show();*/
 
             if(email.equals("")) {
                 loginEmailText.setError("Enter your email");

@@ -72,7 +72,7 @@ public class MentorsFragment extends Fragment {
             }
         });
 
-        if(userInstance.getEmail().equals("georgee@gmail.com")){
+        if(userInstance.getEmail().equals("georges012441@@gmail.com")){
             fab.show();
         }
 
@@ -117,7 +117,7 @@ public class MentorsFragment extends Fragment {
                     if(e == null) {
 
                         if (!queryDocumentSnapshots.isEmpty()) {
-                            System.out.println("MentorsFragment3");
+
                             lastVisible = queryDocumentSnapshots.getDocuments()
                                     .get(queryDocumentSnapshots.size() - 1);
                             saveMentorInstance.setDocumentSnapshot(lastVisible);
@@ -159,30 +159,32 @@ public class MentorsFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
 
-                if (!queryDocumentSnapshots.isEmpty()) {
+                if(e == null) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
 
-                    lastVisible = queryDocumentSnapshots.getDocuments()
-                            .get(queryDocumentSnapshots.size() - 1);
-                    saveMentorInstance.setDocumentSnapshot(lastVisible);
+                        lastVisible = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+                        saveMentorInstance.setDocumentSnapshot(lastVisible);
 
-                    for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
-                        if (doc.getType() == DocumentChange.Type.ADDED) {
+                        for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
+                            if (doc.getType() == DocumentChange.Type.ADDED) {
 
-                            Map<String, Object> mentorMap = doc.getDocument().getData();
-                            Mentor mentor = new Mentor();
-                            mentor.setName(mentorMap.get("name").toString());
-                            mentor.setImage_url(mentorMap.get("profile_url").toString());
-                            mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
-                            mentor.setId(doc.getDocument().getId());
-                            mentor.setContent(mentorMap.get("content").toString());
+                                Map<String, Object> mentorMap = doc.getDocument().getData();
+                                Mentor mentor = new Mentor();
+                                mentor.setName(mentorMap.get("name").toString());
+                                mentor.setImage_url(mentorMap.get("profile_url").toString());
+                                mentor.setImageThumb_url(mentorMap.get("profileThumb_url").toString());
+                                mentor.setId(doc.getDocument().getId());
+                                mentor.setContent(mentorMap.get("content").toString());
 
-                            mentorList.add(mentor);
-                            adapter.notifyDataSetChanged();
+                                mentorList.add(mentor);
+                                adapter.notifyDataSetChanged();
+                            }
                         }
-                    }
-                    saveMentorInstance.setList(mentorList);
-                    progressBar.setVisibility(View.INVISIBLE);
+                        saveMentorInstance.setList(mentorList);
+                        progressBar.setVisibility(View.INVISIBLE);
 
+                    }
                 }
                 progressBar.setVisibility(View.INVISIBLE);
             }

@@ -1,6 +1,8 @@
 package com.egcoders.technologysolution.netclub;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -26,42 +29,40 @@ import java.util.Map;
 
 public class MentorDatesActivity extends AppCompatActivity {
 
-    private String mentorId;
+    private SaveMentorInstance mentorInstance;
     private String mentorName;
     private FirebaseFirestore firestore;
     private android.support.v7.widget.Toolbar toolbar;
     private static ArrayList<ChooseCategory> datesList = new ArrayList<>();
     private ChooseCategoryAdapter adapter;
     private ListView listView;
-    private ProgressBar progressBar;
     private AlertDialog.Builder alertBuilder;
     private ArrayList<String> datesByUser = new ArrayList<>();
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mentor_details);
 
-        Boolean backPressed = getIntent().getBooleanExtra("back", false);
-        if(backPressed){
-            finish();
-        }
-
-        mentorId = getIntent().getStringExtra("mentorId");
+        mentorInstance = new SaveMentorInstance();
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         listView = (ListView) findViewById(R.id.list_view);
-
-        firestore = FirebaseFirestore.getInstance();
         adapter = new ChooseCategoryAdapter(getApplicationContext(), datesList);
+        adapter.clearAdapter();
+
+        progressDialog = new ProgressDialog(this);
+        firestore = FirebaseFirestore.getInstance();
+
         listView.setAdapter(adapter);
         alertBuilder = new AlertDialog.Builder(this);
 
-        firestore.collection("Mentors").document(mentorId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
@@ -75,8 +76,11 @@ public class MentorDatesActivity extends AppCompatActivity {
             }
         });
 
-        progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Mentors").document(mentorId).collection("Dates").get()
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Loading Dates");
+        progressDialog.setMessage("Loading");
+        progressDialog.show();
+        firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).collection("Dates").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -90,13 +94,13 @@ public class MentorDatesActivity extends AppCompatActivity {
                                 datesList.add(category);
                                 adapter.notifyDataSetChanged();
                             }
-                            progressBar.setVisibility(View.INVISIBLE);
                         }
                         else{
-                            progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
+        progressDialog.dismiss();
+
     }
 
     @Override
@@ -109,10 +113,14 @@ public class MentorDatesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.submit) {
+
             Boolean itemChecked = (adapter.itemsChecked());
             datesList = adapter.getCheckedList();
             if (itemChecked) {
-                progressBar.setVisibility(View.VISIBLE);
+                progressDialog.setCancelable(false);
+                progressDialog.setTitle("Submit your choosing");
+                progressDialog.setMessage("Loading");
+                progressDialog.show();
                 final String registerId = Long.toString(System.currentTimeMillis());
                 for (ChooseCategory category : datesList) {
                     if (category.getcategoryChecked()) {
@@ -134,7 +142,7 @@ public class MentorDatesActivity extends AppCompatActivity {
                                     registerMap.put("userPhone", userMap.get("phone").toString());
 
                                     // Get currentMentor
-                                    firestore.collection("Mentors").document(mentorId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                             if(task.isSuccessful()){
@@ -183,11 +191,25 @@ public class MentorDatesActivity extends AppCompatActivity {
                 i.putStringArrayListExtra("dates", datesByUser);
                 startActivity(i);
                 finish();
-                progressBar.setVisibility(View.INVISIBLE);
+                progressDialog.dismiss();
+            }
+            else{
+                alertBuilder.setTitle("Dates");
+                alertBuilder.setMessage("Use at Least on date to book mentor");
+                alertBuilder.setCancelable(false);
+                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog alertDialog = alertBuilder.create();
+                alertDialog.show();
             }
 
         }
 
         return true;
     }
+
 }

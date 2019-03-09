@@ -22,19 +22,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DetailsMentorActivity extends AppCompatActivity {
 
-    private String mentorId;
     private FirebaseFirestore firestore;
     private TextView mentorDesc, mentorName;
     private CircleImageView mentorImage;
     private ProgressBar progressBar;
     private Button bookBtn;
+    private SaveMentorInstance mentorInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_mentor);
 
-        mentorId = getIntent().getStringExtra("mentorId");
+        mentorInstance = new SaveMentorInstance();
 
         mentorName = (TextView) findViewById(R.id.mentor_name);
         mentorImage = (CircleImageView) findViewById(R.id.mentor_image);
@@ -45,7 +45,7 @@ public class DetailsMentorActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
 
         progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Mentors").document(mentorId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        firestore.collection("Mentors").document(mentorInstance.getBookMentorId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
@@ -68,7 +68,6 @@ public class DetailsMentorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(DetailsMentorActivity.this, MentorDatesActivity.class);
-                i.putExtra("mentorId", mentorId);
                 startActivity(i);
             }
         });

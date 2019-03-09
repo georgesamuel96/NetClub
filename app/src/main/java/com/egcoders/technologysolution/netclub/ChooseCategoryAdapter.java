@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -41,10 +43,13 @@ public class ChooseCategoryAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
         View view = convertView;
+        ViewHolder viewHolder = new ViewHolder();
+
         if(convertView == null){
             view = inflater.inflate(R.layout.item_choose_category, null);
-            CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+            /*CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
             ChooseCategory category = new ChooseCategory();
             category = categoryList.get(position);
             checkBox.setText(category.getCategoryName());
@@ -60,11 +65,55 @@ public class ChooseCategoryAdapter extends BaseAdapter {
                     else
                         countCategoriesChecked--;
                 }
-            });
+            });*/
 
-
+            viewHolder.checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+            viewHolder.textCategory = (TextView) view.findViewById(R.id.text_item);
+            view.setTag(viewHolder);
         }
+        else{
+            viewHolder = (ViewHolder) view.getTag();
+        }
+        //
+        viewHolder.textCategory.setText(categoryList.get(position).getCategoryName());
+        viewHolder.checkBox.setChecked(categoryList.get(position).getcategoryChecked());
+        viewHolder.checkBox.setTag(position);
+
+        viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Boolean statue = !categoryList.get(position).getcategoryChecked();
+                categoryList.get(position).setcategoryChecked(statue);
+                if(statue) {
+                    countCategoriesChecked++;
+                }
+                else {
+                    countCategoriesChecked--;
+                }
+            }
+        });
+
+        viewHolder.textCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Boolean statue = !categoryList.get(position).getcategoryChecked();
+                if(statue) {
+                    countCategoriesChecked++;
+                }
+                else {
+                    countCategoriesChecked--;
+                }
+            }
+        });
+
+        viewHolder.checkBox.setChecked(isChecked(position));
+
         return view;
+    }
+
+    public boolean isChecked(int position) {
+        return categoryList.get(position).getcategoryChecked();
     }
 
     public ArrayList<ChooseCategory> getCheckedList(){
@@ -75,5 +124,16 @@ public class ChooseCategoryAdapter extends BaseAdapter {
         if(countCategoriesChecked > 0)
             return true;
         return false;
+    }
+
+    public static class ViewHolder{
+        CheckBox checkBox;
+        TextView textCategory;
+    }
+
+    public void clearAdapter()
+    {
+        categoryList.clear();
+        notifyDataSetChanged();
     }
 }

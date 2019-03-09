@@ -32,6 +32,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
     private ArrayList<Mentor> mentorList = new ArrayList<>();
     private Context context;
     private FirebaseFirestore firestore;
+    private SaveMentorInstance mentorInstance;
 
     public MentorAdapter(ArrayList<Mentor> list){
         this.mentorList = list;
@@ -44,6 +45,7 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
         MyViewHolder viewHolder = new MyViewHolder(view);
         context = viewGroup.getContext();
         firestore = FirebaseFirestore.getInstance();
+        mentorInstance = new SaveMentorInstance();
         return viewHolder;
     }
 
@@ -64,7 +66,8 @@ public class MentorAdapter extends RecyclerView.Adapter<MentorAdapter.MyViewHold
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, DetailsMentorActivity.class);
-                i.putExtra("mentorId", mentorId);
+                //i.putExtra("mentorId", mentorId);
+                mentorInstance.setBookMentorId(mentorId);
                 context.startActivity(i);
             }
         });

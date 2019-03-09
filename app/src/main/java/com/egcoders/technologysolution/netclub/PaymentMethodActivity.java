@@ -38,6 +38,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_method);
 
+
         registrationId = getIntent().getStringExtra("registrationId");
         datesByUser = (ArrayList<String>) getIntent().getSerializableExtra("dates");
         firestore = FirebaseFirestore.getInstance();
@@ -122,8 +123,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
-        Intent i = new Intent(PaymentMethodActivity.this, MentorDatesActivity.class);
-        i.putExtra("back", true);
+        Intent i = new Intent(PaymentMethodActivity.this, DetailsMentorActivity.class);
         startActivity(i);
         finish();
     }

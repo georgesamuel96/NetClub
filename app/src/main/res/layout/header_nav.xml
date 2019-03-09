@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/_148sdp">
 
@@ -17,37 +18,20 @@
         android:layout_height="@dimen/_54sdp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/placeholder"
+        android:layout_marginTop="56dp"
+        android:src="@drawable/profile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/name_header"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_18sdp"
-        android:layout_below="@id/profile_header"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="@dimen/_4sdp"
-        android:fontFamily="monospace"
-        android:text="George Samuel"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_12ssp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_header" />
 
     <TextView
         android:id="@+id/email_header"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/_18sdp"
-        android:layout_below="@id/name_header"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginTop="16dp"
         android:fontFamily="monospace"
-        android:text="george.samuel90@yahoo.com"
+        android:text="Register New Account"
         android:textColor="@color/white"
         android:textSize="@dimen/_12ssp"
         android:textStyle="bold"
