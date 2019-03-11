@@ -245,8 +245,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendToCategories() {
+        finish();
         Intent i = new Intent(MainActivity.this, CategoriesActivity.class);
         startActivity(i);
+
     }
 
     private void sendToLogin() {

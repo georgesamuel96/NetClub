@@ -46,7 +46,6 @@ public class CategoriesActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         preferenceConfig = new SharedPreferenceConfig(this);
         progressDialog = new ProgressDialog(this);

@@ -23,6 +23,7 @@ import java.util.Map;
 
 public class PaymentMethodActivity extends AppCompatActivity {
 
+    private android.support.v7.widget.Toolbar toolbar;
     private String registrationId;
     private FirebaseFirestore firestore;
     private ListView listView;
@@ -38,6 +39,10 @@ public class PaymentMethodActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_method);
 
+
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_menu);
 
         registrationId = getIntent().getStringExtra("registrationId");
         datesByUser = (ArrayList<String>) getIntent().getSerializableExtra("dates");
@@ -61,7 +66,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
                 alertBuilder.setTitle("Successful Registration");
-                alertBuilder.setMessage("You will revieve message with details");
+                alertBuilder.setMessage("You will receive message with details");
                 alertBuilder.setCancelable(false);
                 alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override

@@ -22,6 +22,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DetailsMentorActivity extends AppCompatActivity {
 
+    private android.support.v7.widget.Toolbar toolbar;
     private FirebaseFirestore firestore;
     private TextView mentorDesc, mentorName;
     private CircleImageView mentorImage;
@@ -35,6 +36,10 @@ public class DetailsMentorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details_mentor);
 
         mentorInstance = new SaveMentorInstance();
+
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_menu);
 
         mentorName = (TextView) findViewById(R.id.mentor_name);
         mentorImage = (CircleImageView) findViewById(R.id.mentor_image);
