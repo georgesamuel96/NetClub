@@ -92,7 +92,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                 int mYear = currentDate.get(Calendar.YEAR);
                 int mMonth = currentDate.get(Calendar.MONTH);
                 int mDay = currentDate.get(Calendar.DAY_OF_MONTH);
-
+                birthdayText.setText("");
                 DatePickerDialog mDatePicker = new DatePickerDialog(RegisterSecondPageActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {

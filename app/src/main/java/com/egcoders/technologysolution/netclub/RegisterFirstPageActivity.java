@@ -105,4 +105,8 @@ public class RegisterFirstPageActivity extends AppCompatActivity {
         startActivity(new Intent(RegisterFirstPageActivity.this, LoginActivity.class));
         finish();
     }
+
+    private Boolean checkEmail(String email){
+        return true;
+    }
 }

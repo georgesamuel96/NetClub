@@ -2,6 +2,7 @@ package com.egcoders.technologysolution.netclub;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.annotation.BoolRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -76,13 +77,11 @@ public class MainActivity extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         userInstance = new SaveUserInstance();
 
-
-        Boolean checkMentorFragment = getIntent().getBooleanExtra("TOP", false);
         preferences = new SharedPreferenceConfig(getApplicationContext());
         if(!preferences.getSharedPrefConfig().equals("Empty")) {
 
             currentUserId = preferences.getSharedPrefConfig();
-            Map<String, Object> currentUserMap = preferences.getCurrentUser();
+            final Map<String, Object> currentUserMap = preferences.getCurrentUser();
 
             headerEmail.setText(currentUserMap.get("email").toString());
             headerEmail.setVisibility(View.VISIBLE);
@@ -93,15 +92,48 @@ public class MainActivity extends AppCompatActivity {
                     .load(currentUserMap.get("profileUrl").toString()).thumbnail(Glide.with(getApplicationContext())
                     .load(currentUserMap.get("profileThumbUrl").toString())).into(headerProfile);
 
-            homeFragment = new HomeFragment();
-            categoriesFragment = new CategoriesFragment();
-            usersFragment = new UsersFragment();
-            mentorsFragment = new MentorsFragment();
+            Boolean categorySelected = (Boolean) currentUserMap.get("categorySelected");
+            if (!categorySelected) {
+                sendToCategories();
+            } else {
 
-            replaceFragment(usersFragment);
-            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                firestore.collection("Users").document(currentUserId).collection("selectedCategory")
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            int numberCategories = task.getResult().getDocumentChanges().size();
+                            if(numberCategories > 0){
+
+                            }
+                            else{
+                                currentUserMap.put("selectedCategory", false);
+                                preferences.setCurrentUser(
+                                        currentUserMap.get("name").toString(),
+                                        currentUserMap.get("email").toString(),
+                                        currentUserMap.get("phone").toString(),
+                                        currentUserMap.get("birthday").toString(),
+                                        currentUserMap.get("profileUrl").toString(),
+                                        currentUserMap.get("profileThumbUrl").toString(),
+                                        false);
+                                sendToCategories();
+                            }
+                        }
+                        else{
+
+                        }
+                    }
+                });
+
+                homeFragment = new HomeFragment();
+                categoriesFragment = new CategoriesFragment();
+                usersFragment = new UsersFragment();
+                mentorsFragment = new MentorsFragment();
+
+                replaceFragment(usersFragment);
+                bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
                     /*if (menuItem.getItemId() == R.id.home) {
                         getSupportActionBar().setTitle("NetClub");
@@ -110,19 +142,21 @@ public class MainActivity extends AppCompatActivity {
                     } else if (menuItem.getItemId() == R.id.categories) {
                         replaceFragment(categoriesFragment);
                         return true;
-                    } else */if (menuItem.getItemId() == R.id.users) {
-                        getSupportActionBar().setTitle("Users");
-                        replaceFragment(usersFragment);
-                        return true;
-                    } else if (menuItem.getItemId() == R.id.mentors) {
-                        getSupportActionBar().setTitle("Mentors");
-                        replaceFragment(mentorsFragment);
-                        return true;
-                    }
+                    } else */
+                        if (menuItem.getItemId() == R.id.users) {
+                            getSupportActionBar().setTitle("Users");
+                            replaceFragment(usersFragment);
+                            return true;
+                        } else if (menuItem.getItemId() == R.id.mentors) {
+                            getSupportActionBar().setTitle("Mentors");
+                            replaceFragment(mentorsFragment);
+                            return true;
+                        }
 
-                    return false;
-                }
-            });
+                        return false;
+                    }
+                });
+            }
         }
         else{
             sendToLogin();
@@ -156,8 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if(itemId == R.id.change_category){
 
-                    getSupportActionBar().setTitle("Categories");
-                    fragment = new ChangeCategoriesFragment();
+                    sendToCategories();
                 }
                 else if (itemId == R.id.about_us) {
 
@@ -184,8 +217,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (fragment != null) {
+
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                     transaction.replace(R.id.frame, fragment);
+                    transaction.addToBackStack(null);
                     transaction.commit();
                     drawerLayout.closeDrawers();
                     return true;
@@ -211,9 +246,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendToCategories() {
         Intent i = new Intent(MainActivity.this, CategoriesActivity.class);
-        //i.putExtra("user", user);
         startActivity(i);
-        finish();
     }
 
     private void sendToLogin() {

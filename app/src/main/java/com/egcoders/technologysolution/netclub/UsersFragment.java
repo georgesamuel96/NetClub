@@ -77,6 +77,7 @@ public class UsersFragment extends Fragment {
 
                 Boolean reachedBottom = !recyclerView.canScrollVertically(1);
                 if(reachedBottom){
+                    System.out.println("Last: " + lastVisible);
                     loadMoreUsers();
                 }
             }

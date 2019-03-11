@@ -70,14 +70,15 @@ public class ChooseCategoryAdapter extends BaseAdapter {
             @Override
             public void onCheckedChanged(CustomCheckBox checkBox, boolean isChecked) {
                 Boolean statue = isChecked;
-
                 categoryList.get(position).setcategoryChecked(statue);
-                if(statue) {
+                /*if(statue) {
                     countCategoriesChecked++;
                 }
                 else {
                     countCategoriesChecked = Math.max(0, countCategoriesChecked - 1);
                 }
+
+                System.out.println(countCategoriesChecked);*/
             }
         });
 
@@ -95,6 +96,10 @@ public class ChooseCategoryAdapter extends BaseAdapter {
     }
 
     public Boolean itemsChecked(){
+        countCategoriesChecked = 0;
+        for(ChooseCategory category : categoryList)
+            if(category.getcategoryChecked())
+                countCategoriesChecked++;
         if(countCategoriesChecked > 0)
             return true;
         return false;

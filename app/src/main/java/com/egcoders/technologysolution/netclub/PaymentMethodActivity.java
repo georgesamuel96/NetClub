@@ -119,12 +119,12 @@ public class PaymentMethodActivity extends AppCompatActivity {
         });
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         super.onBackPressed();
 
         Intent i = new Intent(PaymentMethodActivity.this, DetailsMentorActivity.class);
         startActivity(i);
         finish();
-    }
+    }*/
 }
