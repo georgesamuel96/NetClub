@@ -7,5 +7,5 @@ Glide library <br>
 Shared Preference <br>
 Share post <br>
 Edit profile account <br>
-Comment & like on Post <br>
+like on Post <br>
 Book Mentor <br>
