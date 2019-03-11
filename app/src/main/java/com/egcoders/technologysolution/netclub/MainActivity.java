@@ -21,8 +21,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Map;
 
@@ -91,43 +93,12 @@ public class MainActivity extends AppCompatActivity {
                     .load(currentUserMap.get("profileUrl").toString()).thumbnail(Glide.with(getApplicationContext())
                     .load(currentUserMap.get("profileThumbUrl").toString())).into(headerProfile);
 
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("Loading");
-            firestore.collection("Users").document(currentUserId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(!task.getResult().exists())
-                    {
-                        progressDialog.dismiss();
-                        sendToLogin();
-                    }
-                    else
-                    {
-                        progressDialog.dismiss();
-                        if(task.isSuccessful()){
-                            replaceFragment(usersFragment);
-                        }
-                        else{
-
-                        }
-                    }
-                }
-            });
-
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
             usersFragment = new UsersFragment();
             mentorsFragment = new MentorsFragment();
 
-            /*if(userInstance.getIsActivityFirstLoad()){
-
-                userInstance.setIsActivityFirstLoad(false);
-
-                replaceFragment(usersFragment);
-            }*/
-
-
-
+            replaceFragment(usersFragment);
             bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -183,6 +154,11 @@ public class MainActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(currentUserName);
                     fragment = new ProfileFragment();
                 }
+                else if(itemId == R.id.change_category){
+
+                    getSupportActionBar().setTitle("Categories");
+                    fragment = new ChangeCategoriesFragment();
+                }
                 else if (itemId == R.id.about_us) {
 
                     getSupportActionBar().setTitle("About Us");
@@ -192,6 +168,10 @@ public class MainActivity extends AppCompatActivity {
 
                     Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                     sharingIntent.setType("text/plain");
+                    String shareBody = "Meet mentors and instructors online";
+                    String link = "https://play.google.com/store/apps/details?id=com.egcoders.technologysolution.netclub";
+                    sharingIntent.putExtra(Intent.EXTRA_SUBJECT, shareBody);
+                    sharingIntent.putExtra(Intent.EXTRA_TEXT, link);
                     startActivity(Intent.createChooser(sharingIntent, "Share using"));
                 }
                 else if (itemId == R.id.log_out) {
@@ -245,9 +225,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
-        userInstance.setIsActivityFirstLoad(true);
+
+        if(this.drawerLayout.isDrawerOpen(GravityCompat.START)){
+            this.drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else {
+            super.onBackPressed();
+            userInstance.setIsActivityFirstLoad(true);
+        }
     }
 
     @Override

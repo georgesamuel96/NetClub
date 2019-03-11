@@ -22,7 +22,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CategoriesActivity extends AppCompatActivity {
 
@@ -31,14 +33,7 @@ public class CategoriesActivity extends AppCompatActivity {
     private ChooseCategoryAdapter adapter;
     private ArrayList<ChooseCategory> categoryList = new ArrayList<>();
     private FirebaseFirestore firestore;
-    //private ProgressBar progressBar;
     private ProgressDialog progressDialog;
-    private User user;
-    private AlertDialog.Builder alertBuilder;
-    //private FirebaseUser firebaseUser;
-    private FirebaseAuth mAuth;
-    //private String currentUserId;
-    //private SaveUserInstance userInstance;
     private SharedPreferenceConfig preferenceConfig;
 
     @Override
@@ -50,38 +45,13 @@ public class CategoriesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        alertBuilder = new AlertDialog.Builder(this);
         preferenceConfig = new SharedPreferenceConfig(this);
         progressDialog = new ProgressDialog(this);
 
 
         listView = (ListView) findViewById(R.id.list_view);
-        //progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        user = new User();
 
         firestore = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        //firebaseUser = mAuth.getCurrentUser();
-
-
-        //userInstance = new SaveUserInstance();
-
-        //currentUserId = firebaseUser.getUid();
-
-        /*user.setUserName(userInstance.getName());
-        user.setUserBirthday(userInstance.getBirthday());
-        user.setUserPhone(userInstance.getPhone());
-        user.setUserImageUrl(userInstance.getProfile_url());
-        user.setUserImageThumbUrl(userInstance.getProfileThumb_url());
-        user.setUserSelectCategories(userInstance.getCategorySelected());
-        user.setUserEmail(userInstance.getEmail());*/
-        /*if(userInstance.getIsFirstLoad())
-            userInstance.getList().add(user);
-        else
-            userInstance.getList().add(0, user);*/
-
-
 
         adapter = new ChooseCategoryAdapter(getApplicationContext(), categoryList);
         listView.setAdapter(adapter);
@@ -172,19 +142,6 @@ public class CategoriesActivity extends AppCompatActivity {
                     }
                 }
 
-            }
-            else{
-                alertBuilder.setTitle("Category");
-                alertBuilder.setMessage("Choose at least one category");
-                alertBuilder.setCancelable(false);
-                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog alertDialog = alertBuilder.create();
-                alertDialog.show();
             }
         }
 

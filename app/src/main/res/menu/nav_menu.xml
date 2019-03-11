@@ -7,6 +7,11 @@
         android:title="Profile" />
 
     <item
+        android:id="@+id/change_category"
+        android:title="Change your interests"
+        android:icon="@mipmap/ic_change_categories" />
+
+    <item
         android:id="@+id/about_us"
         android:icon="@mipmap/ic_about_us"
         android:title="About Us" />

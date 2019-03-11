@@ -58,11 +58,9 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
     private String email, password;
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
-    //private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private Bitmap compressedImageFile;
     private String currentUserId;
-    //private SaveUserInstance saveUserInstance;
     private SharedPreferenceConfig preference;
     private ProgressDialog progressDialog;
 
@@ -80,13 +78,11 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
         phoneText = (EditText) findViewById(R.id.phone);
         register = (Button) findViewById(R.id.register);
         userImage = (CircleImageView) findViewById(R.id.user_image);
-        //progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         progressDialog = new ProgressDialog(this);
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        //saveUserInstance = new SaveUserInstance();
         preference = new SharedPreferenceConfig(getApplicationContext());
 
         birthdayText.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +120,6 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
 
                 if(!missingValue(userName, birthday, phone)){
 
-                    //progressBar.setVisibility(View.VISIBLE);
                     progressDialog.setCancelable(false);
                     progressDialog.setTitle("Create Account");
                     progressDialog.setMessage("Loading");
@@ -199,15 +194,6 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
 
                                                         downloadThumbUri = task.getResult();
 
-                                                        /*preference.setSharedPrefConfig(saveUserInstance.getId());
-                                                        saveUserInstance.setName(userName);
-                                                        saveUserInstance.setEmail(email);
-                                                        saveUserInstance.setBirthday(birthday);
-                                                        saveUserInstance.setPhone(phone);
-                                                        saveUserInstance.setCategorySelected(false);
-                                                        saveUserInstance.setProfile_url(downloadThumbUri.toString());
-                                                        saveUserInstance.setProfileThumb_url(downloadThumbUri.toString());*/
-
                                                         preference.setCurrentUser(userName, email, phone, birthday,
                                                                 downloadUri.toString(), downloadThumbUri.toString(), false);
 
@@ -220,21 +206,19 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                                                         userMap.put("categorySelected", false);
                                                         userMap.put("email", email);
 
-
-                                                        //progressBar.setVisibility(View.VISIBLE);
                                                         firestore.collection("Users").document(preference.getSharedPrefConfig()).set(userMap)
                                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
                                                                         if(task.isSuccessful()){
-                                                                            //progressBar.setVisibility(View.INVISIBLE);
+
                                                                             progressDialog.dismiss();
                                                                             Intent i = new Intent(RegisterSecondPageActivity.this, CategoriesActivity.class);
+                                                                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                                             startActivity(i);
                                                                             finish();
                                                                         }
                                                                         else{
-                                                                            //progressBar.setVisibility(View.INVISIBLE);
                                                                             progressDialog.dismiss();
                                                                         }
                                                                     }

@@ -11,30 +11,22 @@
         android:id="@+id/user_image"
         android:layout_width="@dimen/_84sdp"
         android:layout_height="@dimen/_84sdp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/_26sdp"
         android:scaleType="centerCrop"
         android:src="@drawable/profile"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.06" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/_28sdp"
+        android:layout_marginLeft="@dimen/_28sdp"
+        android:layout_marginTop="@dimen/_46sdp"
+        android:layout_marginEnd="@dimen/_28sdp"
+        android:layout_marginRight="@dimen/_28sdp"
         android:background="@drawable/bg_et"
         android:ems="10"
         android:hint="Your Name"
@@ -42,23 +34,19 @@
         android:padding="@dimen/_10sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_image"
-        app:layout_constraintVertical_bias="0.122" />
+        app:layout_constraintTop_toBottomOf="@+id/user_image" />
 
     <TextView
         android:id="@+id/date"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/_28sdp"
+        android:layout_marginLeft="@dimen/_28sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_28sdp"
+        android:layout_marginRight="@dimen/_28sdp"
         android:background="@drawable/bg_et"
         android:ems="10"
         android:hint="Your Birthday"
@@ -66,44 +54,19 @@
         android:padding="@dimen/_10sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_name"
-        app:layout_constraintVertical_bias="0.085"/>
-
-    <!-- <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_calender">
-
-    <CalendarView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout> -->
-
+        app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
     <EditText
         android:id="@+id/phone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/_28sdp"
+        android:layout_marginLeft="@dimen/_28sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_28sdp"
+        android:layout_marginRight="@dimen/_28sdp"
         android:background="@drawable/bg_et"
         android:ems="10"
         android:hint="Your Phone"
@@ -111,48 +74,21 @@
         android:padding="@dimen/_10sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14ssp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date"
-        app:layout_constraintVertical_bias="0.083" />
+        app:layout_constraintTop_toBottomOf="@+id/date" />
 
     <Button
         android:id="@+id/register"
-        android:layout_width="99dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="@dimen/_99sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_32sdp"
         android:background="@drawable/bg_btn"
         android:text="Register"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone"
-        app:layout_constraintVertical_bias="0.138" />
+        app:layout_constraintTop_toBottomOf="@+id/phone" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="68dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>

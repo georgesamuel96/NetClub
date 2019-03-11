@@ -3,8 +3,12 @@ package com.egcoders.technologysolution.netclub;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SharedPreferenceConfig {
 
@@ -56,5 +60,28 @@ public class SharedPreferenceConfig {
         currentUserMap.put("categorySelected", preferences.getBoolean(context.getResources().getString(R.string.categorySelected_currenetUser), false));
 
         return currentUserMap;
+    }
+
+    public void setUserCategory(String id){
+
+        SharedPreferences.Editor editor = preferences.edit();
+        String list = preferences.getString("userList", "");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(list);
+        stringBuilder.append(id + ",");
+        editor.putString("userList", stringBuilder.toString());
+        editor.commit();
+    }
+
+    public String getUserCategory(){
+       String list = "";
+       list  = preferences.getString("userList", list);
+       return list;
+    }
+
+    public void resetCategoryList(){
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("userList", "");
+        editor.commit();
     }
 }
