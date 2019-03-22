@@ -10,41 +10,66 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/logo"
+        android:icon="@drawable/netclub_white"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo"
+        android:roundIcon="@drawable/netclub_white"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.egcoders.technologysolution.netclub.MainActivity"
-            android:theme="@style/MyAppTheme">
+            android:name=".MainActivity"
+            android:theme="@style/MyAppTheme" />
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity
+            android:name=".RegisterSecondPageActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".CategoriesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MentorDatesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddMentorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MoreDetailsMentorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DatesMentorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddDateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MentorCategoriesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PaymentMethodActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EditUserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailsMentorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.egcoders.technologysolution.netclub.LoginActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity
-            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name="com.egcoders.technologysolution.netclub.RegisterFirstPageActivity"
-            android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.RegisterSecondPageActivity"
-            android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.CategoriesActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.MentorDatesActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.AddMentorActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.MoreDetailsMentorActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.DatesMentorActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.AddDateActivity" android:screenOrientation="portrait" />
-        <activity android:name="com.egcoders.technologysolution.netclub.MentorCategoriesActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.PaymentMethodActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.EditUserProfileActivity" android:screenOrientation="portrait"/>
-        <activity android:name="com.egcoders.technologysolution.netclub.DetailsMentorActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".AddPostActivity" />
+        <activity android:name=".UserProfileActivity"></activity>
     </application>
 
 </manifest>

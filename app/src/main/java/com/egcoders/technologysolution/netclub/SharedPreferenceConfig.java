@@ -33,8 +33,18 @@ public class SharedPreferenceConfig {
         editor.commit();
     }
 
-    public void setCurrentUser(String userName, String userEmail, String userPhone, String userBirthday, String userProfileUrl,
-                               String userProfileThumbUrl, Boolean categorySelected){
+    public void setCurrentUser(Map<String, Object> userMap){
+
+        String userName = userMap.get("name").toString();
+        String userEmail = userMap.get("email").toString();
+        String userPhone = userMap.get("phone").toString();
+        String userBirthday = userMap.get("birthday").toString();
+        String userProfileUrl = userMap.get("profile_url").toString();
+        String userProfileThumbUrl = userMap.get("profileThumb").toString();
+        Boolean categorySelected = (Boolean) userMap.get("categorySelected");
+
+        if(!userMap.containsKey("userStatue"))
+            userMap.put("userStatue", "0");
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(context.getResources().getString(R.string.name_currenetUser), userName);
@@ -55,8 +65,8 @@ public class SharedPreferenceConfig {
         currentUserMap.put("email", preferences.getString(context.getResources().getString(R.string.email_currenetUser), status));
         currentUserMap.put("phone", preferences.getString(context.getResources().getString(R.string.phone_currenetUser), status));
         currentUserMap.put("birthday", preferences.getString(context.getResources().getString(R.string.birthday_currenetUser), status));
-        currentUserMap.put("profileUrl", preferences.getString(context.getResources().getString(R.string.profileUrl_currenetUser), status));
-        currentUserMap.put("profileThumbUrl", preferences.getString(context.getResources().getString(R.string.profileThumbUrl_currenetUser), status));
+        currentUserMap.put("profile_url", preferences.getString(context.getResources().getString(R.string.profileUrl_currenetUser), status));
+        currentUserMap.put("profileThumb", preferences.getString(context.getResources().getString(R.string.profileThumbUrl_currenetUser), status));
         currentUserMap.put("categorySelected", preferences.getBoolean(context.getResources().getString(R.string.categorySelected_currenetUser), false));
 
         return currentUserMap;

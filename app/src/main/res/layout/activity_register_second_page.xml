@@ -1,94 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterSecondPageActivity"
-    android:background="@color/white">
+    android:background="@drawable/bg"
+    tools:context=".RegisterSecondPageActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/user_image"
-        android:layout_width="@dimen/_84sdp"
-        android:layout_height="@dimen/_84sdp"
-        android:layout_marginTop="@dimen/_26sdp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.constraint.ConstraintLayout
 
-    <EditText
-        android:id="@+id/user_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_28sdp"
-        android:layout_marginLeft="@dimen/_28sdp"
-        android:layout_marginTop="@dimen/_46sdp"
-        android:layout_marginEnd="@dimen/_28sdp"
-        android:layout_marginRight="@dimen/_28sdp"
-        android:background="@drawable/bg_et"
-        android:ems="10"
-        android:hint="Your Name"
-        android:inputType="text"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_image" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/_16sdp">
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_28sdp"
-        android:layout_marginLeft="@dimen/_28sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginEnd="@dimen/_28sdp"
-        android:layout_marginRight="@dimen/_28sdp"
-        android:background="@drawable/bg_et"
-        android:ems="10"
-        android:hint="Your Birthday"
-        android:inputType="date"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_name" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_image"
+            android:layout_width="@dimen/_74sdp"
+            android:layout_height="@dimen/_74sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/phone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_28sdp"
-        android:layout_marginLeft="@dimen/_28sdp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:layout_marginEnd="@dimen/_28sdp"
-        android:layout_marginRight="@dimen/_28sdp"
-        android:background="@drawable/bg_et"
-        android:ems="10"
-        android:hint="Your Phone"
-        android:inputType="phone"
-        android:padding="@dimen/_10sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14ssp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
+        <TextView
+            android:id="@+id/textAddPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16sdp"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_16sdp"
+            android:layout_marginRight="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:gravity="center"
+            android:text="Add photo"
+            android:textColor="@color/word_gray"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_image" />
 
-    <Button
-        android:id="@+id/register"
-        android:layout_width="@dimen/_99sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_marginTop="@dimen/_32sdp"
-        android:background="@drawable/bg_btn"
-        android:text="Register"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phone" />
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textAddPhoto"
+            app:errorEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Name"
+                android:inputType="text"
+                android:textColor="@color/word_gray"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name"
+            app:errorEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/word_gray"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/email"
+            app:errorEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Date of birth"
+                android:textColor="@color/word_gray"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base"
+                android:focusable="false"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/date"
+            app:errorEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone"
+                android:inputType="phone"
+                android:textColor="@color/word_gray"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/phone"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:textColorHint="@color/word_gray"
+                android:textColor="@color/word_gray"
+                android:inputType="textPassword"
+                android:theme="@style/Theme.App.Base"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/confirmPassword"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginLeft="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:layout_marginRight="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password"
+            app:errorEnabled="true"
+            app:passwordToggleEnabled="true"
+            android:textColorHint="@color/word_gray"
+            android:theme="@style/Theme.App.Base">
+
+            <android.support.design.widget.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Password"
+                android:textColorHint="@color/word_gray"
+                android:textColor="@color/word_gray"
+                android:inputType="textPassword"
+                android:theme="@style/Theme.App.Base"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="@dimen/_99sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_28sdp"
+            android:background="@drawable/bg_btn"
+            android:text="Register"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/confirmPassword" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_80sdp"
+            android:layout_marginLeft="@dimen/_80sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="Have account ?"
+            android:textColor="@color/word_gray"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register" />
+
+        <TextView
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="Login"
+            android:textColor="@color/word_gray"
+            android:textSize="@dimen/_14ssp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.136"
+            app:layout_constraintStart_toEndOf="@+id/textView2"
+            app:layout_constraintTop_toBottomOf="@id/register" />
 
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

@@ -11,15 +11,15 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Continuation;
@@ -48,21 +48,23 @@ import id.zelory.compressor.Compressor;
 
 public class RegisterSecondPageActivity extends AppCompatActivity {
 
-    private EditText userNameText;
-    private EditText phoneText;
-    private TextView birthdayText;
+    private TextInputLayout userNameText;
+    private TextInputLayout phoneText;
+    private TextInputLayout birthdayText;
     private Button register;
     private CircleImageView userImage;
     private AlertDialog.Builder alertBuilder;
     private Uri userImageURI = null, downloadUri, downloadThumbUri;
-    private String email, password;
+    private TextInputLayout emailText, passwordText, confrimPassText;
     private FirebaseFirestore firestore;
     private StorageReference storageReference;
     private FirebaseAuth mAuth;
     private Bitmap compressedImageFile;
     private String currentUserId;
-    private SharedPreferenceConfig preference;
+    private SharedPreferenceConfig preferenceConfig;
     private ProgressDialog progressDialog;
+    private Boolean finishActivity = false;
+    private TextView loginText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,29 +72,32 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register_second_page);
 
         alertBuilder = new AlertDialog.Builder(this);
-        email = getIntent().getStringExtra("email");
-        password = getIntent().getStringExtra("password");
 
-        userNameText = (EditText) findViewById(R.id.user_name);
-        birthdayText = (TextView) findViewById(R.id.date);
-        phoneText = (EditText) findViewById(R.id.phone);
+        userNameText = (TextInputLayout) findViewById(R.id.name);
+        birthdayText = (TextInputLayout) findViewById(R.id.date);
+        emailText = (TextInputLayout) findViewById(R.id.email);
+        phoneText = (TextInputLayout) findViewById(R.id.phone);
+        passwordText = (TextInputLayout) findViewById(R.id.password);
+        confrimPassText = (TextInputLayout) findViewById(R.id.confirmPassword);
         register = (Button) findViewById(R.id.register);
         userImage = (CircleImageView) findViewById(R.id.user_image);
+        loginText = (TextView) findViewById(R.id.login);
 
         progressDialog = new ProgressDialog(this);
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
-        preference = new SharedPreferenceConfig(getApplicationContext());
+        preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
 
-        birthdayText.setOnClickListener(new View.OnClickListener() {
+        birthdayText.getEditText().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                 Calendar currentDate = Calendar.getInstance();
                 int mYear = currentDate.get(Calendar.YEAR);
                 int mMonth = currentDate.get(Calendar.MONTH);
                 int mDay = currentDate.get(Calendar.DAY_OF_MONTH);
-                birthdayText.setText("");
+                birthdayText.getEditText().setText("");
                 DatePickerDialog mDatePicker = new DatePickerDialog(RegisterSecondPageActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                     public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
@@ -102,7 +107,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                         myCalendar.set(Calendar.DAY_OF_MONTH, selectedday);
                         String myFormat = "dd/MM/yyyy";
                         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
-                        birthdayText.setText(sdf.format(myCalendar.getTime()));
+                        birthdayText.getEditText().setText(sdf.format(myCalendar.getTime()));
 
                     }
                 }, mYear, mMonth, mDay);
@@ -114,146 +119,164 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String userName = userNameText.getText().toString().trim();
-                final String birthday = birthdayText.getText().toString().trim();
-                final String phone = phoneText.getText().toString().trim();
+                final String userName = userNameText.getEditText().getText().toString().trim();
+                final String birthday = birthdayText.getEditText().getText().toString().trim();
+                final String phone = phoneText.getEditText().getText().toString().trim();
+                final String email = emailText.getEditText().getText().toString().trim();
+                final String password = passwordText.getEditText().getText().toString().trim();
+                final String confirmPass = confrimPassText.getEditText().getText().toString().trim();
 
-                if(!missingValue(userName, birthday, phone)){
+                if(!missingValue(userName, birthday, phone, email, password, confirmPass)) {
+                    if(password.equals(confirmPass)){
+                        progressDialog.setCancelable(false);
+                        progressDialog.setTitle("Create Account");
+                        progressDialog.setMessage("Loading");
+                        progressDialog.show();
+                        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
 
-                    progressDialog.setCancelable(false);
-                    progressDialog.setTitle("Create Account");
-                    progressDialog.setMessage("Loading");
-                    progressDialog.show();
-                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-
-                                currentUserId = task.getResult().getUser().getUid();
-                                preference.setSharedPrefConfig(currentUserId);
-                                final StorageReference userProfileReference = storageReference.child("profile_images")
-                                        .child(currentUserId + ".jpg");
-                                UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
-                                Task<Uri> userProfileUriTask = userProfileUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                    @Override
-                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                        if(!task.isSuccessful())
-                                        {
-                                            alertBuilder.setTitle("Upload Image");
-                                            alertBuilder.setMessage(task.getException().getMessage());
-                                            alertBuilder.setCancelable(false);
-                                            alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                            AlertDialog alertDialog = alertBuilder.create();
-                                            alertDialog.show();
-                                            return null;
-                                        }
-                                        return userProfileReference.getDownloadUrl();
-                                    }
-                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        if(task.isSuccessful()){
-
-                                            downloadUri = task.getResult();
-
-                                            File newImageFile = new File(userImageURI.getPath());
-                                            try {
-                                                compressedImageFile = new Compressor(RegisterSecondPageActivity.this)
-                                                        .compressToBitmap(newImageFile);
+                                    currentUserId = task.getResult().getUser().getUid();
+                                    preferenceConfig.setSharedPrefConfig(currentUserId);
+                                    final StorageReference userProfileReference = storageReference.child("profile_images")
+                                            .child(currentUserId + ".jpg");
+                                    UploadTask userProfileUploadTask = userProfileReference.putFile(userImageURI);
+                                    Task<Uri> userProfileUriTask = userProfileUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                        @Override
+                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                            if (!task.isSuccessful()) {
+                                                alertBuilder.setTitle("Upload Image");
+                                                alertBuilder.setMessage(task.getException().getMessage());
+                                                alertBuilder.setCancelable(false);
+                                                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.cancel();
+                                                    }
+                                                });
+                                                AlertDialog alertDialog = alertBuilder.create();
+                                                alertDialog.show();
+                                                return null;
                                             }
-                                            catch (IOException e){
-                                                e.printStackTrace();
+                                            return userProfileReference.getDownloadUrl();
+                                        }
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            if (task.isSuccessful()) {
+
+                                                downloadUri = task.getResult();
+
+                                                File newImageFile = new File(userImageURI.getPath());
+                                                try {
+                                                    compressedImageFile = new Compressor(RegisterSecondPageActivity.this)
+                                                            .compressToBitmap(newImageFile);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                                compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                                byte[] thumbData = baos.toByteArray();
+
+                                                final StorageReference userProfileThumbReference = storageReference.child("profile_images/thumbs").
+                                                        child(currentUserId + ".jpg");
+                                                UploadTask userProfileThumbUploadTask = userProfileThumbReference
+                                                        .putBytes(thumbData);
+                                                Task<Uri> userProfileThumbUriTask = userProfileThumbUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                                    @Override
+                                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                                        if (!task.isSuccessful()) {
+                                                            return null;
+                                                        } else {
+                                                            return userProfileThumbReference.getDownloadUrl();
+                                                        }
+                                                    }
+                                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Uri> task) {
+                                                        if (task.isSuccessful()) {
+
+                                                            downloadThumbUri = task.getResult();
+
+                                                            Map<String, Object> userMap = new HashMap<>();
+                                                            userMap.put("name", userName);
+                                                            userMap.put("email", email);
+                                                            userMap.put("pone", phone);
+                                                            userMap.put("birthday", birthday);
+                                                            userMap.put("profile_url", downloadUri.toString());
+                                                            userMap.put("profileThumb", downloadThumbUri.toString());
+                                                            userMap.put("categorySelected", false);
+                                                            userMap.put("userStatue", "0");
+
+                                                            preferenceConfig.setCurrentUser(userMap);
+                                                            /*preferenceConfig.setCurrentUser(userName, email, phone, birthday,
+                                                                    downloadUri.toString(), downloadThumbUri.toString(), false);*/
+
+                                                            /*Map<String, Object> userMap = preferenceConfig.getCurrentUser();
+                                                            userMap.put("name", userName);
+                                                            userMap.put("birthday", birthday);
+                                                            userMap.put("phone", phone);
+                                                            userMap.put("profile_url", downloadUri.toString());
+                                                            userMap.put("profileThumb", downloadThumbUri.toString());
+                                                            userMap.put("categorySelected", false);
+                                                            userMap.put("email", email);*/
+
+                                                            firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).set(userMap)
+                                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                            if (task.isSuccessful()) {
+
+                                                                                progressDialog.dismiss();
+                                                                                sendToCategories();
+                                                                            } else {
+                                                                                progressDialog.dismiss();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                        } else {
+
+                                                        }
+                                                    }
+                                                });
+
+                                            } else {
+
                                             }
-                                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                            compressedImageFile.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                                            byte[] thumbData = baos.toByteArray();
-
-                                            final StorageReference userProfileThumbReference = storageReference.child("profile_images/thumbs").
-                                                    child(currentUserId + ".jpg");
-                                            UploadTask userProfileThumbUploadTask = userProfileThumbReference
-                                                    .putBytes(thumbData);
-                                            Task<Uri> userProfileThumbUriTask = userProfileThumbUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                                @Override
-                                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                                    if(!task.isSuccessful()) {
-                                                        return null;
-                                                    }
-                                                    else {
-                                                        return userProfileThumbReference.getDownloadUrl();
-                                                    }
-                                                }
-                                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Uri> task) {
-                                                    if(task.isSuccessful()){
-
-                                                        downloadThumbUri = task.getResult();
-
-                                                        preference.setCurrentUser(userName, email, phone, birthday,
-                                                                downloadUri.toString(), downloadThumbUri.toString(), false);
-
-                                                        Map<String, Object> userMap = preference.getCurrentUser();
-                                                        userMap.put("name", userName);
-                                                        userMap.put("birthday", birthday);
-                                                        userMap.put("phone", phone);
-                                                        userMap.put("profile_url", downloadUri.toString());
-                                                        userMap.put("profileThumb", downloadThumbUri.toString());
-                                                        userMap.put("categorySelected", false);
-                                                        userMap.put("email", email);
-
-                                                        firestore.collection("Users").document(preference.getSharedPrefConfig()).set(userMap)
-                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                    @Override
-                                                                    public void onComplete(@NonNull Task<Void> task) {
-                                                                        if(task.isSuccessful()){
-
-                                                                            progressDialog.dismiss();
-                                                                            Intent i = new Intent(RegisterSecondPageActivity.this, CategoriesActivity.class);
-                                                                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                            startActivity(i);
-                                                                            finish();
-                                                                        }
-                                                                        else{
-                                                                            progressDialog.dismiss();
-                                                                        }
-                                                                    }
-                                                                });
-                                                    }
-                                                    else{
-
-                                                    }
-                                                }
-                                            });
-
                                         }
-                                        else{
+                                    });
 
+                                } else {
+                                    alertBuilder.setTitle("Error");
+                                    alertBuilder.setMessage(task.getException().getMessage());
+                                    alertBuilder.setCancelable(false);
+                                    alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
                                         }
-                                    }
-                                });
-
+                                    });
+                                    AlertDialog alertDialog = alertBuilder.create();
+                                    alertDialog.show();
+                                    progressDialog.dismiss();
+                                }
                             }
-                            else{
-                                alertBuilder.setTitle("Error");
-                                alertBuilder.setMessage(task.getException().getMessage());
-                                alertBuilder.setCancelable(false);
-                                alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                                AlertDialog alertDialog = alertBuilder.create();
-                                alertDialog.show();
-                                progressDialog.dismiss();
+                        });
+                    }
+                    else{
+                        alertBuilder.setTitle("Passwords");
+                        alertBuilder.setMessage("Password and confirm password not same");
+                        alertBuilder.setCancelable(false);
+                        alertBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
                             }
-                        }
-                    });
+                        });
+                        AlertDialog alertDialog = alertBuilder.create();
+                        alertDialog.show();
+                    }
                 }
                 else {
 
@@ -280,20 +303,44 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
             }
         });
 
+        loginText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
-    private Boolean missingValue(String userName, String date, String phone){
+    private void sendToCategories() {
+        finishActivity = true;
+        Intent i = new Intent(RegisterSecondPageActivity.this, CategoriesActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
+    }
 
-        if(userName.equals("") || date.equals("") || phone.equals("") || userImageURI == null){
+    private Boolean missingValue(String userName, String date, String phone, String email, String pass, String confirmPass){
+
+        if(userName.equals("") || date.equals("") || phone.equals("") || email.equals("") || pass.equals("") ||
+                confirmPass.equals("") || userImageURI == null){
 
             if(userName.equals("")){
                 userNameText.setError("Enter your name");
+            }
+            else if(email.equals("")){
+                emailText.setError("Enter your email");
             }
             else if(date.equals("")){
                 birthdayText.setError("Enter your birthday");
             }
             else if(phone.equals("")){
                 phoneText.setError("Enter Your phone");
+            }
+            else if(pass.equals("")){
+                passwordText.setError("Enter your password");
+            }
+            else if(confirmPass.equals("")){
+                confrimPassText.setError("Enter confirm password");
             }
             else if(userImageURI == null){
                 alertBuilder.setTitle("Your photo");
@@ -317,16 +364,6 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        sendToFirstPage();
-    }
-
-    private void sendToFirstPage() {
-        Intent i = new Intent(RegisterSecondPageActivity.this, RegisterFirstPageActivity.class);
-        i.putExtra("email", email);
-        i.putExtra("backPressed", true);
-        startActivity(i);
-        finish();
     }
 
     @Override
@@ -350,4 +387,12 @@ public class RegisterSecondPageActivity extends AppCompatActivity {
                 .start(RegisterSecondPageActivity.this);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(finishActivity){
+            finish();
+        }
+    }
 }

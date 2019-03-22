@@ -119,8 +119,8 @@ public class EditUserProfileActivity extends AppCompatActivity {
         userName.setText(currentUserMap.get("name").toString());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.profile);
-        Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(currentUserMap.get("profileUrl").toString()).thumbnail(
-                Glide.with(EditUserProfileActivity.this).load(currentUserMap.get("profileThumbUrl").toString())
+        Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(currentUserMap.get("profile_url").toString()).thumbnail(
+                Glide.with(EditUserProfileActivity.this).load(currentUserMap.get("profileThumb").toString())
         ).into(userImage);
 
         progressBar.setVisibility(View.INVISIBLE);
@@ -202,24 +202,26 @@ public class EditUserProfileActivity extends AppCompatActivity {
                                             if (task.isSuccessful()) {
 
                                                 downloadThumbUri = task.getResult();
-                                                Map<String, Object> userMap = new HashMap<>();
-                                                userMap.put("name", name);
-                                                userMap.put("birthday", birthday);
-                                                userMap.put("phone", phone);
-                                                userMap.put("profile_url", downloadUri.toString());
-                                                userMap.put("profileThumb", downloadThumbUri.toString());
+                                                //Map<String, Object> userMap = new HashMap<>();
+                                                currentUserMap.put("name", name);
+                                                currentUserMap.put("email", userEmail.getText().toString());
+                                                currentUserMap.put("birthday", birthday);
+                                                currentUserMap.put("phone", phone);
+                                                currentUserMap.put("profile_url", downloadUri.toString());
+                                                currentUserMap.put("profileThumb", downloadThumbUri.toString());
 
-                                                String url = currentUserMap.get("profileUrl").toString();
+                                                /*String url = currentUserMap.get("profileUrl").toString();
                                                 if (userInstance.getList().get(0).getUserImageUrl().equals(url)) {
                                                     userInstance.getList().get(0).setUserName(name);
                                                     userInstance.getList().get(0).setUserImageUrl(downloadUri.toString());
                                                     userInstance.getList().get(0).setUserImageThumbUrl(downloadThumbUri.toString());
-                                                }
+                                                }*/
 
-                                                preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
-                                                        downloadUri.toString(), downloadThumbUri.toString(), true);
+                                                preferenceConfig.setCurrentUser(currentUserMap);
+                                                /*preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
+                                                        downloadUri.toString(), downloadThumbUri.toString(), true);*/
 
-                                                firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(userMap)
+                                                firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(currentUserMap)
                                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<Void> task) {
@@ -251,21 +253,23 @@ public class EditUserProfileActivity extends AppCompatActivity {
                     }
                     else {
 
-                        Map<String, Object> userMap = new HashMap<>();
-                        userMap.put("name", name);
-                        userMap.put("birthday", birthday);
-                        userMap.put("phone", phone);
+                        //Map<String, Object> userMap = new HashMap<>();
+                        currentUserMap.put("name", name);
+                        currentUserMap.put("email", userEmail.getText().toString());
+                        currentUserMap.put("birthday", birthday);
+                        currentUserMap.put("phone", phone);
 
-                        String url = currentUserMap.get("profileUrl").toString();
-                        if (userInstance.getList().get(0).getUserImageUrl().equals(url)) {
+                        /*String url = currentUserMap.get("profile_url").toString();
+                        if (userInstance.getList().size() > 0 && userInstance.getList().get(0).getUserImageUrl().equals(url)) {
                             userInstance.getList().get(0).setUserName(name);
-                        }
+                        }*/
 
-                        preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
+                        preferenceConfig.setCurrentUser(currentUserMap);
+                        /*preferenceConfig.setCurrentUser(name, currentUserMap.get("email").toString(), phone, birthday,
                                 currentUserMap.get("profileUrl").toString(), currentUserMap.get("profileThumbUrl").toString(),
-                                true);
+                                true);*/
 
-                        firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(userMap)
+                        firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).update(currentUserMap)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {

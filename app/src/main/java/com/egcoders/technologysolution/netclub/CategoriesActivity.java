@@ -164,10 +164,12 @@ public class CategoriesActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
 
                                     Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
-                                    preferenceConfig.setCurrentUser(currentUserMap.get("name").toString(),
+                                    currentUserMap.put("categorySelected", true);
+                                    preferenceConfig.setCurrentUser(currentUserMap);
+                                    /*preferenceConfig.setCurrentUser(currentUserMap.get("name").toString(),
                                             currentUserMap.get("email").toString(), currentUserMap.get("phone").toString(),
                                             currentUserMap.get("birthday").toString(), currentUserMap.get("profileUrl").toString(),
-                                            currentUserMap.get("profileThumbUrl").toString(), true);
+                                            currentUserMap.get("profileThumbUrl").toString(), true);*/
                                 } else {
                                 }
                             }

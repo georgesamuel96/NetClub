@@ -10,4 +10,10 @@
 
     <style name="MyAppTheme" parent="@style/AppTheme" />
 
+    <style name="Theme.App.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">@color/word_gray</item>
+        <item name="colorControlActivated">@color/word_gray</item>
+        <item name="colorControlHighlight">@color/word_gray</item>
+    </style>
+
 </resources>

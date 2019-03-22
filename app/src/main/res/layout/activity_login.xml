@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LoginActivity"
-    android:background="@color/white">
+    android:background="@drawable/bg">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,54 +15,87 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/logo"
-                android:layout_width="@dimen/_95sdp"
-                android:layout_height="@dimen/_95sdp"
-                android:layout_marginTop="@dimen/_24sdp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/logo"
+            <ImageView
+                android:id="@+id/imageView4"
+                android:layout_width="@dimen/_240sdp"
+                android:layout_height="@dimen/_66sdp"
+                android:layout_marginTop="@dimen/_36sdp"
+                android:src="@drawable/netclub_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:layout_marginLeft="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginEnd="@dimen/_16sdp"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:gravity="center"
+                android:text="Meet Mentors online"
+                android:textColor="#eeeeee"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_28sdp"
-                android:layout_marginLeft="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginLeft="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_22sdp"
-                android:layout_marginEnd="@dimen/_28sdp"
-                android:layout_marginRight="@dimen/_28sdp"
-                android:background="@drawable/bg_et"
-                android:ems="10"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:padding="@dimen/_10sdp"
-                android:textColor="@color/black"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginRight="@dimen/_12sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/logo" />
+                app:layout_constraintTop_toBottomOf="@id/textView6"
+                app:errorEnabled="true"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base">
 
-            <EditText
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/word_gray"
+                    android:textColorHint="@color/word_gray"
+                    android:theme="@style/Theme.App.Base" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/password"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_28sdp"
-                android:layout_marginLeft="@dimen/_28sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginLeft="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_12sdp"
-                android:layout_marginEnd="@dimen/_28sdp"
-                android:layout_marginRight="@dimen/_28sdp"
-                android:background="@drawable/bg_et"
-                android:ems="10"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:padding="@dimen/_10sdp"
-                android:textColor="@color/black"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginRight="@dimen/_12sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/email" />
+                app:layout_constraintTop_toBottomOf="@+id/email"
+                app:errorEnabled="true"
+                app:passwordToggleEnabled="true"
+                android:textColorHint="@color/word_gray"
+                android:theme="@style/Theme.App.Base">
+
+                <android.support.design.widget.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:textColorHint="@color/word_gray"
+                    android:textColor="@color/word_gray"
+                    android:inputType="textPassword"
+                    android:theme="@style/Theme.App.Base"/>
+
+            </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/loginBtn"
@@ -82,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="Don't have account ?"
-                android:textColor="@color/word"
+                android:textColor="@color/word_gray"
                 android:textSize="@dimen/_14ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.207"
@@ -95,14 +128,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="Register"
-                android:textColor="@color/word"
+                android:textColor="@color/word_gray"
                 android:textSize="@dimen/_14ssp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.136"
                 app:layout_constraintStart_toEndOf="@+id/textView2"
                 app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
-
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>

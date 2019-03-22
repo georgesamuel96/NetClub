@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,8 +26,8 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText loginEmailText;
-    private EditText loginPassText;
+    private TextInputLayout loginEmailText;
+    private TextInputLayout loginPassText;
     private Button loginBtn;
     private FirebaseAuth mAuth;
     private TextView register;
@@ -40,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginEmailText = (EditText) findViewById(R.id.email);
-        loginPassText = (EditText) findViewById(R.id.password);
+        loginEmailText = (TextInputLayout) findViewById(R.id.email);
+        loginPassText = (TextInputLayout) findViewById(R.id.password);
         loginBtn = (Button) findViewById(R.id.loginBtn);
         register = (TextView) findViewById(R.id.register);
 
@@ -55,8 +56,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String loginEmail = loginEmailText.getText().toString().trim();
-                String loginPass = loginPassText.getText().toString().trim();
+                String loginEmail = loginEmailText.getEditText().getText().toString().trim();
+                String loginPass = loginPassText.getEditText().getText().toString().trim();
 
                 if(!missingValue(loginEmail, loginPass)){
 
@@ -92,7 +93,8 @@ public class LoginActivity extends AppCompatActivity {
                                                 categorySelected = (Boolean) userMap.get("categorySelected");
 
                                                 preferenceConfig.setSharedPrefConfig(userId);
-                                                preferenceConfig.setCurrentUser(name, email, phone, birthday, profileUrl, profileThumbUrl, categorySelected);
+                                                preferenceConfig.setCurrentUser(userMap);
+                                                //preferenceConfig.setCurrentUser(name, email, phone, birthday, profileUrl, profileThumbUrl, categorySelected);
                                                 sendToMain();
                                             }
                                             else{
@@ -136,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                startActivity(new Intent(LoginActivity.this, RegisterFirstPageActivity.class));
+                startActivity(new Intent(LoginActivity.this, RegisterSecondPageActivity.class));
             }
         });
     }

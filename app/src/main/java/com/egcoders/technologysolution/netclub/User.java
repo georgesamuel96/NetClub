@@ -2,9 +2,8 @@ package com.egcoders.technologysolution.netclub;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class User {
 
-    private static final long serialVersionUID = 10L;
     private String userName;
     private String userImageUrl;
     private String userImageThumbUrl;

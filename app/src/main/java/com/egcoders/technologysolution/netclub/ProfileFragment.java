@@ -3,7 +3,9 @@ package com.egcoders.technologysolution.netclub;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +27,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class ProfileFragment extends Fragment {
 
-    private FirebaseFirestore firestore;
-    private Button editBtn;
-    private TextView email, birthday, phone, name;
-    private CircleImageView profile;
-    //private FirebaseUser currentUser;
-    //private String userId;
-    private ProgressBar progressBar;
-    //private SaveUserInstance userInstance;
-    private SharedPreferenceConfig preferenceConfig;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private TabLayout tabLayout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -46,64 +42,30 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        editBtn = (Button) view.findViewById(R.id.editBtn);
-        email = (TextView) view.findViewById(R.id.user_email);
-        birthday = (TextView) view.findViewById(R.id.user_birthday);
-        phone = (TextView) view.findViewById(R.id.user_phone);
-        name = (TextView) view.findViewById(R.id.user_name);
-        profile = (CircleImageView) view.findViewById(R.id.user_profile);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+        viewPagerAdapter = new ViewPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout = (TabLayout)view.findViewById(R.id.tabLayout);
 
-        firestore = FirebaseFirestore.getInstance();
-        //currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        //userId = currentUser.getUid();
-        //userInstance = new SaveUserInstance();
-        preferenceConfig = new SharedPreferenceConfig(getContext());
-        Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
-
-        progressBar.setVisibility(View.VISIBLE);
-        email.setText(currentUserMap.get("email").toString());
-        birthday.setText(currentUserMap.get("birthday").toString());
-        phone.setText(currentUserMap.get("phone").toString());
-        name.setText(currentUserMap.get("name").toString());
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.profile);
-        Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUserMap.get("profileUrl").toString())
-                .thumbnail(Glide.with(getContext()).load(currentUserMap.get("profileThumbUrl").toString())).into(profile);
-        progressBar.setVisibility(View.INVISIBLE);
-
-        /*progressBar.setVisibility(View.VISIBLE);
-        firestore.collection("Users").document(userInstance.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    Map<String, Object> userMap = task.getResult().getData();
-                    email.setText(userInstance.getEmail());
-                    birthday.setText(userMap.get("birthday").toString());
-                    phone.setText(userMap.get("phone").toString());
-                    name.setText(userMap.get("name").toString());
-                    RequestOptions requestOptions = new RequestOptions();
-                    requestOptions.placeholder(R.drawable.profile);
-                    Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(userMap.get("profile_url")).thumbnail(
-                            Glide.with(getContext()).load(userMap.get("profileThumb"))
-                    ).into(profile);
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-                else{
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            }
-        });*/
-
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), EditUserProfileActivity.class);
-                startActivity(i);
-            }
-        });
+        tabLayout.setupWithViewPager(viewPager);
+        setupTabLayout();
+        viewPager.setCurrentItem(0);
 
         return view;
+    }
+
+    private void setupTabLayout() {
+
+        TextView customTab1 = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
+        TextView customTab2 = (TextView) LayoutInflater.from(getActivity()).inflate(R.layout.custom_tab, null);
+        customTab1.setText("Posts");
+        customTab1.setBackgroundResource(R.color.transparent);
+        tabLayout.getTabAt(0).setCustomView(customTab1);
+        customTab2.setText("Saves");
+        customTab2.setBackgroundResource(R.color.transparent);
+        tabLayout.getTabAt(1).setCustomView(customTab2);
+
+
     }
 
 }

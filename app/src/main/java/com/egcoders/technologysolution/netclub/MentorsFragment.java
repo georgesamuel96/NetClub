@@ -92,7 +92,6 @@ public class MentorsFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        System.out.println(mentorList.size());
 
         // Get mentors when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
