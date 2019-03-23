@@ -97,7 +97,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 break;
             }
 
-            System.out.println("Cur:" + timeStamp);
             if(timeStamp <= time.get(j).first){
                 myViewHolder.date.setText(timeStamp + " " + time.get(j).second);
                 break;

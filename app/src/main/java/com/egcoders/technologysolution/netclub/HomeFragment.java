@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment implements Home.View{
     private ArrayList<Post> postsList = new ArrayList<>();
     private PostAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
-    private HomePresenter homePresenter;
+    private Home.Presenter homePresenter;
 
     public HomeFragment() {
         // Required empty public constructor

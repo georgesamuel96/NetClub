@@ -16,4 +16,10 @@
         <item name="colorControlHighlight">@color/word_gray</item>
     </style>
 
+    <style name="custom_editText" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">@color/word</item>
+        <item name="colorControlActivated">@color/word</item>
+        <item name="colorControlHighlight">@color/word</item>
+    </style>
+
 </resources>
