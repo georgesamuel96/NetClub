@@ -61,7 +61,8 @@ public class UserPresenter implements UserProfile.Presenter {
         threads[2] = new Thread(new Runnable() {
             @Override
             public void run() {
-                Query query = firestore.collection("Posts").orderBy("timeStamp", Query.Direction.DESCENDING).limit(5);
+                Query query = firestore.collection("Posts").whereEqualTo("userId", preferenceConfig.getSharedPrefConfig())
+                        .orderBy("timeStamp", Query.Direction.DESCENDING).limit(5);
                 getUserPosts(query);
             }
         });
@@ -71,7 +72,6 @@ public class UserPresenter implements UserProfile.Presenter {
             @Override
             public void run() {
 
-                System.out.println("Count::: " + countUserPosts);
                 while (countUserPosts > 0);
                 view.showUserPosts(userPostsList);
             }
@@ -87,7 +87,8 @@ public class UserPresenter implements UserProfile.Presenter {
         threads[0] = new Thread(new Runnable() {
             @Override
             public void run() {
-                Query query = firestore.collection("Posts").orderBy("timeStamp", Query.Direction.DESCENDING).startAfter(lastVisiblePosts).limit(5);
+                Query query = firestore.collection("Posts")
+                        .whereEqualTo("userId", preferenceConfig.getSharedPrefConfig()).orderBy("timeStamp", Query.Direction.DESCENDING).startAfter(lastVisiblePosts).limit(5);
                 getUserPosts(query);
             }
         });
@@ -173,10 +174,10 @@ public class UserPresenter implements UserProfile.Presenter {
                             if (doc.getType() == DocumentChange.Type.ADDED) {
 
                                 Map<String, Object> postMap = doc.getDocument().getData();
-                                if(!postMap.get("userId").toString().equals(preferenceConfig.getSharedPrefConfig())){
+                                /*if(!postMap.get("userId").toString().equals(preferenceConfig.getSharedPrefConfig())){
                                     countUserPosts--;
                                     continue;
-                                }
+                                }*/
                                 final Post post = new Post();
                                 post.setPostId(doc.getDocument().getId());
                                 post.setCategory(postMap.get("category").toString());

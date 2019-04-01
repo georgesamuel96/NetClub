@@ -136,13 +136,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-                    /*if (menuItem.getItemId() == R.id.home) {
-                        getSupportActionBar().setTitle("NetClub");
+                    if (menuItem.getItemId() == R.id.home) {
+                        getSupportActionBar().setTitle("Net Club");
                         replaceFragment(homeFragment);
                         return true;
-                    } else*/
-                    if (menuItem.getItemId() == R.id.home) {
-                        replaceFragment(homeFragment);
+                    } else if (menuItem.getItemId() == R.id.categories) {
+                        getSupportActionBar().setTitle("Categories");
+                        replaceFragment(categoriesFragment);
                         return true;
                     } else if (menuItem.getItemId() == R.id.users) {
                         getSupportActionBar().setTitle("Users");

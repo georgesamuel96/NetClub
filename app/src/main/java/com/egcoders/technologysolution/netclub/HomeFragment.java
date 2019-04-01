@@ -103,6 +103,8 @@ public class HomeFragment extends Fragment implements Home.View{
     @Override
     public void showPosts(ArrayList<Post> list) {
         postsList.addAll(list);
+        if(getActivity() == null)
+            return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -115,6 +117,8 @@ public class HomeFragment extends Fragment implements Home.View{
     @Override
     public void showMorePosts(ArrayList<Post> list) {
         postsList.addAll(list);
+        if(getActivity() == null)
+            return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

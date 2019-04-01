@@ -6,10 +6,10 @@
         android:icon="@mipmap/ic_home"
         android:title="Home" />
 
-    <!--<item
+    <item
         android:id="@+id/categories"
         android:icon="@mipmap/ic_categories"
-        android:title="Categories" /> -->
+        android:title="Categories" />
 
     <item
         android:id="@+id/users"

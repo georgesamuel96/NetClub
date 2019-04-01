@@ -3,13 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".CategoriesFragment"
-    android:background="@color/white">
+    android:background="#eeeeee">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Categories Fragment" />
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs_container"
+            android:layout_width="wrap_content"
+            app:tabSelectedTextColor="@color/colorPrimary"
+            app:tabTextColor="@color/colorPrimary"
+            android:layout_height="48dp"
+            app:tabIndicatorColor="@color/black"
+            android:background="#ffffff"
+            android:backgroundTint="@color/white"
+            android:elevation="@dimen/_4sdp"
+            android:paddingLeft="4dp"
+            app:tabGravity="fill"
+            app:tabMode="scrollable"
+            app:tabPadding="16dp" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tabs_container"
+            >
+
+        </android.support.v4.view.ViewPager>
+
+    </RelativeLayout>
 
 </FrameLayout>

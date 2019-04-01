@@ -1,9 +1,7 @@
 package com.egcoders.technologysolution.netclub;
 
 import android.app.Activity;
-import android.net.wifi.hotspot2.pps.HomeSp;
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -16,37 +14,40 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class HomePresenter implements Home.Presenter {
+public class CategoryPostsPresenter implements CategoryPosts.Presenter {
 
-    private Home.View view;
+    private CategoryPosts.View view;
     private Activity activity;
-    private ArrayList<Post> postsList = new ArrayList<>();
+    private List<Post> postsList = new ArrayList<>();
+    private List<String> categoryList = new ArrayList<>();
     private DocumentSnapshot lastVisible;
     private FirebaseFirestore firestore;
     private Thread[] threads = new Thread[4];
     private volatile int countPosts;
+    private SharedPreferenceConfig preferenceConfig;
 
-    public HomePresenter(Activity activity, Home.View view){
+    public CategoryPostsPresenter(Activity activity, CategoryPosts.View view){
         this.view = view;
         this.activity = activity;
         firestore = FirebaseFirestore.getInstance();
+        preferenceConfig = new SharedPreferenceConfig(activity);
     }
 
     @Override
-    public void loadPosts() {
+    public void loadPosts(final String category) {
 
         postsList.clear();
         countPosts = Integer.MAX_VALUE;
-
         threads[0] = new Thread(new Runnable() {
             @Override
             public void run() {
-                Query query = firestore.collection("Posts").orderBy("timeStamp", Query.Direction.DESCENDING)
-                        .limit(5);
+                Query query = firestore.collection("Posts").whereEqualTo("category", category)
+                        .orderBy("timeStamp", Query.Direction.DESCENDING).limit(5);
                 getPost(query);
             }
         });
@@ -57,14 +58,16 @@ public class HomePresenter implements Home.Presenter {
             public void run() {
 
                 while (countPosts > 0);
-                view.showPosts(postsList);
+                view.viewPosts(postsList);
             }
         });
         threads[1].start();
     }
 
+
     @Override
-    public void loadMorePosts() {
+    public void loadMorePosts(final String category) {
+
         postsList.clear();
         countPosts = Integer.MAX_VALUE;
 
@@ -74,8 +77,8 @@ public class HomePresenter implements Home.Presenter {
         threads[2] = new Thread(new Runnable() {
             @Override
             public void run() {
-                Query query = firestore.collection("Posts").orderBy("timeStamp", Query.Direction.DESCENDING)
-                        .startAfter(lastVisible).limit(5);
+                Query query = firestore.collection("Posts").whereEqualTo("category", category)
+                        .orderBy("timeStamp", Query.Direction.DESCENDING).startAfter(lastVisible).limit(5);
                 getPost(query);
 
             }
@@ -86,13 +89,34 @@ public class HomePresenter implements Home.Presenter {
             @Override
             public void run() {
                 while (countPosts > 0);
-                view.showMorePosts(postsList);
+                view.viewMorePosts(postsList);
             }
         });
         threads[3].start();
+
     }
 
-    private void getPost(Query query){
+    @Override
+    public void loadCategories() {
+        categoryList.clear();
+        firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).collection("selectedCategory")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    for(DocumentChange document : task.getResult().getDocumentChanges()){
+                        categoryList.add(document.getDocument().get("name").toString());
+                    }
+                    view.viewCategories(categoryList);
+                }
+                else{
+
+                }
+            }
+        });
+    }
+
+    private void getPost(Query query) {
 
         query.addSnapshotListener(activity, new EventListener<QuerySnapshot>() {
             @Override
