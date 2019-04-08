@@ -12,5 +12,6 @@
     <string name="profileUrl_currenetUser">com.egcoders.technologysolutions.netclub_profileUrl_currenetUser</string>
     <string name="profileThumbUrl_currenetUser">com.egcoders.technologysolutions.netclub_profileThumbUrl_currenetUser</string>
     <string name="categorySelected_currenetUser">com.egcoders.technologysolutions.netclub_categorySelected_currenetUser</string>
+    <string name="userStatue_currenetUser">com.egcoders.technologysolutions.netclub_userStatue_currenetUser</string>
 
 </resources>

@@ -22,8 +22,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/userProfile"
-                    android:layout_width="@dimen/_55sdp"
-                    android:layout_height="@dimen/_55sdp"
+                    android:layout_width="@dimen/_42sdp"
+                    android:layout_height="@dimen/_42sdp"
                     android:src="@drawable/profile"
                     android:scaleType="centerCrop"
                     android:layout_marginTop="@dimen/_8sdp"
@@ -54,15 +54,8 @@
                         android:layout_height="wrap_content"
                         android:text="User Name"
                         android:textSize="@dimen/_12ssp"
-                        android:textColor="@color/black"/>
-
-                    <TextView
-                        android:id="@+id/postDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="13/03/2019"
-                        android:textSize="@dimen/_12ssp"
-                        android:layout_marginTop="@dimen/_4sdp" />
+                        android:textColor="@color/black"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/statue"
@@ -70,10 +63,16 @@
                         android:layout_height="wrap_content"
                         android:text="Mentor"
                         android:textColor="@color/red"
-                        android:layout_below="@id/userProfile"
-                        android:layout_marginLeft="@dimen/_8sdp"
-                        android:textSize="@dimen/_12ssp"
-                        android:layout_marginTop="@dimen/_4sdp" />
+                        android:textSize="@dimen/_12ssp" />
+
+                    <TextView
+                        android:id="@+id/postDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="13/03/2019"
+                        android:textSize="@dimen/_12ssp" />
+
+
 
                 </LinearLayout>
 
@@ -82,8 +81,8 @@
             <ImageView
                 android:id="@+id/postImage"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_160sdp"
-                android:scaleType="centerCrop"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
                 android:src="@drawable/placeholder"
                 android:layout_below="@id/container1"
                 android:layout_marginTop="@dimen/_8sdp"/>
@@ -132,7 +131,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/containerContent"
-                android:paddingBottom="@dimen/_4sdp">
+                android:paddingBottom="@dimen/_4sdp"
+                android:layout_marginRight="@dimen/_12sdp"
+                android:layout_marginLeft="@dimen/_12sdp">
 
                 <ImageView
                     android:id="@+id/likeBtn"

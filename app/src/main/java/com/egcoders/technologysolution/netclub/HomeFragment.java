@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +40,8 @@ public class HomeFragment extends Fragment implements Home.View{
     private PostAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
     private Home.Presenter homePresenter;
+    private ProgressBar progressBar;
+    private TextView textPosts;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -54,7 +57,11 @@ public class HomeFragment extends Fragment implements Home.View{
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        textPosts = (TextView) view.findViewById(R.id.textPosts);
 
+        if(postsList.size() == 0)
+            progressBar.setVisibility(View.VISIBLE);
         adapter = new PostAdapter(postsList, 0);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
@@ -108,7 +115,12 @@ public class HomeFragment extends Fragment implements Home.View{
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                progressBar.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
+
+                if(postsList.size() == 0){
+                    textPosts.setVisibility(View.VISIBLE);
+                }
             }
         });
 

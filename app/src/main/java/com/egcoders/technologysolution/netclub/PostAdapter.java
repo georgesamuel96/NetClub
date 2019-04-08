@@ -1,6 +1,7 @@
 package com.egcoders.technologysolution.netclub;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -154,6 +155,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                                         notifyDataSetChanged();
                                     }
                                 });
+                    }
+                    else if(item.getItemId() == R.id.edit){
+                        Intent intent = new Intent(context, AddPostActivity.class);
+                        intent.putExtra("postId", postsList.get(i).getPostId());
+                        context.startActivity(intent);
                     }
                     return true;
                 }

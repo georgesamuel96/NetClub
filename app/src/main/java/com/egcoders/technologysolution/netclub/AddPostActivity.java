@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,7 +57,7 @@ public class AddPostActivity extends AppCompatActivity {
     private SpinnerAdapter adapter;
     private FirebaseFirestore firestore;
     private Uri postImageUri = null;
-    private ImageView postImage;
+    private ImageView postImage, deleteImage;
     private TextInputLayout contentTextInput;
     private AlertDialog.Builder alertBuilder;
     private StorageReference storageReference;
@@ -65,8 +67,9 @@ public class AddPostActivity extends AppCompatActivity {
     private String categoryName;
     private SharedPreferenceConfig preferenceConfig;
     private ProgressDialog progressDialog;
-    private boolean isQueryingFinished = false;
     private Thread[] threads = new Thread[4];
+    private String editPostId;
+    private android.support.v7.widget.Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,11 @@ public class AddPostActivity extends AppCompatActivity {
         postImage = (ImageView) findViewById(R.id.postImage);
         contentTextInput = (TextInputLayout) findViewById(R.id.content);
         postBtn = (Button) findViewById(R.id.post);
+        deleteImage = (ImageView) findViewById(R.id.deleteImage);
+
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Add Post");
 
         firestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -113,6 +121,53 @@ public class AddPostActivity extends AppCompatActivity {
 
             }
         });
+
+        editPostId = getIntent().getStringExtra("postId");
+        if(editPostId != null){
+            getData(editPostId);
+        }
+        else
+            editPostId = "";
+
+        deleteImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postImageUri = null;
+                postImage.setImageResource(R.drawable.placeholder);
+            }
+        });
+    }
+
+    private void getData(String editPostId) {
+
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Loading post data");
+        progressDialog.setMessage("Loading");
+        progressDialog.show();
+        Long postId = Long.parseLong(editPostId);
+        firestore.collection("Posts").whereEqualTo("timeStamp", postId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    Map<String, Object> postMap = task.getResult().getDocumentChanges().get(0).getDocument().getData();
+                    String photoUrl = postMap.get("photoUrl").toString();
+                    String photoThumb = postMap.get("photoThumbUrl").toString();
+                    if(!photoUrl.equals("")){
+                        RequestOptions requestOptions = new RequestOptions();
+                        requestOptions.placeholder(R.drawable.placeholder);
+                        Glide.with(AddPostActivity.this).applyDefaultRequestOptions(requestOptions).load(photoUrl).thumbnail(
+                                Glide.with(AddPostActivity.this).load(photoThumb)).into(postImage);
+                    }
+                    String content = postMap.get("content").toString();
+                    contentTextInput.getEditText().setText(content);
+
+                    progressDialog.dismiss();
+                }
+                else {
+                    progressDialog.dismiss();
+                }
+            }
+        });
     }
 
     private void getCategories() {
@@ -135,7 +190,6 @@ public class AddPostActivity extends AppCompatActivity {
     private void setPost() {
         final String postContent = contentTextInput.getEditText().getText().toString().trim();
         if(!postContent.equals("") || postImageUri != null){
-            //System.out.println("DONE:");
             progressDialog.setCancelable(false);
             progressDialog.setTitle("Publishing post");
             progressDialog.setMessage("Loading");
@@ -151,21 +205,20 @@ public class AddPostActivity extends AppCompatActivity {
 
                     while((urls[0].equals("")|| urls[1].equals("")) && postImageUri != null);
 
-                    String random = Long.toString(System.currentTimeMillis());
+                    String random;
+                    if(editPostId.equals(""))
+                        random = Long.toString(System.currentTimeMillis());
+                    else
+                        random = editPostId;
                     Map<String, Object> postMap = new HashMap<>();
                     Map<String, Object> currentUser = preferenceConfig.getCurrentUser();
 
-                    //postMap.put("userName", currentUser.get("name").toString());
-                    //postMap.put("userProfile", currentUser.get("profile_url").toString());
-                    //postMap.put("userProfileThumb", currentUser.get("profileThumb").toString());
                     postMap.put("userId", preferenceConfig.getSharedPrefConfig());
                     postMap.put("timeStamp", Long.parseLong(random));
                     postMap.put("photoUrl", urls[0]);
                     postMap.put("photoThumbUrl", urls[1]);
-                    //postMap.put("likesNumber", "0");
                     postMap.put("category", categoryName);
                     postMap.put("content", postContent);
-                    //postMap.put("userStatue", "0");
 
 
                     firestore.collection("Posts").document(random).set(postMap).addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -26,31 +26,10 @@ public class CategoriesPager extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
 
         CategoryPostsFragment fragment = new CategoryPostsFragment();
-        //Fragment fragment;
         Bundle bundle = new Bundle();
         bundle.putString("category", categoriesList.get(i));
         fragment.setArguments(bundle);
         return fragment;
-        /*for(String name : categoriesList){
-            if(name.equals("Tech / Programming")){
-                fragment = new TechProgrammingFragment();
-                fragment.setArguments(bundle);
-                System.out.println("ASD1");
-                return fragment;
-            }
-            else if(name.equals("Social skills / Motivation")){
-                fragment = new SocialskillsMotivationFragment();
-                fragment.setArguments(bundle);
-                System.out.println("ASD2");
-                return fragment;
-            }
-            else if(name.equals("Music")){
-                fragment = new MusicFragment();
-                fragment.setArguments(bundle);
-                return fragment;
-            }
-        }
-        return null;*/
     }
 
     @Override

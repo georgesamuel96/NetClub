@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,55 +28,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
     private CategoryPosts.Presenter presenter;
     private String category;
     private SwipeRefreshLayout refreshLayout;
-
-    /*public CategoryPostsFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-
-        category = getArguments().getString("category");
-        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        adapter = new PostAdapter(postsList, 0);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
-        presenter = new CategoryPostsPresenter(getActivity(), this);
-        presenter.loadPosts(category);
-
-        // Get posts when reached to then end of recycler view
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                Boolean reachedBottom = !recyclerView.canScrollVertically(1);
-                if(reachedBottom && postsList.size() > 0){
-                    presenter.loadMorePosts(category);
-                }
-            }
-        });
-
-        // Refresh Data
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                postsList.clear();
-                adapter.notifyDataSetChanged();
-                presenter.loadPosts(category);
-                refreshLayout.setRefreshing(false);
-            }
-        });
-
-        return view;
-    }*/
+    private RelativeLayout container;
 
     @Override
     protected int getViewStubLayoutResource() {
@@ -84,6 +37,8 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
 
     @Override
     protected void onCreateViewAfterViewStubInflated(View view, Bundle savedInstanceState) {
+
+        container = (RelativeLayout) view.findViewById(R.id.container);
 
         category = getArguments().getString("category");
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
@@ -130,6 +85,9 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if(postsList.size() == 0){
+                    container.setVisibility(View.VISIBLE);
+                }
                 adapter.notifyDataSetChanged();
             }
         });

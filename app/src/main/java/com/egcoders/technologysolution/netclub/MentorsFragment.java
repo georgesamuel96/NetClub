@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
@@ -44,7 +45,7 @@ public class MentorsFragment extends Fragment {
     private ArrayList<Mentor> mentorList = new ArrayList<>();
     private MentorAdapter adapter;
     private SharedPreferenceConfig preferenceConfig;
-    //private SaveUserInstance userInstance;
+    private TextView textComingSoon;
 
     public MentorsFragment() {
         // Required empty public constructor
@@ -64,7 +65,7 @@ public class MentorsFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.add_mentor);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        //userInstance = new SaveUserInstance();
+        textComingSoon = (TextView) view.findViewById(R.id.textComingSoon);
         preferenceConfig = new SharedPreferenceConfig(getContext());
         
         fab.setOnClickListener(new View.OnClickListener() {
@@ -75,8 +76,7 @@ public class MentorsFragment extends Fragment {
         });
 
         Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
-        if(currentUserMap.get("email").equals("bassemhosny93@gmail.com") ||
-                currentUserMap.get("email").equals("andro.nady2015@gmail.com")){
+        if(currentUserMap.get("userStatue").equals("2")){
             fab.show();
         }
 
@@ -124,6 +124,10 @@ public class MentorsFragment extends Fragment {
                             lastVisible = queryDocumentSnapshots.getDocuments()
                                     .get(queryDocumentSnapshots.size() - 1);
                             saveMentorInstance.setDocumentSnapshot(lastVisible);
+
+                            if(queryDocumentSnapshots.getDocumentChanges().size() == 0){
+                                textComingSoon.setVisibility(View.VISIBLE);
+                            }
 
                             for (DocumentChange doc : queryDocumentSnapshots.getDocumentChanges()) {
                                 if (doc.getType() == DocumentChange.Type.ADDED) {

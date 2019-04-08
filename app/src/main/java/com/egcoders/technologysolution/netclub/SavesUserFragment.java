@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class SavesUserFragment extends Fragment implements UserProfile.View{
     private ArrayList<Post> postsUserList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout refreshLayout;
+    private RelativeLayout textNoPost;
 
     public SavesUserFragment() {
         // Required empty public constructor
@@ -40,6 +42,7 @@ public class SavesUserFragment extends Fragment implements UserProfile.View{
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
+        textNoPost = (RelativeLayout) view.findViewById(R.id.container);
 
         adapter = new PostAdapter(postsUserList, 1);
         linearLayoutManager = new LinearLayoutManager(getContext());
@@ -99,6 +102,8 @@ public class SavesUserFragment extends Fragment implements UserProfile.View{
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
+                if(postsUserList.size() == 0)
+                    textNoPost.setVisibility(View.VISIBLE);
             }
         });
 

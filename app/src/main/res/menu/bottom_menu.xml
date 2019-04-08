@@ -13,12 +13,12 @@
 
     <item
         android:id="@+id/users"
-        android:icon="@mipmap/ic_users_thite"
+        android:icon="@mipmap/ic_mentors_white"
         android:title="Users" />
 
     <item
         android:id="@+id/mentors"
-        android:icon="@mipmap/ic_mentors_white"
+        android:icon="@mipmap/ic_users_thite"
         android:title="Mentors" />
 
 </menu>

@@ -46,6 +46,8 @@ public class SharedPreferenceConfig {
         if(!userMap.containsKey("userStatue"))
             userMap.put("userStatue", "0");
 
+        String userStatue = userMap.get("userStatue").toString();
+
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(context.getResources().getString(R.string.name_currenetUser), userName);
         editor.putString(context.getResources().getString(R.string.email_currenetUser), userEmail);
@@ -54,6 +56,7 @@ public class SharedPreferenceConfig {
         editor.putString(context.getResources().getString(R.string.profileUrl_currenetUser), userProfileUrl);
         editor.putString(context.getResources().getString(R.string.profileThumbUrl_currenetUser), userProfileThumbUrl);
         editor.putBoolean(context.getResources().getString(R.string.categorySelected_currenetUser), categorySelected);
+        editor.putString(context.getResources().getString(R.string.userStatue_currenetUser), userStatue);
         editor.commit();
     }
 
@@ -68,6 +71,7 @@ public class SharedPreferenceConfig {
         currentUserMap.put("profile_url", preferences.getString(context.getResources().getString(R.string.profileUrl_currenetUser), status));
         currentUserMap.put("profileThumb", preferences.getString(context.getResources().getString(R.string.profileThumbUrl_currenetUser), status));
         currentUserMap.put("categorySelected", preferences.getBoolean(context.getResources().getString(R.string.categorySelected_currenetUser), false));
+        currentUserMap.put("userStatue", preferences.getString(context.getResources().getString(R.string.userStatue_currenetUser), status));
 
         return currentUserMap;
     }

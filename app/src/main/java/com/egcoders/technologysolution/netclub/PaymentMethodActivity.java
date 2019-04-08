@@ -42,7 +42,7 @@ public class PaymentMethodActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_action_menu);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_menu);
 
         registrationId = getIntent().getStringExtra("registrationId");
         datesByUser = (ArrayList<String>) getIntent().getSerializableExtra("dates");

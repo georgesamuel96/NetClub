@@ -174,10 +174,6 @@ public class UserPresenter implements UserProfile.Presenter {
                             if (doc.getType() == DocumentChange.Type.ADDED) {
 
                                 Map<String, Object> postMap = doc.getDocument().getData();
-                                /*if(!postMap.get("userId").toString().equals(preferenceConfig.getSharedPrefConfig())){
-                                    countUserPosts--;
-                                    continue;
-                                }*/
                                 final Post post = new Post();
                                 post.setPostId(doc.getDocument().getId());
                                 post.setCategory(postMap.get("category").toString());
