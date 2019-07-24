@@ -5,7 +5,7 @@ Firebase Database <br>
 Firebase Storage <br>
 Glide library <br>
 Shared Preference <br>
-Share post <br>
+Share addPost <br>
 Edit profile account <br>
 like on Post <br>
 Book Mentor <br>

@@ -13,5 +13,14 @@
     <string name="profileThumbUrl_currenetUser">com.egcoders.technologysolutions.netclub_profileThumbUrl_currenetUser</string>
     <string name="categorySelected_currenetUser">com.egcoders.technologysolutions.netclub_categorySelected_currenetUser</string>
     <string name="userStatue_currenetUser">com.egcoders.technologysolutions.netclub_userStatue_currenetUser</string>
+    <string name="verifyCode_currenetUser">com.egcoders.technologysolutions.netclub_verifyCode_currenetUser</string>
+    <string name="updated_at_currenetUser">com.egcoders.technologysolutions.netclub_updated_at_currenetUser</string>
+    <string name="created_at_currenetUser">com.egcoders.technologysolutions.netclub_created_at_currenetUser</string>
+    <string name="id_currenetUser">com.egcoders.technologysolutions.netclub_id_currenetUser</string>
+    <string name="token_currenetUser">com.egcoders.technologysolutions.netclub_token_currenetUser</string>
+    <string name="activate_currenetUser">com.egcoders.technologysolutions.netclub_activate_currenetUser</string>
+    <!--<string name="facebook_app_id">1533973853400026</string>
+    <string name="fb_login_protocol_scheme">fb1533973853400026</string> -->
+
 
 </resources>

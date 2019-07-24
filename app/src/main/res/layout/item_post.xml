@@ -63,39 +63,57 @@
                         android:layout_height="wrap_content"
                         android:text="Mentor"
                         android:textColor="@color/red"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/postDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="13/03/2019"
-                        android:textSize="@dimen/_12ssp" />
-
-
+                        android:textSize="@dimen/_12ssp"
+                        android:visibility="invisible"/>
 
                 </LinearLayout>
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/container2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/container1">
+
             <ImageView
                 android:id="@+id/postImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="@drawable/placeholder"
-                android:layout_below="@id/container1"
-                android:layout_marginTop="@dimen/_8sdp"/>
+                android:scaleType="center"
+                android:maxHeight="@dimen/_200sdp"
+                android:adjustViewBounds="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:visibility="gone"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="@dimen/_64sdp"
+                android:layout_height="@dimen/_64sdp"
+                android:indeterminateDrawable="@drawable/custom_load"
+                android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Marketing"
-                android:layout_below="@id/postImage"
+                android:text=""
+                android:layout_below="@id/container2"
                 android:padding="@dimen/_8sdp"
-                android:textSize="@dimen/_16ssp"
-                android:textColor="#635656"/>
+                android:textSize="@dimen/_14ssp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"/>
 
             <RelativeLayout
                 android:id="@+id/containerContent"
@@ -109,7 +127,7 @@
                     android:id="@+id/content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Post Content Post Content Post Content Post Content Post Content Post Content"
+                    android:text=""
                     android:textSize="@dimen/_14ssp"
                     android:maxLines="2"/>
 
@@ -122,7 +140,8 @@
                     android:layout_alignParentRight="true"
                     android:layout_below="@id/content"
                     android:textSize="@dimen/_14ssp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:visibility="invisible"/>
 
             </RelativeLayout>
 
@@ -139,7 +158,8 @@
                     android:id="@+id/likeBtn"
                     android:layout_width="@dimen/_28sdp"
                     android:layout_height="@dimen/_28sdp"
-                    android:src="@mipmap/ic_like_gray" />
+                    android:src="@mipmap/ic_like_gray"
+                    android:visibility="invisible"/>
 
                 <TextView
                     android:id="@+id/likeNumber"
@@ -149,16 +169,36 @@
                     android:layout_marginLeft="@dimen/_6sdp"
                     android:layout_marginTop="@dimen/_6sdp"
                     android:layout_toRightOf="@id/likeBtn"
-                    android:text="102 Likes"
+                    android:text="0 Likes"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:id="@+id/commentBtn"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
+                    android:src="@mipmap/ic_comment_gray"
+                    android:layout_toRightOf="@id/likeNumber"
+                    android:layout_marginLeft="@dimen/_14sdp"/>
+
+                <TextView
+                    android:id="@+id/commentNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="@dimen/_6sdp"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:layout_toRightOf="@id/commentBtn"
+                    android:text="0 Comments"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"/>
 
                 <ImageView
                     android:id="@+id/saveBtn"
                     android:layout_width="@dimen/_28sdp"
                     android:layout_height="@dimen/_28sdp"
                     android:layout_alignParentRight="true"
-                    android:src="@mipmap/ic_save"/>
+                    android:src="@mipmap/ic_save_gray"/>
 
             </RelativeLayout>
 

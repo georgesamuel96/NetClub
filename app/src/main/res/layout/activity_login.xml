@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity"
+    tools:context=".Activities.LoginActivity"
     android:background="@drawable/bg">
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -97,17 +98,30 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <TextView
+                android:id="@+id/forgetPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginLeft="@dimen/_12sdp"
+                android:text="Foregt password"
+                android:textStyle="bold"
+                android:textColor="@color/word_gray"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/password" />
+
             <Button
                 android:id="@+id/loginBtn"
                 android:layout_width="@dimen/_97sdp"
                 android:layout_height="@dimen/_32sdp"
-                android:layout_marginTop="@dimen/_26sdp"
+                android:layout_marginTop="@dimen/_16sdp"
                 android:background="@drawable/bg_btn"
                 android:text="Log in "
                 android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password" />
+                app:layout_constraintTop_toBottomOf="@+id/forgetPassword" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -134,8 +148,24 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.136"
                 app:layout_constraintStart_toEndOf="@+id/textView2"
-                app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
+                app:layout_constraintTop_toBottomOf="@+id/loginBtn" /> -->
+
+            <Button
+                android:id="@+id/sign_in_button"
+                android:layout_width="@dimen/_190sdp"
+                android:layout_height="@dimen/_32sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@drawable/login_bg"
+                android:drawableLeft="@drawable/google"
+                android:paddingLeft="@dimen/_8sdp"
+                android:text="Log In with your gmail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/register" />
+
         </android.support.constraint.ConstraintLayout>
+
+
 
     </ScrollView>
 
