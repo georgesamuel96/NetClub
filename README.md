@@ -1,6 +1,7 @@
 # NetClub
 # Features
 Retrofit <br>
+Offline storage <br>
 Firebase Storage <br>
 Glide library <br>
 Shared Preference <br>
