@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.egcoders.technologysolution.netclub.data.interfaces.Home;
 import com.egcoders.technologysolution.netclub.data.presenter.HomePresenter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
@@ -39,8 +40,8 @@ public class HomeFragment extends Fragment implements Home.View {
     private PostAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
     private Home.Presenter homePresenter;
-    private ProgressBar progressBar;
     private TextView textPosts;
+    private LottieAnimationView loadingAnimation;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -56,13 +57,11 @@ public class HomeFragment extends Fragment implements Home.View {
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         textPosts = (TextView) view.findViewById(R.id.textPosts);
+        loadingAnimation= view.findViewById(R.id.loadingAnimation);
 
         homePresenter = new HomePresenter(getActivity(), this);
 
-        if(postsList.size() == 0)
-            progressBar.setVisibility(View.VISIBLE);
         adapter = new PostAdapter(getActivity(), postsList, 0);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
@@ -117,7 +116,7 @@ public class HomeFragment extends Fragment implements Home.View {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progressBar.setVisibility(View.GONE);
+                loadingAnimation.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
 
                 if(postsList.size() == 0){

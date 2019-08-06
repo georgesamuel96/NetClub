@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.SavesUserFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -21,10 +22,10 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="gone">
+        android:gravity="center">
 
         <TextView
+            android:id="@+id/tv_no_posts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -34,7 +35,16 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:text="There is no posts"
-            android:textSize="@dimen/_16ssp"/>
+            android:textSize="@dimen/_16ssp"
+            android:visibility="gone"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadingAnimation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:lottie_fileName="loading.json"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"/>
 
     </RelativeLayout>
 

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.PostsUserFragment">
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -37,14 +38,13 @@
            android:textSize="@dimen/_16ssp"
            android:visibility="gone"/>
 
-       <ProgressBar
-           android:id="@+id/progressBar"
-           android:layout_width="@dimen/_64sdp"
-           android:layout_height="@dimen/_64sdp"
-           android:layout_marginTop="8dp"
-           android:layout_marginBottom="8dp"
-           android:indeterminateDrawable="@drawable/custom_load"
-           android:layout_centerInParent="true"/>
+       <com.airbnb.lottie.LottieAnimationView
+           android:id="@+id/loadingAnimation"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           app:lottie_fileName="loading.json"
+           app:lottie_autoPlay="true"
+           app:lottie_loop="true"/>
 
    </RelativeLayout>
 

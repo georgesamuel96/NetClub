@@ -1,12 +1,21 @@
 package com.egcoders.technologysolution.netclub.ui.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.value.LottieFrameInfo;
+import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
@@ -14,29 +23,20 @@ import com.egcoders.technologysolution.netclub.model.profile.UserData;
 public class WelcomeActivity extends AppCompatActivity {
 
     private UserSharedPreference preference;
-    private ProgressBar progressBar;
+    private LottieAnimationView loadingAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
         preference = new UserSharedPreference(WelcomeActivity.this);
-
-
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                progressBar.setVisibility(View.VISIBLE);
-
                 UserData user = preference.getUser().getData();
-
                 if(!user.getToken().equals("")){
-
-
                     if(preference.getUser().getData().getActivate().equals("1")){
                         if(preference.getUser().getData().getSelectedCategory()){
                             sendToMain();
@@ -54,10 +54,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
 
             }
-        }, 500);
-
-
-
+        }, 1500);
     }
 
     private void sendToMain() {

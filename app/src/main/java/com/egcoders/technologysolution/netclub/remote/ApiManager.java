@@ -201,4 +201,9 @@ public class ApiManager {
         Call<PostResponse> posts = service.getSavedPosts(token);
         posts.enqueue(callback);
     }
+
+    public void showMoreSavedPosts(String token, String url, Callback<PostResponse> callback){
+        Call<PostResponse> post = service.showMoreSavedPosts(token, url);
+        post.enqueue(callback);
+    }
 }

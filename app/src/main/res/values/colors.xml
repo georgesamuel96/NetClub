@@ -11,4 +11,5 @@
     <color name="likeBtnAccent">#F44336</color>
     <color name="likeBtnGray">#747474</color>
     <color name="red">#f22613</color>
+    <color name="gray_1">#eeeeee</color>
 </resources>

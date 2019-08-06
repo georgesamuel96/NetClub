@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.data.adapter.PostAdapter;
 import com.egcoders.technologysolution.netclub.R;
@@ -37,8 +38,8 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
     private List<Post> postsUserList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout refreshLayout;
-    private ProgressBar progressBar;
     private TextView tvNoMorePosts;
+    private LottieAnimationView loadingAnimation;
 
     public PostsUserFragment() {
         // Required empty public constructor
@@ -58,7 +59,7 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
         recyclerView = view.findViewById(R.id.recyclerView);
         refreshLayout = view.findViewById(R.id.refreshList);
         tvNoMorePosts = view.findViewById(R.id.tv_no_posts);
-        progressBar = view.findViewById(R.id.progressBar);
+        loadingAnimation = view.findViewById(R.id.loadingAnimation);
         initRecyclerView();
         userPresenter = new UserPresenter(getActivity(), this);
         userPresenter.getUserPosts();
@@ -102,23 +103,20 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
 
     @Override
     public void showUserPosts(PostData postData) {
-
         postsUserList.addAll(postData.getData());
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                progressBar.setVisibility(View.GONE);
+                loadingAnimation.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
                 if(postsUserList.size() == 0)
                     tvNoMorePosts.setVisibility(View.VISIBLE);
             }
         });
-
     }
 
     @Override
     public void showMorePosts(PostData postData) {
-
         postsUserList.addAll(postData.getData());
         getActivity().runOnUiThread(new Runnable() {
             @Override

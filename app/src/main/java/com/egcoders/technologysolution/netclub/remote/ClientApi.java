@@ -111,4 +111,8 @@ public interface ClientApi {
 
     @POST("/net-club/api/post/getSaved")
     Call<PostResponse> getSavedPosts(@Header("Authorization") String token);
+
+    @FormUrlEncoded
+    @POST
+    Call<PostResponse> showMoreSavedPosts(@Header("Authorization") String token, @Url String url);
 }
