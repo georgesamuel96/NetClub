@@ -14,10 +14,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.instance.SaveUserInstance;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
+import com.egcoders.technologysolution.netclub.model.profile.User;
+import com.egcoders.technologysolution.netclub.model.profile.UserData;
 import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 import com.egcoders.technologysolution.netclub.ui.fragments.AboutUsFragment;
 import com.egcoders.technologysolution.netclub.ui.fragments.CategoriesFragment;
@@ -55,25 +59,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navView = (NavigationView) findViewById(R.id.navigation);
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_menu);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navView = findViewById(R.id.navigation);
+        bottomNavigationView = findViewById(R.id.bottom_menu);
 
         configureNavigationDrawer();
 
         preference = new UserSharedPreference(MainActivity.this);
 
-        /*headerView = navView.getHeaderView(0);
-        headerEmail = (TextView) headerView.findViewById(R.id.email_header);
-        headerName = (TextView) headerView.findViewById(R.id.name_header);
-        headerProfile = (CircleImageView) headerView.findViewById(R.id.profile_header);
+        headerView = navView.getHeaderView(0);
+        headerEmail = headerView.findViewById(R.id.email_header);
+        headerName = headerView.findViewById(R.id.name_header);
+        headerProfile = headerView.findViewById(R.id.profile_header);
+        UserData currentUser = preference.getUser().getData();
+        headerEmail.setText(currentUser.getEmail());
+        headerEmail.setVisibility(View.VISIBLE);
+        headerName.setText(currentUser.getName());
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions.placeholder(R.drawable.profile);
+        Glide.with(MainActivity.this).applyDefaultRequestOptions(requestOptions)
+                .load(currentUser.getPhoto_max()).into(headerProfile);
 
-        mAuth = FirebaseAuth.getInstance();
+        /*mAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         userInstance = new SaveUserInstance();
 
@@ -81,15 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
         currentUserId = preferenceConfig.getSharedPrefConfig();
         final Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
-
-        headerEmail.setText(currentUserMap.get("email").toString());
-        headerEmail.setVisibility(View.VISIBLE);
-        headerName.setText(currentUserMap.get("name").toString());
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.profile);
-        Glide.with(getApplicationContext()).applyDefaultRequestOptions(requestOptions)
-                .load(currentUserMap.get("profile_url").toString()).thumbnail(Glide.with(getApplicationContext())
-                .load(currentUserMap.get("profileThumb").toString())).into(headerProfile);
 
         Boolean categorySelected = (Boolean) currentUserMap.get("categorySelected");
         if (!categorySelected) {

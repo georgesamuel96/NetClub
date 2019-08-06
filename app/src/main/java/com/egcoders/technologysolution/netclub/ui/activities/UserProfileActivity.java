@@ -27,7 +27,6 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private TabLayout tabLayout;
-    private SharedPreferenceConfig preferenceConfig;
     private UserProfile.Presenter userPresenter;
     private CircleImageView userImage;
     private TextView userName;
@@ -38,15 +37,13 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.viewPager);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
-        tabLayout = (TabLayout)findViewById(R.id.tabLayout);
-        userImage = (CircleImageView) findViewById(R.id.userImage);
-        userName = (TextView) findViewById(R.id.userName);
-        editBtn = (Button) findViewById(R.id.editBtn);
-
-        preferenceConfig = new SharedPreferenceConfig(this);
+        tabLayout = findViewById(R.id.tabLayout);
+        userImage = findViewById(R.id.userImage);
+        userName = findViewById(R.id.userName);
+        editBtn = findViewById(R.id.editBtn);
 
         tabLayout.setupWithViewPager(viewPager);
         setupTabLayout();
@@ -68,10 +65,10 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
         TextView customTab1 = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         TextView customTab2 = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
-        customTab1.setText("Posts");
+        customTab1.setText(getString(R.string.posts));
         customTab1.setBackgroundResource(R.color.transparent);
         tabLayout.getTabAt(0).setCustomView(customTab1);
-        customTab2.setText("Saved");
+        customTab2.setText(getString(R.string.saved));
         customTab2.setBackgroundResource(R.color.transparent);
         tabLayout.getTabAt(1).setCustomView(customTab2);
 

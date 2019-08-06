@@ -193,7 +193,12 @@ public class ApiManager {
     }
 
     public void unSavePost(String token, int id, Callback<SavePostResponse> callback){
-        Call<SavePostResponse> savePost = service.savePost(token, id);
-        savePost.enqueue(callback);
+        Call<SavePostResponse> unsavePost = service.unSavePost(token, id);
+        unsavePost.enqueue(callback);
+    }
+
+    public void getSavedPosts(String token, Callback<PostResponse> callback){
+        Call<PostResponse> posts = service.getSavedPosts(token);
+        posts.enqueue(callback);
     }
 }

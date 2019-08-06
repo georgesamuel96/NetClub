@@ -108,4 +108,7 @@ public interface ClientApi {
     @FormUrlEncoded
     @POST("/net-club/api/post/unSaved")
     Call<SavePostResponse> unSavePost(@Header("Authorization") String token, @Field("post_id") int post_id);
+
+    @POST("/net-club/api/post/getSaved")
+    Call<PostResponse> getSavedPosts(@Header("Authorization") String token);
 }

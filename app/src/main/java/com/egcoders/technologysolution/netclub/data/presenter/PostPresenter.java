@@ -27,20 +27,20 @@ public class PostPresenter implements AddPost.Presenter {
     private AddPost.View view;
     private Utils utils;
     private UserSharedPreference preference;
+    private final String token;
 
     public PostPresenter(Activity activity, AddPost.View view){
         this.activity  = activity;
         this.view = view;
         utils = new Utils(activity);
         preference = new UserSharedPreference(activity.getApplicationContext());
+        token = preference.getUser().getData().getToken();
     }
 
     @Override
     public void setPost(Post post) {
 
         utils.showProgressDialog("Create Post", "Loading");
-
-        String token = preference.getUser().getData().getToken();
 
         ApiManager.getInstance().createPost(token, post.getPhotoUrl(), post, new Callback<CreatePostResponse>() {
             @Override
@@ -70,9 +70,6 @@ public class PostPresenter implements AddPost.Presenter {
     public void getPost(int postId) {
 
         utils.showProgressDialog("Get Post", "Loading");
-
-        String token = preference.getUser().getData().getToken();
-
         ApiManager.getInstance().showPost(token, postId, new Callback<GetPostResponse>() {
             @Override
             public void onResponse(Call<GetPostResponse> call, Response<GetPostResponse> response) {
@@ -105,8 +102,6 @@ public class PostPresenter implements AddPost.Presenter {
 
         final List<Pair<String, Integer>> list = new ArrayList<>();
 
-        String token = preference.getUser().getData().getToken();
-
         ApiManager.getInstance().showCategories(token, new Callback<Category>() {
             @Override
             public void onResponse(Call<Category> call, Response<Category> response) {
@@ -138,9 +133,6 @@ public class PostPresenter implements AddPost.Presenter {
     public void updatePost(Post post) {
 
         utils.showProgressDialog("Update Post", "Loading");
-
-        String token = preference.getUser().getData().getToken();
-
         ApiManager.getInstance().updatePost(token, post.getPhotoUrl(), post, new Callback<UpdatePostResponse>() {
             @Override
             public void onResponse(Call<UpdatePostResponse> call, Response<UpdatePostResponse> response) {

@@ -10,7 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.data.adapter.PostAdapter;
@@ -35,7 +37,8 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
     private List<Post> postsUserList = new ArrayList<>();
     private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout refreshLayout;
-    private RelativeLayout textNoPost;
+    private ProgressBar progressBar;
+    private TextView tvNoMorePosts;
 
     public PostsUserFragment() {
         // Required empty public constructor
@@ -47,20 +50,18 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_posts_user, container, false);
+        init(view);
+        return view;
+    }
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
-        textNoPost = (RelativeLayout) view.findViewById(R.id.container);
-
-        adapter = new PostAdapter(getActivity(), postsUserList, 0);
-        linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
-
+    private void init(View view) {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        refreshLayout = view.findViewById(R.id.refreshList);
+        tvNoMorePosts = view.findViewById(R.id.tv_no_posts);
+        progressBar = view.findViewById(R.id.progressBar);
+        initRecyclerView();
         userPresenter = new UserPresenter(getActivity(), this);
         userPresenter.getUserPosts();
-
         // Get posts when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -84,8 +85,14 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
                 refreshLayout.setRefreshing(false);
             }
         });
+    }
 
-        return view;
+    private void initRecyclerView() {
+        adapter = new PostAdapter(getActivity(), postsUserList, 0);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -100,9 +107,10 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                progressBar.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
                 if(postsUserList.size() == 0)
-                    textNoPost.setVisibility(View.VISIBLE);
+                    tvNoMorePosts.setVisibility(View.VISIBLE);
             }
         });
 

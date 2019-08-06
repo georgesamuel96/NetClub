@@ -25,6 +25,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.egcoders.technologysolution.netclub.model.post.PostResponse;
+import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
 import com.egcoders.technologysolution.netclub.ui.activities.AddPostActivity;
 import com.egcoders.technologysolution.netclub.R;
@@ -71,6 +73,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     private UserSharedPreference preference;
     private Utils utils;
     private Activity activity;
+    private String token;
 
     public PostAdapter(Activity activity, List<Post> list, int statue){
         this.postsList = list;
@@ -96,32 +99,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         time.add(Pair.create(29L, "D"));
         time.add(Pair.create(11L, "M"));
 
+        token = preference.getUser().getData().getToken();
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int position) {
 
         myViewHolder.setIsRecyclable(false);
 
         // Set user name
-        myViewHolder.userName.setText(postsList.get(i).getUserData().getName());
+        myViewHolder.userName.setText(postsList.get(position).getUserData().getName());
 
         // Set user profile
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.profile);
-        Glide.with(context).applyDefaultRequestOptions(requestOptions).load(postsList.get(i).getUserData().getPhoto_max())
+        Glide.with(context).applyDefaultRequestOptions(requestOptions).load(postsList.get(position).getUserData().getPhoto_max())
                 .into(myViewHolder.userImage);
 
         // Check if this post belong to a mentor
-        if(postsList.get(i).getUserData().getUserStatus().equals("user"))
+        if(postsList.get(position).getUserData().getUserStatus().equals("user"))
             myViewHolder.statue.setVisibility(View.GONE);
         else {
             myViewHolder.statue.setVisibility(View.VISIBLE);
         }
 
        // Set time when this post was published
-        String str_date = postsList.get(i).getCreated_at();
+        String str_date = postsList.get(position).getCreated_at();
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date date = null;
@@ -149,7 +154,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         myViewHolder.date.setVisibility(View.VISIBLE);
 
       // Set popup menu if this post was published wish current user
-        if(postsList.get(i).getUserData().getId() != preference.getUser().getData().getId())
+        if(postsList.get(position).getUserData().getId() != preference.getUser().getData().getId())
             myViewHolder.deleteBtn.setVisibility(View.INVISIBLE);
        else{
 
@@ -165,9 +170,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
                         utils.showProgressDialog("Delete post", "Loading");
 
-                        String token = preference.getUser().getData().getToken();
-
-                        ApiManager.getInstance().deletePost(token, postsList.get(i).getId(), new Callback<DeletePostResponse>() {
+                        ApiManager.getInstance().deletePost(token, postsList.get(position).getId(), new Callback<DeletePostResponse>() {
                             @Override
                             public void onResponse(Call<DeletePostResponse> call, Response<DeletePostResponse> response) {
 
@@ -177,7 +180,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
                                 try{
                                     if(postResponse.getSuccess()){
-                                        postsList.remove(i);
+                                        postsList.remove(position);
                                         notifyDataSetChanged();
                                     }
                                     else{
@@ -199,7 +202,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
                         // Edit post
                         Intent intent = new Intent(context, AddPostActivity.class);
-                        intent.putExtra("postId", postsList.get(i).getId());
+                        intent.putExtra("postId", postsList.get(position).getId());
                         context.startActivity(intent);
                     }
                     return true;
@@ -215,9 +218,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         }
 
        // Check if this post has image
-        if(postsList.get(i).getPhotoUrl() != null){
+        if(postsList.get(position).getPhotoUrl() != null){
 
-            Glide.with(context).load(postsList.get(i).getPhotoUrl())
+            Glide.with(context).load(postsList.get(position).getPhotoUrl())
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@android.support.annotation.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -243,13 +246,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         }
 
        // Set category of this post
-        myViewHolder.category.setText(postsList.get(i).getCategory());
+        myViewHolder.category.setText(postsList.get(position).getCategory());
 
         // Check if this post has text content
-        if(!postsList.get(i).getContent().equals("")){
+        if(!postsList.get(position).getContent().equals("")){
 
             // Set content
-            String content = postsList.get(i).getContent();
+            String content = postsList.get(position).getContent();
             content = content.substring(0, content.length() - 1);
             myViewHolder.content.setText(content);
             myViewHolder.content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -282,7 +285,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         }
 
        // Check if user like this post or not
-        firestore.collection("Posts").document(postsList.get(i).getId() + "")
+        firestore.collection("Posts").document(postsList.get(position).getId() + "")
                 .collection("Likes")
                 .document(preference.getUser().getData().getId() + "")
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -300,7 +303,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         myViewHolder.likeBtn.setVisibility(View.VISIBLE);
 
         // Get likes count
-        firestore.collection("Posts").document(postsList.get(i).getId() + "")
+        firestore.collection("Posts").document(postsList.get(position).getId() + "")
                 .collection("Likes")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -326,14 +329,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             public void onClick(View v) {
 
                 firestore.collection("Posts").
-                        document(postsList.get(i).getId() + "").collection("Likes")
+                        document(postsList.get(position).getId() + "").collection("Likes")
                         .document(preference.getUser().getData().getId() + "")
                         .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.getResult().exists()) {
 
-                            firestore.collection("Posts").document(postsList.get(i).getId() + "")
+                            firestore.collection("Posts").document(postsList.get(position).getId() + "")
                                     .collection("Likes").document(preference.getUser().getData().getId() + "").
                                     delete();
                             myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_gray));
@@ -341,7 +344,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                             Map<String, Object> likesMap = new HashMap<>();
                             likesMap.put("timestamp", Long.toString(System.currentTimeMillis()));
 
-                            firestore.collection("Posts").document(postsList.get(i).getId() + "")
+                            firestore.collection("Posts").document(postsList.get(position).getId() + "")
                                     .collection("Likes").document(preference.getUser().getData().getId() + "")
                                     .set(likesMap);
                             myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_accent));
@@ -353,7 +356,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         });
 
         // Get Comments count
-        firestore.collection("Posts").document(postsList.get(i).getId() + "")
+        firestore.collection("Posts").document(postsList.get(position).getId() + "")
                 .collection("Comments")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -378,24 +381,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, AddComentActivity.class);
-                intent.putExtra("postId", postsList.get(i).getId());
+                intent.putExtra("postId", postsList.get(position).getId());
                 context.startActivity(intent);
             }
         });
 
-      /*// Check if user save this post or not
-        myViewHolder.saveBtn.setVisibility(View.VISIBLE);
-        firestore.collection("Posts").document(postsList.get(i).getPostId()).collection("Saves")
-                .document(preferenceConfig.getSharedPrefConfig()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+      // Check if user save this post or not
+        /*ApiManager.getInstance().getSavedPosts(token, new Callback<PostResponse>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(e == null) {
-                    if (documentSnapshot.exists()) {
-                        myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
-                    } else {
-                        myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
+                if(response.isSuccessful()){
+                    if(response != null){
+                        PostResponse posts = response.body();
+                        boolean isExist = findPost(postsList.get(position).getPostId(), posts);
+                    }
+                    else{
+
                     }
                 }
+                else {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PostResponse> call, Throwable t) {
+
             }
         });*/
 
@@ -449,6 +460,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 });
             }
         });*/
+    }
+
+    private boolean findPost(String postId, PostResponse posts) {
+        boolean isExist = false;
+
+        return isExist;
     }
 
     @Override

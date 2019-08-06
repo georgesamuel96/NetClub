@@ -41,6 +41,8 @@
     <string name="msg_choose_category">Choose category for your post</string>
     <string name="your_post">Your Post</string>
     <string name="msg_your_post">You must post content, image or both</string>
+    <string name="posts">Posts</string>
+    <string name="saved">Saved</string>
     <!--<string name="facebook_app_id">1533973853400026</string>
     <string name="fb_login_protocol_scheme">fb1533973853400026</string> -->
 

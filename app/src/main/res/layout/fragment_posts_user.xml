@@ -21,10 +21,10 @@
        android:id="@+id/container"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:gravity="center"
-       android:visibility="gone">
+       android:gravity="center">
 
        <TextView
+           android:id="@+id/tv_no_posts"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_marginStart="8dp"
@@ -34,9 +34,20 @@
            android:layout_marginRight="8dp"
            android:layout_marginBottom="8dp"
            android:text="There is no posts"
-           android:textSize="@dimen/_16ssp"/>
+           android:textSize="@dimen/_16ssp"
+           android:visibility="gone"/>
+
+       <ProgressBar
+           android:id="@+id/progressBar"
+           android:layout_width="@dimen/_64sdp"
+           android:layout_height="@dimen/_64sdp"
+           android:layout_marginTop="8dp"
+           android:layout_marginBottom="8dp"
+           android:indeterminateDrawable="@drawable/custom_load"
+           android:layout_centerInParent="true"/>
 
    </RelativeLayout>
+
 
 
 </FrameLayout>

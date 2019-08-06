@@ -66,9 +66,9 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
         contentTextInput = findViewById(R.id.content);
         postBtn = findViewById(R.id.addPost);
         deleteImage = findViewById(R.id.deleteImage);
-        initToolbar();
         utils = new Utils(AddPostActivity.this);
         presenter = new PostPresenter(AddPostActivity.this, this);
+        initToolbar();
         initSpinner();
         postImage.setOnClickListener(this);
         postBtn.setOnClickListener(this);
