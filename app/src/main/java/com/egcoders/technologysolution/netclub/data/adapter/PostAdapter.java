@@ -25,6 +25,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.PostResponse;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
@@ -47,6 +48,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,9 +64,9 @@ import retrofit2.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
 
-    private List<Post> postsList = new ArrayList<>();
+    private static final String TAG = PostResponse.class.getSimpleName();
+    private List<Post> postsList;
     private Context context;
-    //private SharedPreferenceConfig preferenceConfig;
     private FirebaseFirestore firestore;
     private int lines = 0;
     private String likesCount = "";
@@ -74,6 +76,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     private Utils utils;
     private Activity activity;
     private String token;
+    private List<Boolean> isChecked;
+
 
     public PostAdapter(Activity activity, List<Post> list, int statue){
         this.postsList = list;
@@ -100,6 +104,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         time.add(Pair.create(11L, "M"));
 
         token = preference.getUser().getData().getToken();
+
+
+        isChecked = Arrays.asList(new Boolean[postsList.size()]);
 
         return viewHolder;
     }
@@ -386,80 +393,86 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             }
         });
 
-      // Check if user save this post or not
-        /*ApiManager.getInstance().getSavedPosts(token, new Callback<PostResponse>() {
+      //Check if user save this post or not
+        int userId = preference.getUser().getData().getId();
+        ApiManager.getInstance().checkSavedPost(token, postsList.get(position).getId(), userId, new Callback<CheckSavedResponse>() {
             @Override
-            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
-                if(response.isSuccessful()){
-                    if(response != null){
-                        PostResponse posts = response.body();
-                        boolean isExist = findPost(postsList.get(position).getPostId(), posts);
-                    }
-                    else{
-
+            public void onResponse(Call<CheckSavedResponse> call, Response<CheckSavedResponse> response) {
+                if(response.isSuccessful() && response != null){
+                    CheckSavedResponse saved = response.body();
+                    if(saved.getSuccess()){
+                        myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
+                        isChecked.set(position, true);
                     }
                 }
                 else {
-
+                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+                    isChecked.set(position, false);
                 }
             }
 
             @Override
-            public void onFailure(Call<PostResponse> call, Throwable t) {
-
+            public void onFailure(Call<CheckSavedResponse> call, Throwable t) {
+                Log.d(TAG, "onFailure: psot adapter: check post saved: " + t.getMessage());
             }
-        });*/
+        });
 
-        // Save or not save post
-     /*   myViewHolder.saveBtn.setOnClickListener(new View.OnClickListener() {
+        //Save or not save post
+        myViewHolder.saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firestore.collection("Posts").document(postsList.get(i).getPostId()).collection("Saves")
-                        .document(preferenceConfig.getSharedPrefConfig()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.getResult().exists()){
-                            myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
-
-                            firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig()).collection("Saves")
-                                    .document(postsList.get(i).getPostId()).delete();
-
-                            firestore.collection("Posts").document(postsList.get(i).getPostId())
-                                    .collection("Saves").document(preferenceConfig.getSharedPrefConfig()).delete()
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        if(statue == 1){
-                                            postsList.remove(i);
-                                            notifyDataSetChanged();
-                                        }
-                                    }
-                                    else{
-                                    }
+                int userId = preference.getUser().getData().getId();
+                if(!isChecked.get(position)){
+                    ApiManager.getInstance().savePost(token, postsList.get(position).getId(), new Callback<SavePostResponse>() {
+                        @Override
+                        public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
+                            if(response != null)
+                            {
+                                SavePostResponse savePostResponse = response.body();
+                                if(savePostResponse.getSuccess()){
+                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
+                                    isChecked.set(position, true);
                                 }
-                            });
-
-                            firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig())
-                                    .collection("Saves").document(postsList.get(i).getPostId()).delete();
+                                else{
+                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+                                    isChecked.set(position, false);
+                                }
+                            }
                         }
-                        else{
-                            myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
 
-                            String random = Long.toString(System.currentTimeMillis());
-                            Map<String, Object> savesMap = new HashMap<>();
-                            savesMap.put("timestamp", random);
-
-                            firestore.collection("Posts").document(postsList.get(i).getPostId())
-                                    .collection("Saves").document(preferenceConfig.getSharedPrefConfig()).set(savesMap);
-
-                            firestore.collection("Users").document(preferenceConfig.getSharedPrefConfig())
-                                    .collection("Saves").document(postsList.get(i).getPostId()).set(savesMap);
+                        @Override
+                        public void onFailure(Call<SavePostResponse> call, Throwable t) {
+                            Log.d(TAG, "onFailure: post adapter: save post: " + t.getMessage());
                         }
-                    }
-                });
+                    });
+                }
+                else{
+                    ApiManager.getInstance().unSavePost(token, postsList.get(position).getId(), new Callback<SavePostResponse>() {
+                        @Override
+                        public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
+                            if(response != null)
+                            {
+                                SavePostResponse savePostResponse = response.body();
+                                if(savePostResponse.getSuccess()){
+                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+                                    isChecked.set(position, false);
+                                }
+                                else{
+                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
+                                    isChecked.set(position, true);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SavePostResponse> call, Throwable t) {
+                            Log.d(TAG, "onFailure: post adapter: unsave post: " + t.getMessage());
+
+                        }
+                    });
+                }
             }
-        });*/
+        });
     }
 
     private boolean findPost(String postId, PostResponse posts) {
@@ -494,21 +507,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         public MyViewHolder(View view){
             super(view);
 
-            userImage = (CircleImageView) view.findViewById(R.id.userProfile);
-            userName = (TextView) view.findViewById(R.id.userName);
-            date = (TextView) view.findViewById(R.id.postDate);
-            statue = (TextView) view.findViewById(R.id.statue);
-            postImage = (ImageView) view.findViewById(R.id.postImage);
-            category = (TextView) view.findViewById(R.id.category);
-            content = (TextView) view.findViewById(R.id.content);
-            seeMore = (TextView) view.findViewById(R.id.seeMore);
-            likeNumber = (TextView) view.findViewById(R.id.likeNumber);
-            likeBtn = (ImageView) view.findViewById(R.id.likeBtn);
-            saveBtn = (ImageView) view.findViewById(R.id.saveBtn);
-            deleteBtn = (ImageView) view.findViewById(R.id.deleteBtn);
-            commentBtn = (ImageView) view.findViewById(R.id.commentBtn);
-            commentNumber = (TextView) view.findViewById(R.id.commentNumber);
-            imageLoad = (ProgressBar) view.findViewById(R.id.progressBar);
+            userImage = view.findViewById(R.id.userProfile);
+            userName = view.findViewById(R.id.userName);
+            date = view.findViewById(R.id.postDate);
+            statue = view.findViewById(R.id.statue);
+            postImage = view.findViewById(R.id.postImage);
+            category = view.findViewById(R.id.category);
+            content = view.findViewById(R.id.content);
+            seeMore = view.findViewById(R.id.seeMore);
+            likeNumber = view.findViewById(R.id.likeNumber);
+            likeBtn = view.findViewById(R.id.likeBtn);
+            saveBtn = view.findViewById(R.id.saveBtn);
+            deleteBtn = view.findViewById(R.id.deleteBtn);
+            commentBtn = view.findViewById(R.id.commentBtn);
+            commentNumber = view.findViewById(R.id.commentNumber);
+            imageLoad = view.findViewById(R.id.progressBar);
         }
     }
 }

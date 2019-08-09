@@ -2,6 +2,7 @@ package com.egcoders.technologysolution.netclub.remote;
 
 import com.egcoders.technologysolution.netclub.model.category.Category;
 import com.egcoders.technologysolution.netclub.model.category.CategorySelected;
+import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.CreatePostResponse;
 import com.egcoders.technologysolution.netclub.model.category.DeleteCategoriesResponse;
 import com.egcoders.technologysolution.netclub.model.post.DeletePostResponse;
@@ -205,5 +206,10 @@ public class ApiManager {
     public void showMoreSavedPosts(String token, String url, Callback<PostResponse> callback){
         Call<PostResponse> post = service.showMoreSavedPosts(token, url);
         post.enqueue(callback);
+    }
+
+    public void checkSavedPost(String token, int post_id, int user_id, Callback<CheckSavedResponse> callback){
+        Call<CheckSavedResponse> saved = service.checkSavedPost(token, post_id, user_id);
+        saved.enqueue(callback);
     }
 }

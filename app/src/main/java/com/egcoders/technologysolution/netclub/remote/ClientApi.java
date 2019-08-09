@@ -2,6 +2,7 @@ package com.egcoders.technologysolution.netclub.remote;
 
 import com.egcoders.technologysolution.netclub.model.category.Category;
 import com.egcoders.technologysolution.netclub.model.category.CategorySelected;
+import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.CreatePostResponse;
 import com.egcoders.technologysolution.netclub.model.category.DeleteCategoriesResponse;
 import com.egcoders.technologysolution.netclub.model.post.DeletePostResponse;
@@ -115,4 +116,9 @@ public interface ClientApi {
     @FormUrlEncoded
     @POST
     Call<PostResponse> showMoreSavedPosts(@Header("Authorization") String token, @Url String url);
+
+    @FormUrlEncoded
+    @POST("/net-club/api/post/checkSaved")
+    Call<CheckSavedResponse> checkSavedPost(@Header("Authorization") String token,
+                                            @Field("post_id") int post_id, @Field("user_id") int user_id);
 }
