@@ -14,6 +14,7 @@ import com.egcoders.technologysolution.netclub.model.category.SelectCategoryResp
 import com.egcoders.technologysolution.netclub.model.post.UpdatePostResponse;
 import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 
+import io.reactivex.Single;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -104,11 +105,11 @@ public interface ClientApi {
 
     @FormUrlEncoded
     @POST("/net-club/api/post/save")
-    Call<SavePostResponse> savePost(@Header("Authorization") String token, @Field("post_id") int post_id);
+    Single<SavePostResponse> savePost(@Header("Authorization") String token, @Field("post_id") int post_id);
 
     @FormUrlEncoded
     @POST("/net-club/api/post/unSaved")
-    Call<SavePostResponse> unSavePost(@Header("Authorization") String token, @Field("post_id") int post_id);
+    Single<SavePostResponse> unSavePost(@Header("Authorization") String token, @Field("post_id") int post_id);
 
     @POST("/net-club/api/post/getSaved")
     Call<PostResponse> getSavedPosts(@Header("Authorization") String token);
@@ -119,6 +120,6 @@ public interface ClientApi {
 
     @FormUrlEncoded
     @POST("/net-club/api/post/checkSaved")
-    Call<CheckSavedResponse> checkSavedPost(@Header("Authorization") String token,
-                                            @Field("post_id") int post_id, @Field("user_id") int user_id);
+    Single<CheckSavedResponse> checkSavedPost(@Header("Authorization") String token,
+                                              @Field("post_id") int post_id, @Field("user_id") int user_id);
 }

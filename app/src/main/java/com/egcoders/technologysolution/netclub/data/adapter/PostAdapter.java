@@ -28,6 +28,7 @@ import com.bumptech.glide.request.target.Target;
 import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.PostResponse;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
+import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
 import com.egcoders.technologysolution.netclub.ui.activities.AddPostActivity;
 import com.egcoders.technologysolution.netclub.R;
@@ -58,13 +59,21 @@ import java.util.TimeZone;
 import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
 
-    private static final String TAG = PostResponse.class.getSimpleName();
+    private static final String TAG = PostAdapter.class.getSimpleName();
     private List<Post> postsList;
     private Context context;
     private FirebaseFirestore firestore;
@@ -77,12 +86,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     private Activity activity;
     private String token;
     private List<Boolean> isChecked;
-
+    private ClientApi clientApi;
 
     public PostAdapter(Activity activity, List<Post> list, int statue){
         this.postsList = list;
         this.statue = statue;
         this.activity = activity;
+        clientApi = ApiManager.getClient().create(ClientApi.class);
     }
 
     @NonNull
@@ -92,7 +102,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         MyViewHolder viewHolder = new MyViewHolder(view);
         context = viewGroup.getContext();
 
-        /*preferenceConfig = new SharedPreferenceConfig(context);*/
         firestore = FirebaseFirestore.getInstance();
         preference = new UserSharedPreference(context);
         utils = new Utils(activity);
@@ -394,85 +403,78 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         });
 
       //Check if user save this post or not
-        int userId = preference.getUser().getData().getId();
-        ApiManager.getInstance().checkSavedPost(token, postsList.get(position).getId(), userId, new Callback<CheckSavedResponse>() {
-            @Override
-            public void onResponse(Call<CheckSavedResponse> call, Response<CheckSavedResponse> response) {
-                if(response.isSuccessful() && response != null){
-                    CheckSavedResponse saved = response.body();
-                    if(saved.getSuccess()){
-                        myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
-                        isChecked.set(position, true);
-                    }
-                }
-                else {
-                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
-                    isChecked.set(position, false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CheckSavedResponse> call, Throwable t) {
-                Log.d(TAG, "onFailure: psot adapter: check post saved: " + t.getMessage());
-            }
-        });
+        if(postsList.get(position).isSaved()){
+            myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
+        }
+        else{
+            myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+        }
 
         //Save or not save post
         myViewHolder.saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int userId = preference.getUser().getData().getId();
-                if(!isChecked.get(position)){
-                    ApiManager.getInstance().savePost(token, postsList.get(position).getId(), new Callback<SavePostResponse>() {
-                        @Override
-                        public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
-                            if(response != null)
-                            {
-                                SavePostResponse savePostResponse = response.body();
-                                if(savePostResponse.getSuccess()){
-                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
-                                    isChecked.set(position, true);
+                if(postsList.get(position).isSaved()){
+                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
+                    postsList.get(position).setSaved(false);
+                    getUnSavePostObservable(postsList.get(position).getId())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new SingleObserver<SavePostResponse>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+                                    Log.d(TAG, "onSubscribe");
                                 }
-                                else{
-                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
-                                    isChecked.set(position, false);
-                                }
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<SavePostResponse> call, Throwable t) {
-                            Log.d(TAG, "onFailure: post adapter: save post: " + t.getMessage());
-                        }
-                    });
+                                @Override
+                                public void onSuccess(SavePostResponse savePostResponse) {
+                                    Log.d(TAG, "onSuccess: " + savePostResponse.getMessage());
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d(TAG, "onError: " + e.getMessage());
+                                }
+                            });
                 }
                 else{
-                    ApiManager.getInstance().unSavePost(token, postsList.get(position).getId(), new Callback<SavePostResponse>() {
-                        @Override
-                        public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
-                            if(response != null)
-                            {
-                                SavePostResponse savePostResponse = response.body();
-                                if(savePostResponse.getSuccess()){
-                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_gray));
-                                    isChecked.set(position, false);
+                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
+                    postsList.get(position).setSaved(true);
+                    getSavePostObservable(postsList.get(position).getId())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new SingleObserver<SavePostResponse>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
+                                    Log.d(TAG, "onSubscribe");
                                 }
-                                else{
-                                    myViewHolder.saveBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_save_accent));
-                                    isChecked.set(position, true);
+
+                                @Override
+                                public void onSuccess(SavePostResponse savePostResponse) {
+                                    Log.d(TAG, "onSuccess: " + savePostResponse.getMessage());
                                 }
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(Call<SavePostResponse> call, Throwable t) {
-                            Log.d(TAG, "onFailure: post adapter: unsave post: " + t.getMessage());
-
-                        }
-                    });
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d(TAG, "onError: " + e.getMessage());
+                                }
+                            });
                 }
             }
         });
+    }
+
+    private Single<SavePostResponse> getSavePostObservable(int post_id) {
+        return clientApi.savePost(token, post_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Single<SavePostResponse> getUnSavePostObservable(int post_id) {
+        return clientApi.unSavePost(token, post_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private boolean findPost(String postId, PostResponse posts) {

@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment implements Home.View {
 
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private List<Post> postsList = new ArrayList<>();
@@ -109,7 +110,6 @@ public class HomeFragment extends Fragment implements Home.View {
 
     @Override
     public void showPosts(PostData data) {
-
         postsList.addAll(data.getData());
         if(getActivity() == null)
             return;
@@ -129,11 +129,7 @@ public class HomeFragment extends Fragment implements Home.View {
 
     @Override
     public void showMorePosts(PostData data) {
-
         postsList.addAll(data.getData());
-
-        Log.v("Size", postsList.size() + "");
-
         if(getActivity() == null)
             return;
         getActivity().runOnUiThread(new Runnable() {
@@ -144,4 +140,9 @@ public class HomeFragment extends Fragment implements Home.View {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        homePresenter.clearDisposal();
+    }
 }

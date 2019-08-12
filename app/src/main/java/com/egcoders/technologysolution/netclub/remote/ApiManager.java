@@ -15,13 +15,19 @@ import com.egcoders.technologysolution.netclub.model.category.SelectCategoryResp
 import com.egcoders.technologysolution.netclub.model.post.UpdatePostResponse;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +38,10 @@ public class ApiManager {
 
     private static ClientApi service;
     private static ApiManager apiManager;
-
+    private static final String BASE_URL = "http://www.egcoders.net/";
+    private static Retrofit retrofit = null;
+    private static int REQUEST_TIMEOUT = 60;
+    private static OkHttpClient okHttpClient;
     private ApiManager(){
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -43,12 +52,37 @@ public class ApiManager {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://www.egcoders.net/")
+                .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         service = retrofit.create(ClientApi.class);
+    }
+
+    public static synchronized Retrofit getClient() {
+        if (okHttpClient == null)
+            initOkHttp();
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(okHttpClient)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+    }
+
+    private static void initOkHttp() {
+        OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder()
+                .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        httpClient.addInterceptor(interceptor);
+        okHttpClient = httpClient.build();
     }
 
     public static ApiManager getInstance(){
@@ -189,13 +223,13 @@ public class ApiManager {
     }
 
     public void savePost(String token, int id, Callback<SavePostResponse> callback){
-        Call<SavePostResponse> savePost = service.savePost(token, id);
-        savePost.enqueue(callback);
+        /*Call<SavePostResponse> savePost = service.savePost(token, id);
+        savePost.enqueue(callback);*/
     }
 
     public void unSavePost(String token, int id, Callback<SavePostResponse> callback){
-        Call<SavePostResponse> unsavePost = service.unSavePost(token, id);
-        unsavePost.enqueue(callback);
+        /*Call<SavePostResponse> unsavePost = service.unSavePost(token, id);
+        unsavePost.enqueue(callback);*/
     }
 
     public void getSavedPosts(String token, Callback<PostResponse> callback){
@@ -206,10 +240,5 @@ public class ApiManager {
     public void showMoreSavedPosts(String token, String url, Callback<PostResponse> callback){
         Call<PostResponse> post = service.showMoreSavedPosts(token, url);
         post.enqueue(callback);
-    }
-
-    public void checkSavedPost(String token, int post_id, int user_id, Callback<CheckSavedResponse> callback){
-        Call<CheckSavedResponse> saved = service.checkSavedPost(token, post_id, user_id);
-        saved.enqueue(callback);
     }
 }

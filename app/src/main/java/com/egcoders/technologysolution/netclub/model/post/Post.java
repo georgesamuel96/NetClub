@@ -44,7 +44,7 @@ public class Post {
     @SerializedName("user")
     private UserData userData;
 
-
+    private boolean isSaved;
 
     public Post(){
 
@@ -192,5 +192,13 @@ public class Post {
 
     public void setUserData(UserData userData) {
         this.userData = userData;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(boolean saved) {
+        isSaved = saved;
     }
 }

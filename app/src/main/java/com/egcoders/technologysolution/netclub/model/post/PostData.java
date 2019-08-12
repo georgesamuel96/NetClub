@@ -51,4 +51,8 @@ public class PostData {
     public int getTo() {
         return to;
     }
+
+    public void setData(List<Post> data) {
+        this.data = data;
+    }
 }

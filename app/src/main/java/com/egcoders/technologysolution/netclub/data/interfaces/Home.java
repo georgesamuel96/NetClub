@@ -12,5 +12,6 @@ public interface Home {
     interface Presenter{
         void loadPosts();
         void loadMorePosts();
+        void clearDisposal();
     }
 }
