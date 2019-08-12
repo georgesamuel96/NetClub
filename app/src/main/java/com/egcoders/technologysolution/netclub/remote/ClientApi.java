@@ -122,4 +122,14 @@ public interface ClientApi {
     @POST("/net-club/api/post/checkSaved")
     Single<CheckSavedResponse> checkSavedPost(@Header("Authorization") String token,
                                               @Field("post_id") int post_id, @Field("user_id") int user_id);
+    @FormUrlEncoded
+    @POST("/net-club/api/post/category")
+    Call<PostResponse> showPostsCategory(@Header("Authorization") String token,
+                                         @Field("category_id") int category_id);
+
+    @FormUrlEncoded
+    @POST
+    Call<PostResponse> showMorePostsCategory(@Header("Authorization") String token,
+                                             @Field("category_id") int category_id,
+                                             @Url String url);
 }

@@ -34,7 +34,6 @@ public class CategoriesFragment extends Fragment implements CategoryPosts.View {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,11 +42,9 @@ public class CategoriesFragment extends Fragment implements CategoryPosts.View {
 
         viewPager = (ViewPager) view.findViewById(R.id.pager);
         tabLayout = (TabLayout) view.findViewById(R.id.tabs_container);
-
         pager = new CategoriesPager(getFragmentManager(), categoriesList);
         viewPager.setAdapter(pager);
         tabLayout.setupWithViewPager(viewPager);
-
         presenter = new CategoryPostsPresenter(getActivity(), this);
         presenter.loadCategories();
 
@@ -67,23 +64,7 @@ public class CategoriesFragment extends Fragment implements CategoryPosts.View {
     @Override
     public void viewCategories(List<String> list) {
         categoriesList.clear();
-        /*Fragment fragment;
-        for(String name : list){
-            if(name.equals("Tech / Programming")){
-                fragment = new TechProgrammingFragment();
-                categoriesList.add(Pair.create(fragment, name));
-            }
-            else if(name.equals("Social skills / Motivation")){
-                fragment = new SocialskillsMotivationFragment();
-                categoriesList.add(Pair.create(fragment, name));
-            }
-            else if(name.equals("Music")){
-                fragment = new MusicFragment();
-                categoriesList.add(Pair.create(fragment, name));
-            }
-        }*/
         categoriesList.addAll(list);
-        //pager.notifyChangeInPosition(list.size());
         pager.notifyDataSetChanged();
     }
 

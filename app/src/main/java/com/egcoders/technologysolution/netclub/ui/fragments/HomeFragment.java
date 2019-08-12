@@ -98,13 +98,11 @@ public class HomeFragment extends Fragment implements Home.View {
             public void onRefresh() {
                 postsList.clear();
                 adapter.notifyDataSetChanged();
+                loadingAnimation.setVisibility(View.VISIBLE);
                 homePresenter.loadPosts();
                 refreshLayout.setRefreshing(false);
             }
         });
-
-
-
         return view;
     }
 
@@ -124,7 +122,6 @@ public class HomeFragment extends Fragment implements Home.View {
                 }
             }
         });
-
     }
 
     @Override

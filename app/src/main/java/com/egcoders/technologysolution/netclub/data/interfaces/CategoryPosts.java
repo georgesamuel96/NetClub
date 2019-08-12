@@ -13,8 +13,8 @@ public interface CategoryPosts {
     }
 
     interface Presenter{
-        void loadPosts(String category);
-        void loadMorePosts(String category);
+        void loadPosts(int category_id);
+        void loadMorePosts(int categoryId);
         void loadCategories();
     }
 }

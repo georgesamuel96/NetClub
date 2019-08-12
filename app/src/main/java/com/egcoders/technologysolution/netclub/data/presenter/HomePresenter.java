@@ -57,18 +57,18 @@ public class HomePresenter implements Home.Presenter {
         userId = preference.getUser().getData().getId();
         disposable = new CompositeDisposable();
         clientApi = ApiManager.getClient().create(ClientApi.class);
-        isLoadFirstTime = true;
     }
 
     @Override
     public void loadPosts() {
+        isLoadFirstTime = true;
+        postList.clear();
         ApiManager.getInstance().showPosts(token, new Callback<PostResponse>() {
             @Override
             public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
                 PostResponse postResponse = response.body();
                 try {
                     if (postResponse.getSuccess()) {
-
                         PostData data = postResponse.getData();
                         nextPage = data.getNext_page_url();
                         postList.addAll(data.getData());
@@ -201,7 +201,6 @@ public class HomePresenter implements Home.Presenter {
                 PostResponse postResponse = response.body();
                 try {
                     if (postResponse.getSuccess()) {
-
                         PostData data = postResponse.getData();
                         nextPage = data.getNext_page_url();
                         postList.clear();

@@ -84,42 +84,6 @@ public class MainActivity extends AppCompatActivity {
         requestOptions.placeholder(R.drawable.profile);
         Glide.with(MainActivity.this).applyDefaultRequestOptions(requestOptions)
                 .load(currentUser.getPhoto_max()).into(headerProfile);
-
-        /*mAuth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance();
-        userInstance = new SaveUserInstance();
-
-        preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
-
-        currentUserId = preferenceConfig.getSharedPrefConfig();
-        final Map<String, Object> currentUserMap = preferenceConfig.getCurrentUser();
-
-        Boolean categorySelected = (Boolean) currentUserMap.get("categorySelected");
-        if (!categorySelected) {
-            sendToCategories();
-        } else {
-
-            firestore.collection("Users").document(currentUserId).collection("selectedCategory")
-                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        int numberCategories = task.getResult().getDocumentChanges().size();
-                        if(numberCategories > 0){
-
-                        }
-                        else{
-                            currentUserMap.put("selectedCategory", false);
-                            preferenceConfig.setCurrentUser(currentUserMap);
-                            sendToCategories();
-                        }
-                    }
-                    else{
-
-                    }
-                }
-            });*/
-
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
             usersFragment = new UsersFragment();
@@ -137,10 +101,6 @@ public class MainActivity extends AppCompatActivity {
                     } else if (menuItem.getItemId() == R.id.categories) {
                         getSupportActionBar().setTitle("Categories");
                         replaceFragment(categoriesFragment);
-                        return true;
-                    } else if (menuItem.getItemId() == R.id.users) {
-                        getSupportActionBar().setTitle("Users");
-                        replaceFragment(usersFragment);
                         return true;
                     } else if (menuItem.getItemId() == R.id.mentors) {
                         getSupportActionBar().setTitle("Mentors");
@@ -161,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configureNavigationDrawer() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        NavigationView navView = (NavigationView) findViewById(R.id.navigation);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        NavigationView navView = findViewById(R.id.navigation);
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {

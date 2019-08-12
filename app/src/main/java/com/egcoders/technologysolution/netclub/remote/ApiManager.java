@@ -222,16 +222,6 @@ public class ApiManager {
         post.enqueue(callback);
     }
 
-    public void savePost(String token, int id, Callback<SavePostResponse> callback){
-        /*Call<SavePostResponse> savePost = service.savePost(token, id);
-        savePost.enqueue(callback);*/
-    }
-
-    public void unSavePost(String token, int id, Callback<SavePostResponse> callback){
-        /*Call<SavePostResponse> unsavePost = service.unSavePost(token, id);
-        unsavePost.enqueue(callback);*/
-    }
-
     public void getSavedPosts(String token, Callback<PostResponse> callback){
         Call<PostResponse> posts = service.getSavedPosts(token);
         posts.enqueue(callback);
@@ -240,5 +230,15 @@ public class ApiManager {
     public void showMoreSavedPosts(String token, String url, Callback<PostResponse> callback){
         Call<PostResponse> post = service.showMoreSavedPosts(token, url);
         post.enqueue(callback);
+    }
+
+    public void showPostsCategory(String token, int category_id, Callback<PostResponse> callback){
+        Call<PostResponse> posts = service.showPostsCategory(token, category_id);
+        posts.enqueue(callback);
+    }
+
+    public void showMorePostsCategory(String token, int category_id, String url, Callback<PostResponse> callback){
+        Call<PostResponse> posts = service.showMorePostsCategory(token, category_id, url);
+        posts.enqueue(callback);
     }
 }

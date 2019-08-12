@@ -29,7 +29,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
     private PostAdapter adapter;
     private ArrayList<Post> postsList = new ArrayList<>();
     private CategoryPosts.Presenter presenter;
-    private String category;
+    private int categoryId;
     private SwipeRefreshLayout refreshLayout;
     private RelativeLayout container;
 
@@ -41,11 +41,11 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
     @Override
     protected void onCreateViewAfterViewStubInflated(View view, Bundle savedInstanceState) {
 
-        container = (RelativeLayout) view.findViewById(R.id.container);
+        container = view.findViewById(R.id.container);
 
-        category = getArguments().getString("category");
-        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        categoryId = getArguments().getInt("category");
+        refreshLayout = view.findViewById(R.id.refreshList);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         adapter = new PostAdapter(getActivity(), postsList, 0);
@@ -53,7 +53,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
         adapter.notifyDataSetChanged();
 
         presenter = new CategoryPostsPresenter(getActivity(), this);
-        presenter.loadPosts(category);
+        presenter.loadPosts(categoryId);
 
         // Get posts when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -63,7 +63,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
 
                 Boolean reachedBottom = !recyclerView.canScrollVertically(1);
                 if(reachedBottom && postsList.size() > 0){
-                    presenter.loadMorePosts(category);
+                    presenter.loadMorePosts(categoryId);
                 }
             }
         });
@@ -74,7 +74,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
             public void onRefresh() {
                 postsList.clear();
                 adapter.notifyDataSetChanged();
-                presenter.loadPosts(category);
+                presenter.loadPosts(categoryId);
                 refreshLayout.setRefreshing(false);
             }
         });

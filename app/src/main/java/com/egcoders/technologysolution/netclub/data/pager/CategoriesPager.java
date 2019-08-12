@@ -27,7 +27,7 @@ public class CategoriesPager extends FragmentStatePagerAdapter {
 
         CategoryPostsFragment fragment = new CategoryPostsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("category", categoriesList.get(i));
+        bundle.putInt("category", i + 1);
         fragment.setArguments(bundle);
         return fragment;
     }

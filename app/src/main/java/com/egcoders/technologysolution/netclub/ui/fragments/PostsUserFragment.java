@@ -82,6 +82,7 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
             public void onRefresh() {
                 postsUserList.clear();
                 adapter.notifyDataSetChanged();
+                loadingAnimation.setVisibility(View.VISIBLE);
                 userPresenter.getUserPosts();
                 refreshLayout.setRefreshing(false);
             }
@@ -134,5 +135,11 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
     @Override
     public void showMoreSavePosts(PostData postData) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        userPresenter.clearDisposal();
     }
 }

@@ -21,6 +21,7 @@ public interface UserProfile {
         void getMorePosts();
         void getUserSavePosts();
         void getMoreSavePosts();
+        void clearDisposal();
 
     }
 }
