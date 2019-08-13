@@ -108,6 +108,7 @@ public class HomeFragment extends Fragment implements Home.View {
 
     @Override
     public void showPosts(PostData data) {
+        postsList.clear();
         postsList.addAll(data.getData());
         if(getActivity() == null)
             return;
@@ -141,5 +142,6 @@ public class HomeFragment extends Fragment implements Home.View {
     public void onDestroy() {
         super.onDestroy();
         homePresenter.clearDisposal();
+        adapter.clearDisposal();
     }
 }

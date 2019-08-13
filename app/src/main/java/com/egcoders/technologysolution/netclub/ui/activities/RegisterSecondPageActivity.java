@@ -61,7 +61,7 @@ public class RegisterSecondPageActivity extends AppCompatActivity implements Reg
 
     private void init() {
         userNameText = findViewById(R.id.name);
-        birthdayText = findViewById(R.id.date);
+        birthdayText = findViewById(R.id.postDate);
         emailText = findViewById(R.id.email);
         phoneText = findViewById(R.id.phone);
         passwordText = findViewById(R.id.password);

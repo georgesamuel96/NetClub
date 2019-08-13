@@ -46,7 +46,7 @@ public class AddComentActivity extends AppCompatActivity implements Comments.Vie
         postId = getIntent().getIntExtra("postId", -1);
 
         noComments = (TextView) findViewById(R.id.noComments);
-        commentEditText = (EditText) findViewById(R.id.comment);
+        commentEditText = (EditText) findViewById(R.id.commentBtn);
         addComment = (ImageView) findViewById(R.id.addComment);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);

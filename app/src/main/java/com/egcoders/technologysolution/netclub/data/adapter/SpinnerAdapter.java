@@ -1,6 +1,5 @@
 package com.egcoders.technologysolution.netclub.data.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +45,7 @@ public class SpinnerAdapter extends BaseAdapter {
         if(convertView == null){
             view = inflater.inflate(R.layout.item_spinner, null);
         }
-        TextView categoryName = (TextView) view.findViewById(R.id.categoryName);
+        TextView categoryName = (TextView) view.findViewById(R.id.category);
         categoryName.setText(list.get(position));
 
         return view;

@@ -3,6 +3,7 @@ package com.egcoders.technologysolution.netclub.data.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -16,17 +17,10 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
-import com.egcoders.technologysolution.netclub.model.post.PostResponse;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
@@ -44,6 +38,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -60,12 +55,14 @@ import javax.annotation.Nullable;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,12 +84,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     private String token;
     private List<Boolean> isChecked;
     private ClientApi clientApi;
+    private CompositeDisposable disposable;
 
     public PostAdapter(Activity activity, List<Post> list, int statue){
         this.postsList = list;
         this.statue = statue;
         this.activity = activity;
         clientApi = ApiManager.getClient().create(ClientApi.class);
+        disposable = new CompositeDisposable();
     }
 
     @NonNull
@@ -129,16 +128,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         myViewHolder.userName.setText(postsList.get(position).getUserData().getName());
 
         // Set user profile
-        RequestOptions requestOptions = new RequestOptions();
-        requestOptions.placeholder(R.drawable.profile);
-        Glide.with(context).applyDefaultRequestOptions(requestOptions).load(postsList.get(position).getUserData().getPhoto_max())
+        Glide.with(context).load(postsList.get(position).getUserData().getPhoto_max())
                 .into(myViewHolder.userImage);
 
         // Check if this post belong to a mentor
-        if(postsList.get(position).getUserData().getUserStatus().equals("user"))
-            myViewHolder.statue.setVisibility(View.GONE);
+       if(postsList.get(position).getUserData().getUserStatus().equals("user"))
+            myViewHolder.statue.setText("");
         else {
-            myViewHolder.statue.setVisibility(View.VISIBLE);
+            myViewHolder.statue.setText(context.getString(R.string.mentor));
         }
 
        // Set time when this post was published
@@ -167,14 +164,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             }
             timeStamp /= time.get(j).first;
         }
-        myViewHolder.date.setVisibility(View.VISIBLE);
 
       // Set popup menu if this post was published wish current user
         if(postsList.get(position).getUserData().getId() != preference.getUser().getData().getId())
-            myViewHolder.deleteBtn.setVisibility(View.INVISIBLE);
+            myViewHolder.deleteBtn.setClickable(false);
        else{
-
-            myViewHolder.deleteBtn.setVisibility(View.VISIBLE);
+            myViewHolder.deleteBtn.setClickable(true);
+            myViewHolder.deleteBtn.setImageResource(R.drawable.dots);
             final PopupMenu popupMenu = new PopupMenu(context, myViewHolder.deleteBtn);
             popupMenu.getMenuInflater().inflate(R.menu.popup_menu_post, popupMenu.getMenu());
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -235,88 +231,69 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
        // Check if this post has image
         if(postsList.get(position).getPhotoUrl() != null){
+           /*Glide.with(context)
+                   .load(postsList.get(position).getPhotoUrl())
+                   .into(myViewHolder.postImage);*/
 
-            Glide.with(context).load(postsList.get(position).getPhotoUrl())
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@android.support.annotation.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-
-                            myViewHolder.imageLoad.setVisibility(View.INVISIBLE);
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-
-                            myViewHolder.imageLoad.setVisibility(View.INVISIBLE);
-                            return false;
-                        }
-                    })
+            Picasso.with(context)
+                    .load(postsList.get(position).getPhotoUrl())
                     .into(myViewHolder.postImage);
+            /*myViewHolder.postImage.getLayoutParams().height = 850;
+            myViewHolder.postImage.requestLayout();*/
 
-            myViewHolder.postImage.setVisibility(View.VISIBLE);
-        }
-        else {
-            myViewHolder.imageLoad.setVisibility(View.GONE);
-            myViewHolder.postImage.setVisibility(View.GONE);
+            /*Glide.with(context)
+                    .asBitmap()
+                    .load(postsList.get(position).getPhotoUrl())
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                           myViewHolder.postImage.setImageBitmap(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                        }
+                    });*/
         }
 
-       // Set category of this post
+
+        // Set category of this post
         myViewHolder.category.setText(postsList.get(position).getCategory());
 
-        // Check if this post has text content
-        if(!postsList.get(position).getContent().equals("")){
-
-            // Set content
-            String content = postsList.get(position).getContent();
-            content = content.substring(0, content.length() - 1);
-            myViewHolder.content.setText(content);
-            myViewHolder.content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-
-                    // Check if the content has more 2 lines
-                    myViewHolder.content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    lines = myViewHolder.content.getLineCount();
-                    if(lines > 2){
-                        myViewHolder.seeMore.setVisibility(View.VISIBLE);
-                    }
-                    else {
-                        myViewHolder.seeMore.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
-
-            myViewHolder.seeMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    myViewHolder.content.setMaxLines(myViewHolder.content.getLineCount() + 1);
-                    myViewHolder.seeMore.setVisibility(View.INVISIBLE);
-                }
-            });
-        }
-        else {
-
-            myViewHolder.content.setVisibility(View.INVISIBLE);
-        }
-
-       // Check if user like this post or not
-        firestore.collection("Posts").document(postsList.get(position).getId() + "")
-                .collection("Likes")
-                .document(preference.getUser().getData().getId() + "")
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        // Set content
+        String content = postsList.get(position).getContent();
+        content = content.substring(0, content.length() - 1);
+        myViewHolder.content.setText(content);
+        myViewHolder.content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(e == null) {
-                    if (documentSnapshot.exists()) {
-                        myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_accent));
-                    } else {
-                        myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_gray));
-                    }
+            public void onGlobalLayout() {
+
+                // Check if the content has more 2 lines
+                myViewHolder.content.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                lines = myViewHolder.content.getLineCount();
+                if(lines > 2){
+                    myViewHolder.seeMore.setText(context.getString(R.string.see_more));
                 }
             }
         });
-        myViewHolder.likeBtn.setVisibility(View.VISIBLE);
+
+        myViewHolder.seeMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myViewHolder.content.setMaxLines(myViewHolder.content.getLineCount() + 1);
+               myViewHolder.seeMore.setText("");
+            }
+        });
+
+       // Check if user like this post or not
+       Observable<Boolean> likeObservable = getLikeObservable(position);
+       DisposableObserver<Boolean> likeObserver = getLikeObserver(myViewHolder);
+        disposable.add(
+                likeObservable
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(likeObserver)
+        );
 
         // Get likes count
         firestore.collection("Posts").document(postsList.get(position).getId() + "")
@@ -327,8 +304,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                         if(e == null) {
                             if (!queryDocumentSnapshots.isEmpty()) {
                                 int count = queryDocumentSnapshots.size();
+                                Log.d(TAG, "onEvent: count: " + count);
                                 myViewHolder.likeNumber.setText(count + " Likes");
-                                likesCount = Integer.toString(count);
+                                Log.d(TAG, "onEvent: size likes: " + count);
                             } else {
                                 myViewHolder.likeNumber.setText("0 Likes");
                             }
@@ -465,6 +443,54 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         });
     }
 
+    private DisposableObserver<Boolean> getLikeObserver(final MyViewHolder myViewHolder) {
+        return new DisposableObserver<Boolean>(){
+
+            @Override
+            public void onNext(Boolean liked) {
+                if(liked)
+                    myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_accent));
+                else
+                    myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_gray));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+    }
+
+    private Observable<Boolean> getLikeObservable(final int position) {
+        return Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(final ObservableEmitter<Boolean> emitter) throws Exception {
+                firestore.collection("Posts").document(postsList.get(position).getId() + "")
+                        .collection("Likes")
+                        .document(preference.getUser().getData().getId() + "")
+                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                if(e == null) {
+                                    if (documentSnapshot.exists()) {
+                                        if(!emitter.isDisposed())
+                                            emitter.onNext(true);
+                                    } else {
+                                        if(!emitter.isDisposed())
+                                            emitter.onNext(false);
+                                    }
+                                }
+                            }
+                        });
+            }
+        });
+    }
+
     private Single<SavePostResponse> getSavePostObservable(int post_id) {
         return clientApi.savePost(token, post_id)
                 .subscribeOn(Schedulers.io())
@@ -475,12 +501,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         return clientApi.unSavePost(token, post_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private boolean findPost(String postId, PostResponse posts) {
-        boolean isExist = false;
-
-        return isExist;
     }
 
     @Override
@@ -504,7 +524,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         private ImageView deleteBtn;
         private ImageView commentBtn;
         private TextView commentNumber;
-        private ProgressBar imageLoad;
 
         public MyViewHolder(View view){
             super(view);
@@ -523,7 +542,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             deleteBtn = view.findViewById(R.id.deleteBtn);
             commentBtn = view.findViewById(R.id.commentBtn);
             commentNumber = view.findViewById(R.id.commentNumber);
-            imageLoad = view.findViewById(R.id.progressBar);
         }
+    }
+
+    public void clearDisposal(){
+        disposable.clear();
     }
 }

@@ -21,7 +21,7 @@ public class AddDateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_date);
 
-        date = (EditText) findViewById(R.id.date);
+        date = (EditText) findViewById(R.id.postDate);
         add = (Button) findViewById(R.id.add_btn);
 
         mentor = new CurrentMentor();

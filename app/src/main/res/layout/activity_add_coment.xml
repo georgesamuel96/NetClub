@@ -42,7 +42,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/comment"
+            android:id="@+id/commentBtn"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_64sdp"
             android:hint="Add comment here"

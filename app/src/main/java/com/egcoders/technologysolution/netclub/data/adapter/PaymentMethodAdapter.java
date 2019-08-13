@@ -46,7 +46,7 @@ public class PaymentMethodAdapter extends BaseAdapter {
         if(convertView == null){
             view = inflater.inflate(R.layout.item_payment_method, null);
             TextView name = (TextView) view.findViewById(R.id.name);
-            ImageView image = (ImageView) view.findViewById(R.id.image);
+            ImageView image = (ImageView) view.findViewById(R.id.postImage);
 
             name.setText(list.get(position).second);
             image.setImageDrawable(context.getResources().getDrawable(list.get(position).first));

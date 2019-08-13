@@ -56,7 +56,7 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
         userName = (TextInputLayout) findViewById(R.id.name);
         userEmail = (TextInputLayout) findViewById(R.id.email);
         userPhone = (TextInputLayout) findViewById(R.id.phone);
-        userBirthday = (TextInputLayout) findViewById(R.id.date);
+        userBirthday = (TextInputLayout) findViewById(R.id.postDate);
         changeBtn = (Button) findViewById(R.id.change);
         resetPass = (TextView) findViewById(R.id.resetPass);
 

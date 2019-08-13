@@ -3,14 +3,18 @@ package com.egcoders.technologysolution.netclub.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.egcoders.technologysolution.netclub.data.interfaces.CategoryPosts;
+import com.egcoders.technologysolution.netclub.data.interfaces.Home;
 import com.egcoders.technologysolution.netclub.data.presenter.CategoryPostsPresenter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.data.adapter.PostAdapter;
@@ -25,13 +29,15 @@ import java.util.List;
  */
 public class CategoryPostsFragment extends ViewstupFragment implements CategoryPosts.View {
 
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private RecyclerView recyclerView;
+    private List<Post> postsList = new ArrayList<>();
     private PostAdapter adapter;
-    private ArrayList<Post> postsList = new ArrayList<>();
-    private CategoryPosts.Presenter presenter;
-    private int categoryId;
     private SwipeRefreshLayout refreshLayout;
-    private RelativeLayout container;
+    private CategoryPosts.Presenter presenter;
+    private TextView textPosts;
+    private LottieAnimationView loadingAnimation;
+    private int categoryId;
 
     @Override
     protected int getViewStubLayoutResource() {
@@ -41,14 +47,15 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
     @Override
     protected void onCreateViewAfterViewStubInflated(View view, Bundle savedInstanceState) {
 
-        container = view.findViewById(R.id.container);
-
         categoryId = getArguments().getInt("category");
-        refreshLayout = view.findViewById(R.id.refreshList);
-        recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
+        textPosts = (TextView) view.findViewById(R.id.textPosts);
+        loadingAnimation= view.findViewById(R.id.loadingAnimation);
+
+        adapter = new PostAdapter(getActivity(), postsList, 0);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
-        adapter = new PostAdapter(getActivity(), postsList, 0);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -74,6 +81,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
             public void onRefresh() {
                 postsList.clear();
                 adapter.notifyDataSetChanged();
+                loadingAnimation.setVisibility(View.VISIBLE);
                 presenter.loadPosts(categoryId);
                 refreshLayout.setRefreshing(false);
             }
@@ -82,17 +90,19 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
 
     @Override
     public void viewPosts(List<Post> list) {
+        postsList.clear();
         postsList.addAll(list);
-        System.out.println("POSt SIZE: " + postsList.size());
         if(getActivity() == null)
             return;
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(postsList.size() == 0){
-                    container.setVisibility(View.VISIBLE);
-                }
+                loadingAnimation.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
+
+                if(postsList.size() == 0){
+                    textPosts.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
