@@ -1,4 +1,4 @@
-package com.egcoders.technologysolution.netclub.data.adapter;
+package com.egcoders.technologysolution.netclub.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;

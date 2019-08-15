@@ -15,7 +15,7 @@ import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.instance.SaveUserInstance;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;
 import com.egcoders.technologysolution.netclub.model.profile.User;
-import com.egcoders.technologysolution.netclub.data.adapter.UserAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.UserAdapter;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;

@@ -1,6 +1,7 @@
 package com.egcoders.technologysolution.netclub.data.interfaces;
 
 import com.egcoders.technologysolution.netclub.model.post.PostData;
+import com.egcoders.technologysolution.netclub.model.post.SavePostData;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 
 public interface UserProfile {
@@ -9,8 +10,8 @@ public interface UserProfile {
         void showUserData(UserData user);
         void showUserPosts(PostData post);
         void showMorePosts(PostData post);
-        void showUserSavePosts(PostData post);
-        void showMoreSavePosts(PostData post);
+        void showUserSavePosts(SavePostData post);
+        void showMoreSavePosts(SavePostData post);
     }
 
     interface Presenter{

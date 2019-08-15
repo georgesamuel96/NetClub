@@ -13,7 +13,7 @@ public class SavePostResponse {
     @SerializedName("error")
     private Object error;
     @SerializedName("data")
-    private Object data;
+    private SavePostData data;
 
     public Integer getStatusCode() {
         return statusCode;
@@ -47,11 +47,11 @@ public class SavePostResponse {
         this.error = error;
     }
 
-    public Object getData() {
+    public SavePostData getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(SavePostData data) {
         this.data = data;
     }
 }

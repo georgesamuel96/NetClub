@@ -18,6 +18,7 @@ import com.egcoders.technologysolution.netclub.data.presenter.UserPresenter;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.data.pager.ViewPagerAdapter;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
+import com.egcoders.technologysolution.netclub.model.post.SavePostData;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -96,12 +97,12 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
     }
 
     @Override
-    public void showUserSavePosts(PostData post) {
+    public void showUserSavePosts(SavePostData post) {
 
     }
 
     @Override
-    public void showMoreSavePosts(PostData post) {
+    public void showMoreSavePosts(SavePostData post) {
 
     }
 }

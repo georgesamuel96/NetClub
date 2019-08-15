@@ -199,6 +199,44 @@ public class CategoryPostsPresenter implements CategoryPosts.Presenter {
                     public Post apply(CheckSavedResponse checkSavedResponse) throws Exception {
                         Log.d(TAG, "apply: " + checkSavedResponse.getSuccess());
                         post.setSaved(checkSavedResponse.getSuccess());
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Likes")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setLikes(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Comments")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setComments(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
                         return post;
                     }
                 });

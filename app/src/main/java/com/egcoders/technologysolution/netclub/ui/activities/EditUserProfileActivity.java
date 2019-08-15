@@ -25,6 +25,7 @@ import com.egcoders.technologysolution.netclub.data.presenter.UserPresenter;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
+import com.egcoders.technologysolution.netclub.model.post.SavePostData;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 
 import java.io.IOException;
@@ -183,12 +184,12 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
     }
 
     @Override
-    public void showUserSavePosts(PostData post) {
+    public void showUserSavePosts(SavePostData post) {
 
     }
 
     @Override
-    public void showMoreSavePosts(PostData post) {
+    public void showMoreSavePosts(SavePostData post) {
 
     }
 

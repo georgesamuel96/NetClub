@@ -7,7 +7,7 @@ import android.util.Pair;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.egcoders.technologysolution.netclub.data.adapter.PaymentMethodAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.PaymentMethodAdapter;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.instance.SaveUserInstance;
 import com.google.firebase.firestore.FirebaseFirestore;

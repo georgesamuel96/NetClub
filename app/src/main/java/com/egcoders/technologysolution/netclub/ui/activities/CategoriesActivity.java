@@ -10,7 +10,7 @@ import com.egcoders.technologysolution.netclub.Utils.Utils;
 import com.egcoders.technologysolution.netclub.data.interfaces.SelectCategory;
 import com.egcoders.technologysolution.netclub.data.presenter.SelectCategoryPresenter;
 import com.egcoders.technologysolution.netclub.model.category.ChooseCategory;
-import com.egcoders.technologysolution.netclub.data.adapter.ChooseCategoryAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.ChooseCategoryAdapter;
 import com.egcoders.technologysolution.netclub.R;
 import java.util.List;
 

@@ -23,7 +23,7 @@ import com.egcoders.technologysolution.netclub.Utils.GetImagePath;
 import com.egcoders.technologysolution.netclub.Utils.Utils;
 import com.egcoders.technologysolution.netclub.data.interfaces.AddPost;
 import com.egcoders.technologysolution.netclub.data.presenter.PostPresenter;
-import com.egcoders.technologysolution.netclub.data.adapter.SpinnerAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.SpinnerAdapter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
 
 import java.io.IOException;
@@ -137,6 +137,7 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
             requestOptions.placeholder(R.drawable.placeholder);
             Glide.with(AddPostActivity.this).applyDefaultRequestOptions(requestOptions).load(post.getPhotoUrl())
                     .into(postImage);
+            imagePath = post.getPhotoUrl();
         }
         else
             postImage.setImageResource(R.drawable.placeholder);
@@ -198,6 +199,7 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
                 break;
             case R.id.deleteImage:
                 postImage.setImageResource(R.drawable.placeholder);
+                imagePath = null;
                 break;
         }
     }

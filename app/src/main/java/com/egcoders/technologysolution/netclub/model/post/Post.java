@@ -11,8 +11,6 @@ public class Post {
     @SerializedName("description")
     private String content;
 
-    private String likeNumber;
-
     @SerializedName("photo")
     private String photoUrl;
 
@@ -45,6 +43,8 @@ public class Post {
     private UserData userData;
 
     private boolean isSaved;
+    private int likes;
+    private int comments;
 
     public Post(){
 
@@ -64,14 +64,6 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getLikeNumber() {
-        return likeNumber;
-    }
-
-    public void setLikeNumber(String likeNumber) {
-        this.likeNumber = likeNumber;
     }
 
     public String getPhotoUrl() {
@@ -200,5 +192,21 @@ public class Post {
 
     public void setSaved(boolean saved) {
         isSaved = saved;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getComments() {
+        return comments;
+    }
+
+    public void setComments(int comments) {
+        this.comments = comments;
     }
 }

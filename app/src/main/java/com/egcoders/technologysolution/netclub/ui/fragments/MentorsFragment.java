@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.egcoders.technologysolution.netclub.model.Mentor;
-import com.egcoders.technologysolution.netclub.data.adapter.MentorAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.MentorAdapter;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.instance.SaveMentorInstance;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;

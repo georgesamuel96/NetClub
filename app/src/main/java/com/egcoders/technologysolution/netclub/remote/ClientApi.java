@@ -112,11 +112,11 @@ public interface ClientApi {
     Single<SavePostResponse> unSavePost(@Header("Authorization") String token, @Field("post_id") int post_id);
 
     @POST("/net-club/api/post/getSaved")
-    Call<PostResponse> getSavedPosts(@Header("Authorization") String token);
+    Call<SavePostResponse> getSavedPosts(@Header("Authorization") String token);
 
     @FormUrlEncoded
     @POST
-    Call<PostResponse> showMoreSavedPosts(@Header("Authorization") String token, @Url String url);
+    Call<SavePostResponse> showMoreSavedPosts(@Header("Authorization") String token, @Url String url);
 
     @FormUrlEncoded
     @POST("/net-club/api/post/checkSaved")

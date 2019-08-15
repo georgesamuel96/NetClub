@@ -1,15 +1,16 @@
-package com.egcoders.technologysolution.netclub.data.adapter;
+package com.egcoders.technologysolution.netclub.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.util.Pair;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +20,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
@@ -231,31 +230,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
        // Check if this post has image
         if(postsList.get(position).getPhotoUrl() != null){
-           /*Glide.with(context)
-                   .load(postsList.get(position).getPhotoUrl())
-                   .into(myViewHolder.postImage);*/
-
             Picasso.with(context)
                     .load(postsList.get(position).getPhotoUrl())
                     .into(myViewHolder.postImage);
-            /*myViewHolder.postImage.getLayoutParams().height = 850;
-            myViewHolder.postImage.requestLayout();*/
-
-            /*Glide.with(context)
-                    .asBitmap()
-                    .load(postsList.get(position).getPhotoUrl())
-                    .into(new CustomTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                           myViewHolder.postImage.setImageBitmap(resource);
-                        }
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-                        }
-                    });*/
         }
-
 
         // Set category of this post
         myViewHolder.category.setText(postsList.get(position).getCategory());
@@ -263,7 +241,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         // Set content
         String content = postsList.get(position).getContent();
         content = content.substring(0, content.length() - 1);
-        myViewHolder.content.setText(content);
+        content = checkURLs(content);
+        myViewHolder.content.setText(Html.fromHtml(content));
+        myViewHolder.content.setMovementMethod(LinkMovementMethod.getInstance());
         myViewHolder.content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -296,26 +276,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         );
 
         // Get likes count
-        firestore.collection("Posts").document(postsList.get(position).getId() + "")
-                .collection("Likes")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if(e == null) {
-                            if (!queryDocumentSnapshots.isEmpty()) {
-                                int count = queryDocumentSnapshots.size();
-                                Log.d(TAG, "onEvent: count: " + count);
-                                myViewHolder.likeNumber.setText(count + " Likes");
-                                Log.d(TAG, "onEvent: size likes: " + count);
-                            } else {
-                                myViewHolder.likeNumber.setText("0 Likes");
-                            }
-                        }
-                        else{
-                            System.out.println("error " + e.getMessage());
-                        }
-                    }
-                });
+        myViewHolder.likeNumber.setText(postsList.get(position).getLikes() + " Likes");
 
         // User like or dislike post
         myViewHolder.likeBtn.setOnClickListener(new View.OnClickListener() {
@@ -334,6 +295,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                                     .collection("Likes").document(preference.getUser().getData().getId() + "").
                                     delete();
                             myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_gray));
+                            postsList.get(position).setLikes(postsList.get(position).getLikes() - 1);
+                            myViewHolder.likeNumber.setText(postsList.get(position).getLikes() + " Likes");
                         } else {
                             Map<String, Object> likesMap = new HashMap<>();
                             likesMap.put("timestamp", Long.toString(System.currentTimeMillis()));
@@ -342,6 +305,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                                     .collection("Likes").document(preference.getUser().getData().getId() + "")
                                     .set(likesMap);
                             myViewHolder.likeBtn.setImageDrawable(ContextCompat.getDrawable(context, R.mipmap.ic_like_accent));
+                            postsList.get(position).setLikes(postsList.get(position).getLikes() + 1);
+                            myViewHolder.likeNumber.setText(postsList.get(position).getLikes() + " Likes");
                         }
                     }
                 });
@@ -350,25 +315,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         });
 
         // Get Comments count
-        firestore.collection("Posts").document(postsList.get(position).getId() + "")
-                .collection("Comments")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if(e == null) {
-                            if (!queryDocumentSnapshots.isEmpty()) {
-                                int count = queryDocumentSnapshots.size();
-                                myViewHolder.commentNumber.setText(count + " Comments");
-                                likesCount = Integer.toString(count);
-                            } else {
-                                myViewHolder.commentNumber.setText("0 Comments");
-                            }
-                        }
-                        else{
-                            System.out.println("error " + e.getMessage());
-                        }
-                    }
-                });
+        myViewHolder.commentNumber.setText(postsList.get(position).getComments() + " Comments");
 
         // Open comments of this post
         myViewHolder.commentNumber.setOnClickListener(new View.OnClickListener() {
@@ -547,5 +494,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
     public void clearDisposal(){
         disposable.clear();
+    }
+
+    private String checkURLs(String content){
+        String finalContent = "";
+        String url = "";
+        for(int i=0; i < content.length(); i++){
+            if(content.charAt(i) == ' '){
+                if(Patterns.WEB_URL.matcher("https://" + url).matches()){
+                    finalContent = finalContent + String.format("<a href=\"%s\">" + url + "</a> ", "https://" + url) + ' ';
+                }
+                else {
+                    finalContent = finalContent + url + ' ';
+                }
+                url = "";
+            }
+            else {
+                url = url + content.charAt(i);
+            }
+        }
+        if(url.length() > 0){
+            if(Patterns.WEB_URL.matcher("https://" + url).matches()){
+                finalContent = finalContent + String.format("<a href=\"%s\">" + url + "</a> ", "https://" + url);
+            }
+            else {
+                finalContent = finalContent + url;
+            }
+        }
+
+        return finalContent;
     }
 }

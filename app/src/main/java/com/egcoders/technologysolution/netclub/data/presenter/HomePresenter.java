@@ -12,16 +12,19 @@ import com.egcoders.technologysolution.netclub.model.post.PostData;
 import com.egcoders.technologysolution.netclub.model.post.PostResponse;
 import com.egcoders.technologysolution.netclub.remote.ApiManager;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Function;
@@ -47,6 +50,7 @@ public class HomePresenter implements Home.Presenter {
     private ClientApi clientApi;
     private final int userId;
     private boolean isLoadFirstTime;
+    private FirebaseFirestore firestore;
 
     public HomePresenter(Activity activity, Home.View view){
         this.view = view;
@@ -57,6 +61,7 @@ public class HomePresenter implements Home.Presenter {
         userId = preference.getUser().getData().getId();
         disposable = new CompositeDisposable();
         clientApi = ApiManager.getClient().create(ClientApi.class);
+        firestore = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -139,7 +144,6 @@ public class HomePresenter implements Home.Presenter {
                 .subscribeWith(new DisposableObserver<Post>() {
                     @Override
                     public void onNext(Post post) {
-                        Log.d(TAG, "onNext: post id: " + post.getId());
                         int position = postList.indexOf(post);
                         if (position == -1) {
                             return;
@@ -149,7 +153,7 @@ public class HomePresenter implements Home.Presenter {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d(TAG, "onError: load posts: " + e.getMessage());
                     }
 
                     @Override
@@ -177,8 +181,45 @@ public class HomePresenter implements Home.Presenter {
                 .map(new Function<CheckSavedResponse, Post>() {
                     @Override
                     public Post apply(CheckSavedResponse checkSavedResponse) throws Exception {
-                        Log.d(TAG, "apply: " + checkSavedResponse.getSuccess());
                         post.setSaved(checkSavedResponse.getSuccess());
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Likes")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setLikes(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Comments")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setComments(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
                         return post;
                     }
                 });

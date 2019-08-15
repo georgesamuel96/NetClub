@@ -10,14 +10,21 @@ import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
 import com.egcoders.technologysolution.netclub.model.post.PostResponse;
+import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 import com.egcoders.technologysolution.netclub.remote.ApiManager;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.google.android.gms.common.api.Api;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -44,6 +51,7 @@ public class UserPresenter implements UserProfile.Presenter {
     private ConnectableObservable<List<Post>> observableListPost;
     private ClientApi clientApi;
     private boolean isLoadFirstTime;
+    private FirebaseFirestore firestore;
 
     public UserPresenter(Activity activity, UserProfile.View view){
         this.view = view;
@@ -54,6 +62,7 @@ public class UserPresenter implements UserProfile.Presenter {
         clientApi = ApiManager.getClient().create(ClientApi.class);
         isLoadFirstTime = true;
         disposable = new CompositeDisposable();
+        firestore = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -199,6 +208,44 @@ public class UserPresenter implements UserProfile.Presenter {
                     public Post apply(CheckSavedResponse checkSavedResponse) throws Exception {
                         Log.d(TAG, "apply: " + checkSavedResponse.getSuccess());
                         post.setSaved(checkSavedResponse.getSuccess());
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Likes")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setLikes(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
+                        firestore.collection("Posts").document(post.getId() + "")
+                                .collection("Comments")
+                                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                        if(e == null) {
+                                            int count;
+                                            if (!queryDocumentSnapshots.isEmpty()) {
+                                                count = queryDocumentSnapshots.size();
+                                            } else {
+                                                count = 0;
+                                            }
+                                            post.setComments(count);
+                                        }
+                                        else{
+                                            System.out.println("error " + e.getMessage());
+                                        }
+                                    }
+                                });
                         return post;
                     }
                 });
@@ -244,15 +291,14 @@ public class UserPresenter implements UserProfile.Presenter {
 
     @Override
     public void getUserSavePosts() {
-        ApiManager.getInstance().getSavedPosts(token, new Callback<PostResponse>() {
+        ApiManager.getInstance().getSavedPosts(token, new Callback<SavePostResponse>() {
             @Override
-            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
-                PostResponse postResponse = response.body();
+            public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
+                SavePostResponse postResponse = response.body();
                 try{
                     if(postResponse.getSuccess()){
-                        PostData postData = postResponse.getData();
-                        nextPageUserSaves = postData.getNext_page_url();
-                        view.showUserSavePosts(postData);
+                        nextPageUserSaves = (String)postResponse.getData().getNextPageUrl();
+                        view.showUserSavePosts(postResponse.getData());
                     }
                     else{
                         Log.v("Get post", postResponse.getMessage());
@@ -264,7 +310,7 @@ public class UserPresenter implements UserProfile.Presenter {
             }
 
             @Override
-            public void onFailure(Call<PostResponse> call, Throwable t) {
+            public void onFailure(Call<SavePostResponse> call, Throwable t) {
                 String message;
                 if(t instanceof SocketTimeoutException)
                     message = "Please try again.";
@@ -279,16 +325,15 @@ public class UserPresenter implements UserProfile.Presenter {
     public void getMoreSavePosts() {
         if(nextPageUserSaves == null)
             return;
-        nextPageUserSaves = Utils.getUrl(nextPageUserSaves);
-        ApiManager.getInstance().showMoreSavedPosts(token, nextPageUserSaves, new Callback<PostResponse>() {
+        nextPageUserPosts = Utils.getUrl(nextPageUserPosts);
+        ApiManager.getInstance().showMoreSavedPosts(token, nextPageUserPosts, new Callback<SavePostResponse>() {
             @Override
-            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
-                PostResponse postResponse = response.body();
+            public void onResponse(Call<SavePostResponse> call, Response<SavePostResponse> response) {
+                SavePostResponse postResponse = response.body();
                 try {
                     if (postResponse.getSuccess()) {
-                        PostData data = postResponse.getData();
-                        view.showMoreSavePosts(data);
-                        nextPageUserSaves = data.getNext_page_url();
+                        nextPageUserSaves = (String)postResponse.getData().getNextPageUrl();
+                        view.showMoreSavePosts(postResponse.getData());
                     } else {
                         Log.v("Get post", postResponse.getMessage());
                     }
@@ -299,7 +344,7 @@ public class UserPresenter implements UserProfile.Presenter {
             }
 
             @Override
-            public void onFailure(Call<PostResponse> call, Throwable t) {
+            public void onFailure(Call<SavePostResponse> call, Throwable t) {
                 String message;
                 if(t instanceof SocketTimeoutException)
                     message = "Please try again.";

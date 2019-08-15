@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.egcoders.technologysolution.netclub.model.post.Comment;
-import com.egcoders.technologysolution.netclub.data.adapter.CommentAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.CommentAdapter;
 import com.egcoders.technologysolution.netclub.data.interfaces.Comments;
 import com.egcoders.technologysolution.netclub.data.presenter.CommentsPresenter;
 import com.egcoders.technologysolution.netclub.R;

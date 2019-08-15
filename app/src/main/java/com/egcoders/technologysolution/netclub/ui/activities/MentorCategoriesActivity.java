@@ -7,7 +7,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.egcoders.technologysolution.netclub.model.category.ChooseCategory;
-import com.egcoders.technologysolution.netclub.data.adapter.ChooseCategoryAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.ChooseCategoryAdapter;
 import com.egcoders.technologysolution.netclub.model.CurrentMentor;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.instance.SaveMentorInstance;

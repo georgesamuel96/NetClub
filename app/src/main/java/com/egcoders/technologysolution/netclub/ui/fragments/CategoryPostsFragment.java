@@ -3,21 +3,18 @@ package com.egcoders.technologysolution.netclub.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.egcoders.technologysolution.netclub.data.interfaces.CategoryPosts;
-import com.egcoders.technologysolution.netclub.data.interfaces.Home;
 import com.egcoders.technologysolution.netclub.data.presenter.CategoryPostsPresenter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
-import com.egcoders.technologysolution.netclub.data.adapter.PostAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.PostAdapter;
 import com.egcoders.technologysolution.netclub.R;
 
 import java.util.ArrayList;

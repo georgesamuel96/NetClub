@@ -10,16 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.egcoders.technologysolution.netclub.model.post.Post;
-import com.egcoders.technologysolution.netclub.data.adapter.PostAdapter;
+import com.egcoders.technologysolution.netclub.ui.adapter.PostAdapter;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.data.presenter.UserPresenter;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
+import com.egcoders.technologysolution.netclub.model.post.SavePostData;
+import com.egcoders.technologysolution.netclub.model.post.SavePostDetail;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 
 import java.util.ArrayList;
@@ -111,8 +112,15 @@ public class SavesUserFragment extends Fragment implements UserProfile.View {
     }
 
     @Override
-    public void showUserSavePosts(PostData postData) {
-        postsUserList.addAll(postData.getData());
+    public void showUserSavePosts(SavePostData postData) {
+        for(SavePostDetail postDetail : postData.getData()){
+            UserData userData = postDetail.getUser();
+            userData.setPhoto_max(getProfileUrl(userData.getPhoto_max()));
+            Post post = postDetail.getPost();
+            post.setUserData(userData);
+            post.setSaved(true);
+            postsUserList.add(post);
+        }
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -125,8 +133,14 @@ public class SavesUserFragment extends Fragment implements UserProfile.View {
     }
 
     @Override
-    public void showMoreSavePosts(PostData postData) {
-        postsUserList.addAll(postData.getData());
+    public void showMoreSavePosts(SavePostData postData) {
+        for(SavePostDetail postDetail : postData.getData()){
+            UserData userData = postDetail.getUser();
+            Post post = postDetail.getPost();
+            post.setSaved(true);
+            post.setUserData(userData);
+            postsUserList.add(post);
+        }
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -135,5 +149,9 @@ public class SavesUserFragment extends Fragment implements UserProfile.View {
         });
     }
 
-
+    private String getProfileUrl(String url){
+        int index = url.indexOf("net-club");
+        url = "http://www.egcoders.net/" + url.substring(index, url.length());
+        return url;
+    }
 }

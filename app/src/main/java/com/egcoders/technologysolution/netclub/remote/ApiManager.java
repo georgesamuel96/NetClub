@@ -222,13 +222,13 @@ public class ApiManager {
         post.enqueue(callback);
     }
 
-    public void getSavedPosts(String token, Callback<PostResponse> callback){
-        Call<PostResponse> posts = service.getSavedPosts(token);
+    public void getSavedPosts(String token, Callback<SavePostResponse> callback){
+        Call<SavePostResponse> posts = service.getSavedPosts(token);
         posts.enqueue(callback);
     }
 
-    public void showMoreSavedPosts(String token, String url, Callback<PostResponse> callback){
-        Call<PostResponse> post = service.showMoreSavedPosts(token, url);
+    public void showMoreSavedPosts(String token, String url, Callback<SavePostResponse> callback){
+        Call<SavePostResponse> post = service.showMoreSavedPosts(token, url);
         post.enqueue(callback);
     }
 
