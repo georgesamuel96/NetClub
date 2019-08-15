@@ -1,7 +1,7 @@
 # NetClub
 # Features
 Retrofit <br>
-Offline storage <br>
+RxJava <br>
 Firebase Storage <br>
 Glide library <br>
 Shared Preference <br>
