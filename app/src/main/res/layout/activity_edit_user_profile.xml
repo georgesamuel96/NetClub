@@ -146,7 +146,7 @@
 
         </android.support.design.widget.TextInputLayout>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/change"
             android:layout_width="@dimen/_99sdp"
             android:layout_height="@dimen/_30sdp"

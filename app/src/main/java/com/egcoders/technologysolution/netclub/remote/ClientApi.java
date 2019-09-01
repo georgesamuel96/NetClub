@@ -94,6 +94,20 @@ public interface ClientApi {
                                         @Part("title") RequestBody title, @Part ("description")RequestBody description,
                                         @Part ("category_id")RequestBody category_id, @Part MultipartBody.Part image);
 
+    @Headers({"Accept: application/json"})
+    @Multipart
+    @POST("/net-club/api/post/update")
+    Call<UpdatePostResponse> updatePostWithoutDelete(@Header("Authorization") String token, @Part("post_id") int post_id,
+                                        @Part("title") RequestBody title, @Part ("description")RequestBody description,
+                                        @Part ("category_id")RequestBody category_id, @Part ("photo")RequestBody photo_url);
+
+    @Headers({"Accept: application/json"})
+    @Multipart
+    @POST("/net-club/api/post/update")
+    Call<UpdatePostResponse> updatePostWithoutPhoto(@Header("Authorization") String token, @Part("post_id") int post_id,
+                                                    @Part("title") RequestBody title, @Part ("description")RequestBody description,
+                                                    @Part ("category_id")RequestBody category_id);
+
 
     @FormUrlEncoded
     @POST("/net-club/api/post/user")

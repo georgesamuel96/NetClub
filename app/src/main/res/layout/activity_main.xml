@@ -11,6 +11,7 @@
     android:background="@color/white">
 
     <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,13 +20,13 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_42sdp"
             android:background="@color/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <FrameLayout
+            android:id="@+id/frame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/frame"
             android:layout_below="@id/toolbar"
             android:layout_marginBottom="@dimen/_38sdp">
 
@@ -36,11 +37,11 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_38sdp"
             android:layout_alignParentBottom="true"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_menu"
+            android:background="@color/colorPrimary"
             app:itemIconTint="@color/nav_bottom_item_colors"
             app:itemTextColor="@color/nav_bottom_item_colors"
-            android:background="@color/colorPrimary">
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_menu">
 
         </android.support.design.widget.BottomNavigationView>
 

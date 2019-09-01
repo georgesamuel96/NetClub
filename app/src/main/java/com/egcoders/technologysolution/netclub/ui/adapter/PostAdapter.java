@@ -19,7 +19,10 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
+import com.egcoders.technologysolution.netclub.Utils.CheckNetwork;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.egcoders.technologysolution.netclub.ui.activities.AddComentActivity;
@@ -122,7 +125,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull final MyViewHolder myViewHolder, final int position) {
 
         myViewHolder.setIsRecyclable(false);
-
+        if(!CheckNetwork.hasNetwork(context)){
+            Toast.makeText(context, context.getString(R.string.network_connection), Toast.LENGTH_LONG).show();
+            return;
+        }
         // Set user name
         myViewHolder.userName.setText(postsList.get(position).getUserData().getName());
 
@@ -229,7 +235,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         }
 
        // Check if this post has image
-        if(postsList.get(position).getPhotoUrl() != null){
+        if(postsList.get(position).getPhotoUrl() != null && postsList.get(position).getPhotoUrl().contains("uploads/posts")){
             Picasso.with(context)
                     .load(postsList.get(position).getPhotoUrl())
                     .into(myViewHolder.postImage);

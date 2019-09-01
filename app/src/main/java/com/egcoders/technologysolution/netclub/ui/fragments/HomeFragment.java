@@ -53,10 +53,10 @@ public class HomeFragment extends Fragment implements Home.View {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshList);
-        textPosts = (TextView) view.findViewById(R.id.textPosts);
+        fab = view.findViewById(R.id.fab);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        refreshLayout = view.findViewById(R.id.refreshList);
+        textPosts = view.findViewById(R.id.textPosts);
         loadingAnimation= view.findViewById(R.id.loadingAnimation);
 
         homePresenter = new HomePresenter(getActivity(), this);

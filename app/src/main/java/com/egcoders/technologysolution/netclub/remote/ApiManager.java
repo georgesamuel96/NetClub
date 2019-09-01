@@ -40,23 +40,19 @@ public class ApiManager {
     private static ApiManager apiManager;
     private static final String BASE_URL = "http://www.egcoders.net/";
     private static Retrofit retrofit = null;
-    private static int REQUEST_TIMEOUT = 60;
+    private static int REQUEST_TIMEOUT = 5;
     private static OkHttpClient okHttpClient;
     private ApiManager(){
-
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.level(HttpLoggingInterceptor.Level.BODY);
-
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .build();
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         service = retrofit.create(ClientApi.class);
     }
 
@@ -76,9 +72,9 @@ public class ApiManager {
 
     private static void initOkHttp() {
         OkHttpClient.Builder httpClient = new OkHttpClient().newBuilder()
-                .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
-                .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
-                .writeTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS);
+                .connectTimeout(REQUEST_TIMEOUT, TimeUnit.MINUTES)
+                .readTimeout(REQUEST_TIMEOUT, TimeUnit.MINUTES)
+                .writeTimeout(REQUEST_TIMEOUT, TimeUnit.MINUTES);
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         httpClient.addInterceptor(interceptor);
@@ -195,21 +191,27 @@ public class ApiManager {
     }
 
     public void updatePost(String token, String image, Post post, Callback<UpdatePostResponse> callback){
-
-        MultipartBody.Part postImage = null;
-
         RequestBody title = RequestBody.create(MediaType.parse("multipart/form-data"), post.getCategory());
         RequestBody content = RequestBody.create(MediaType.parse("multipart/form-data"), post.getContent());
         RequestBody categoryId = RequestBody.create(MediaType.parse("multipart/form-data"), post.getCategoryId() + "");
 
-        if(image != null){
+        if(image != null && image.contains("uploads/posts")){
+            Call<UpdatePostResponse> postCall = service.updatePostWithoutPhoto(token, post.getId(), title, content, categoryId);
+            postCall.enqueue(callback);
+        }
+        else if(image != null && !image.equals("http://www.egcoders.net/net-club/")){
+            MultipartBody.Part postImage = null;
             File file = new File(image);
             RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             postImage = MultipartBody.Part.createFormData("photo", file.getName(), requestFile);
+            Call<UpdatePostResponse> postCall = service.updatePost(token, post.getId(), title, content, categoryId, postImage);
+            postCall.enqueue(callback);
         }
-
-        Call<UpdatePostResponse> postCall = service.updatePost(token, post.getId(), title, content, categoryId, postImage);
-        postCall.enqueue(callback);
+        else{
+            RequestBody photo_url = RequestBody.create(MediaType.parse("multipart/form-data"), "1");
+            Call<UpdatePostResponse> postCall = service.updatePostWithoutDelete(token, post.getId(), title, content, categoryId, photo_url);
+            postCall.enqueue(callback);
+        }
     }
 
     public void showPostsUser(String token, int id, Callback<PostResponse> callback){

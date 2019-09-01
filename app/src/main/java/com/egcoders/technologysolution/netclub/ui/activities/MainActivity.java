@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -12,11 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.egcoders.technologysolution.netclub.R;
+import com.egcoders.technologysolution.netclub.Utils.CheckNetwork;
 import com.egcoders.technologysolution.netclub.data.instance.SaveUserInstance;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
@@ -38,21 +41,16 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private android.support.v7.widget.Toolbar toolbar;
     private NavigationView navView;
-    private FirebaseAuth mAuth;
     private BottomNavigationView bottomNavigationView;
     private HomeFragment homeFragment;
     private CategoriesFragment categoriesFragment;
-    private UsersFragment usersFragment;
     private MentorsFragment mentorsFragment;
-    private FirebaseFirestore firestore;
-    private SaveUserInstance userInstance;
-    private SharedPreferenceConfig preferenceConfig;
     private View headerView;
     private TextView headerEmail, headerName;
     private CircleImageView headerProfile;
-    private String currentUserId;
     private Boolean finishActivity = false;
     private UserSharedPreference preference;
+    private RelativeLayout container;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navView = findViewById(R.id.navigation);
         bottomNavigationView = findViewById(R.id.bottom_menu);
+        container  = findViewById(R.id.container);
 
         configureNavigationDrawer();
 
@@ -86,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 .load(currentUser.getPhoto_max()).into(headerProfile);
             homeFragment = new HomeFragment();
             categoriesFragment = new CategoriesFragment();
-            usersFragment = new UsersFragment();
             mentorsFragment = new MentorsFragment();
 
             replaceFragment(homeFragment);
@@ -172,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
                     drawerLayout.closeDrawers();
                     return true;
                 }
-
                 return false;
             }
         });
@@ -193,11 +190,9 @@ public class MainActivity extends AppCompatActivity {
         finishActivity = true;
         Intent i = new Intent(MainActivity.this, CategoriesActivity.class);
         startActivity(i);
-
     }
 
     private void sendToLogin() {
-
         Intent i = new Intent(MainActivity.this, LoginActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
@@ -206,27 +201,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-
         if(this.drawerLayout.isDrawerOpen(GravityCompat.START)){
             this.drawerLayout.closeDrawer(GravityCompat.START);
         }
         else {
             super.onBackPressed();
-
-            //userInstance.setIsActivityFirstLoad(true);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        /*FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser == null){
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            finish();
-        }*/
+        if(!CheckNetwork.hasNetwork(MainActivity.this)){
+            Snackbar.make(container, R.string.network_connection, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

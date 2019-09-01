@@ -90,7 +90,7 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/addPost"
                 android:layout_width="95dp"
                 android:layout_height="37dp"

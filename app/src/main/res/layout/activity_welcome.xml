@@ -2,10 +2,11 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activities.WelcomeActivity"
-    android:background="@drawable/bg">
+    android:background="@drawable/bg"
+    tools:context=".ui.activities.WelcomeActivity">
 
     <ImageView
         android:id="@+id/imageView4"
@@ -57,8 +58,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_fileName="welcome_loading.json" />
+        app:lottie_fileName="welcome_loading.json"
+        app:lottie_loop="true" />
 
     <TextView
         android:id="@+id/textView7"

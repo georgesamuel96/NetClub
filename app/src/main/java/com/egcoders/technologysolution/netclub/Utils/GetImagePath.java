@@ -12,7 +12,6 @@ public class GetImagePath {
 
     @SuppressLint("NewApi")
     public static String getRealPathFromURI_API19(Context context, Uri uri){
-
         String filePath = "";
         String wholeID = DocumentsContract.getDocumentId(uri);
         String id = wholeID.split(":")[1];

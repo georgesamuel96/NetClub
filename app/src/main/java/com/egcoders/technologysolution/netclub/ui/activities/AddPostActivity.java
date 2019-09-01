@@ -57,7 +57,6 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
 
         editPostId = getIntent().getIntExtra("postId", -1);
         init();
-
     }
 
     private void init() {
@@ -186,8 +185,6 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
         }
     }
 
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -202,5 +199,12 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
                 imagePath = null;
                 break;
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Utils utils = new Utils(AddPostActivity.this);
+        utils.checkStoragePermission();
     }
 }

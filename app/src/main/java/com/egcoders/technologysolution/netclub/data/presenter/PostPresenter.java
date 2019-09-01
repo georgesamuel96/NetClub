@@ -136,11 +136,8 @@ public class PostPresenter implements AddPost.Presenter {
         ApiManager.getInstance().updatePost(token, post.getPhotoUrl(), post, new Callback<UpdatePostResponse>() {
             @Override
             public void onResponse(Call<UpdatePostResponse> call, Response<UpdatePostResponse> response) {
-
                 utils.hideProgressDialog();
-
                 UpdatePostResponse postResponse = response.body();
-
                 if(postResponse.getSuccess()){
                     activity.finish();
                 }

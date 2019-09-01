@@ -1,10 +1,16 @@
 package com.egcoders.technologysolution.netclub.Utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+
+import static com.egcoders.technologysolution.netclub.Utils.Permissions.REQUEST_CODE;
 
 public class Utils {
 
@@ -12,7 +18,7 @@ public class Utils {
     private AlertDialog.Builder alertBuilder;
     private Activity activity;
 
-    public Utils(Activity activity){
+    public Utils(Activity activity) {
         this.activity = activity;
         progressDialog = new ProgressDialog(activity);
         alertBuilder = new AlertDialog.Builder(activity);
@@ -25,11 +31,11 @@ public class Utils {
         progressDialog.show();
     }
 
-    public void hideProgressDialog(){
+    public void hideProgressDialog() {
         progressDialog.dismiss();
     }
 
-    public void showMessage(String title, String message){
+    public void showMessage(String title, String message) {
 
         alertBuilder.setTitle(title);
         alertBuilder.setMessage(message);
@@ -49,9 +55,25 @@ public class Utils {
     }
 
     public static String getUrl(String nextPage) {
+        if (nextPage.length() > 23) {
+            String url = nextPage.substring(23);
+            return url;
+        } else {
+            return "";
+        }
+    }
 
-        String url = nextPage.substring(23);
+    public void checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-        return url;
+                } else {
+                    ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE);
+                }
+            } else {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE);
+            }
+        }
     }
 }
