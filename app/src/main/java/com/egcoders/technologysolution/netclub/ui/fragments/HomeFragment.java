@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.egcoders.technologysolution.netclub.Utils.RunLayoutAnimation;
 import com.egcoders.technologysolution.netclub.data.interfaces.Home;
 import com.egcoders.technologysolution.netclub.data.presenter.HomePresenter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
@@ -114,8 +115,7 @@ public class HomeFragment extends Fragment implements Home.View {
             @Override
             public void run() {
                 loadingAnimation.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
-
+                RunLayoutAnimation.run(recyclerView, getContext());
                 if(postsList.size() == 0){
                     textPosts.setVisibility(View.VISIBLE);
                 }
@@ -131,7 +131,7 @@ public class HomeFragment extends Fragment implements Home.View {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                RunLayoutAnimation.run(recyclerView, getContext());
             }
         });
     }

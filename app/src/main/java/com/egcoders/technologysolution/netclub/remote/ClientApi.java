@@ -62,8 +62,9 @@ public interface ClientApi {
     @Headers({"Accept: application/json"})
     @Multipart
     @POST("/net-club/api/post/create")
-    Call<CreatePostResponse> createPost(@Header("Authorization") String token, @Part("title") RequestBody title, @Part ("description")RequestBody description,
-                                        @Part ("category_id")RequestBody category_id, @Part MultipartBody.Part image);
+    Call<CreatePostResponse> createPost(@Header("Authorization") String token, @Part("title") RequestBody title,
+                                        @Part ("description")RequestBody description, @Part ("category_id")RequestBody category_id,
+                                        @Part MultipartBody.Part image);
 
     @FormUrlEncoded
     @POST("/net-club/api/forgetPassword")
@@ -146,4 +147,18 @@ public interface ClientApi {
     Call<PostResponse> showMorePostsCategory(@Header("Authorization") String token,
                                              @Field("category_id") int category_id,
                                              @Url String url);
+
+    @Headers({"Accept: application/json"})
+    @Multipart
+    @POST("/net-club/api/update")
+    Call<UserResponse> updateUserProfile(@Header("Authorization") String token, @Part("name") RequestBody name,
+                                               @Part ("birth_date")RequestBody birth_date, @Part ("phone")RequestBody category_id,
+                                               @Part MultipartBody.Part image);
+
+    @Headers({"Accept: application/json"})
+    @Multipart
+    @POST("/net-club/api/update")
+    Call<UserResponse> updateUserProfileWithoutPhoto(@Header("Authorization") String token, @Part("name") RequestBody name,
+                                                           @Part ("birth_date")RequestBody birth_date,
+                                                           @Part ("phone")RequestBody category_id);
 }

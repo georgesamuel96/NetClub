@@ -129,12 +129,10 @@ public class MainActivity extends AppCompatActivity {
                 int itemId = menuItem.getItemId();
 
                 if (itemId == R.id.profile) {
-
                     Intent i = new Intent(MainActivity.this, UserProfileActivity.class);
                     startActivity(i);
                 }
                 else if(itemId == R.id.change_category){
-
                     sendToCategories();
                 }
                 else if (itemId == R.id.about_us) {
@@ -187,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendToCategories() {
-        finishActivity = true;
+        //finishActivity = true;
         Intent i = new Intent(MainActivity.this, CategoriesActivity.class);
         startActivity(i);
     }
@@ -220,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
         if(finishActivity){
             finish();
         }

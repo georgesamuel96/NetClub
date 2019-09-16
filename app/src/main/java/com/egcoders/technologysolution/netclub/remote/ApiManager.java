@@ -2,7 +2,6 @@ package com.egcoders.technologysolution.netclub.remote;
 
 import com.egcoders.technologysolution.netclub.model.category.Category;
 import com.egcoders.technologysolution.netclub.model.category.CategorySelected;
-import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
 import com.egcoders.technologysolution.netclub.model.post.CreatePostResponse;
 import com.egcoders.technologysolution.netclub.model.category.DeleteCategoriesResponse;
 import com.egcoders.technologysolution.netclub.model.post.DeletePostResponse;
@@ -18,16 +17,12 @@ import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,6 +37,8 @@ public class ApiManager {
     private static Retrofit retrofit = null;
     private static int REQUEST_TIMEOUT = 5;
     private static OkHttpClient okHttpClient;
+    public static final String PHOTO_URL = "http://www.egcoders.net/net-club/";
+
     private ApiManager(){
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.level(HttpLoggingInterceptor.Level.BODY);
@@ -242,5 +239,24 @@ public class ApiManager {
     public void showMorePostsCategory(String token, int category_id, String url, Callback<PostResponse> callback){
         Call<PostResponse> posts = service.showMorePostsCategory(token, category_id, url);
         posts.enqueue(callback);
+    }
+
+    public void updateUserProfile(String token, String image, UserData user, Callback<UserResponse> callback){
+        RequestBody name = RequestBody.create(MediaType.parse("multipart/form-data"), user.getName());
+        RequestBody birthDate = RequestBody.create(MediaType.parse("multipart/form-data"), user.getBirth_date());
+        RequestBody phone = RequestBody.create(MediaType.parse("multipart/form-data"), user.getPhone());
+
+        if(image != null && image.contains(PHOTO_URL)){
+            Call<UserResponse> postCall = service.updateUserProfileWithoutPhoto(token, name, birthDate, phone);
+            postCall.enqueue(callback);
+        }
+        else {
+            MultipartBody.Part postImage = null;
+            File file = new File(image);
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            postImage = MultipartBody.Part.createFormData("photo", file.getName(), requestFile);
+            Call<UserResponse> postCall = service.updateUserProfile(token, name, birthDate, phone, postImage);
+            postCall.enqueue(callback);
+        }
     }
 }

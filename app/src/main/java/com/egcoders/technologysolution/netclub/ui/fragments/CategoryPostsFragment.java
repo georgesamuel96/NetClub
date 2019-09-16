@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.egcoders.technologysolution.netclub.Utils.RunLayoutAnimation;
 import com.egcoders.technologysolution.netclub.data.interfaces.CategoryPosts;
 import com.egcoders.technologysolution.netclub.data.presenter.CategoryPostsPresenter;
 import com.egcoders.technologysolution.netclub.model.post.Post;
@@ -95,7 +96,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
             @Override
             public void run() {
                 loadingAnimation.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                RunLayoutAnimation.run(recyclerView, getContext());
 
                 if(postsList.size() == 0){
                     textPosts.setVisibility(View.VISIBLE);
@@ -112,7 +113,7 @@ public class CategoryPostsFragment extends ViewstupFragment implements CategoryP
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                RunLayoutAnimation.run(recyclerView, getContext());
             }
         });
     }

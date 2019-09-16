@@ -34,13 +34,13 @@ public class ActivateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activate_account);
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Verify Code");
 
-        codeText = (EditText) findViewById(R.id.code);
-        verifyBtn = (Button) findViewById(R.id.verifyBtn);
-        message = (TextView) findViewById(R.id.message);
+        codeText = findViewById(R.id.code);
+        verifyBtn = findViewById(R.id.verifyBtn);
+        message = findViewById(R.id.message);
 
         String email = getIntent().getStringExtra("email");
         message.setText("Code sent to your email\n" + email);

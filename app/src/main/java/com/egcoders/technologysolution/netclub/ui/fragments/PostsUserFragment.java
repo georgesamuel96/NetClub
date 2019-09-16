@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.egcoders.technologysolution.netclub.Utils.RunLayoutAnimation;
+import com.egcoders.technologysolution.netclub.data.interfaces.Message;
 import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.ui.adapter.PostAdapter;
 import com.egcoders.technologysolution.netclub.R;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PostsUserFragment extends Fragment implements UserProfile.View {
+public class PostsUserFragment extends Fragment implements UserProfile.View, Message {
 
     private UserProfile.Presenter userPresenter;
     private RecyclerView recyclerView;
@@ -60,7 +62,7 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
         tvNoMorePosts = view.findViewById(R.id.tv_no_posts);
         loadingAnimation = view.findViewById(R.id.loadingAnimation);
         initRecyclerView();
-        userPresenter = new UserPresenter(getActivity(), this);
+        userPresenter = new UserPresenter(getActivity(), this, this);
         userPresenter.getUserPosts();
         // Get posts when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -108,7 +110,7 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
             @Override
             public void run() {
                 loadingAnimation.setVisibility(View.GONE);
-                adapter.notifyDataSetChanged();
+                RunLayoutAnimation.run(recyclerView, getContext());
                 if(postsUserList.size() == 0)
                     tvNoMorePosts.setVisibility(View.VISIBLE);
             }
@@ -121,7 +123,7 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                RunLayoutAnimation.run(recyclerView, getContext());
             }
         });
     }
@@ -140,5 +142,15 @@ public class PostsUserFragment extends Fragment implements UserProfile.View {
     public void onDestroy() {
         super.onDestroy();
         userPresenter.clearDisposal();
+    }
+
+    @Override
+    public void successMessage(UserData data) {
+
+    }
+
+    @Override
+    public void failMessage() {
+
     }
 }

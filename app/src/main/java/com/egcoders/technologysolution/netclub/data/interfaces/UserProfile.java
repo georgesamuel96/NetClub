@@ -16,8 +16,7 @@ public interface UserProfile {
 
     interface Presenter{
         void showUserData();
-        void setUserDataWithPhoto(UserData user, String imagePath);
-        void setUserDataNoPhoto(UserData user);
+        void setUserData(UserData user, String imagePath);
         void getUserPosts();
         void getMorePosts();
         void getUserSavePosts();

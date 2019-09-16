@@ -1,26 +1,32 @@
 package com.egcoders.technologysolution.netclub.ui.activities;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.egcoders.technologysolution.netclub.R;
+import com.egcoders.technologysolution.netclub.Utils.GetImagePath;
+import com.egcoders.technologysolution.netclub.data.interfaces.Message;
 import com.egcoders.technologysolution.netclub.data.presenter.UserPresenter;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
@@ -35,8 +41,9 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class EditUserProfileActivity extends AppCompatActivity implements UserProfile.View {
+public class EditUserProfileActivity extends AppCompatActivity implements UserProfile.View, Message {
 
+    private static final String TAG = EditUserProfileActivity.class.getSimpleName();
     private CircleImageView userImage;
     private TextInputLayout userName, userPhone;
     private TextInputLayout userBirthday, userEmail;
@@ -47,21 +54,25 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
     private static final int IMG_REQUEST = 777;
     private Bitmap bitmap = null;
     private String imagePath = null;
+    private LottieAnimationView animationView;
+    private LottieAnimationView loadingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_user_profile);
 
-        userImage = (CircleImageView) findViewById(R.id.userProfile);
-        userName = (TextInputLayout) findViewById(R.id.name);
-        userEmail = (TextInputLayout) findViewById(R.id.email);
-        userPhone = (TextInputLayout) findViewById(R.id.phone);
-        userBirthday = (TextInputLayout) findViewById(R.id.postDate);
-        changeBtn = (Button) findViewById(R.id.change);
-        resetPass = (TextView) findViewById(R.id.resetPass);
+        userImage = findViewById(R.id.userProfile);
+        userName = findViewById(R.id.name);
+        userEmail = findViewById(R.id.email);
+        userPhone = findViewById(R.id.phone);
+        userBirthday = findViewById(R.id.postDate);
+        changeBtn = findViewById(R.id.change);
+        resetPass = findViewById(R.id.resetPass);
+        animationView = findViewById(R.id.successAnimation);
+        loadingView = findViewById(R.id.loadingAnimation);
 
-        presenter = new UserPresenter(this, this);
+        presenter = new UserPresenter(this, this, this);
         preference = new UserSharedPreference(this);
 
         userEmail.getEditText().setFocusable(false);
@@ -112,13 +123,8 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
                 user.setPhoto_max(preference.getUser().getData().getPhoto_max());
 
                 if(!missingValue(name, birthday, phone)) {
-
-                    if (imagePath != null) {
-                        presenter.setUserDataWithPhoto(user, imagePath);
-                    }
-                    else {
-                        presenter.setUserDataNoPhoto(user);
-                    }
+                    loadingView.setVisibility(View.VISIBLE);
+                    presenter.setUserData(user, imagePath);
                 }
             }
         });
@@ -161,7 +167,6 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
 
     @Override
     public void showUserData(UserData user) {
-
         userEmail.getEditText().setText(user.getEmail());
         userBirthday.getEditText().setText(user.getBirth_date());
         userPhone.getEditText().setText(user.getPhone());
@@ -171,6 +176,7 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
         requestOptions.placeholder(R.drawable.profile);
         Glide.with(EditUserProfileActivity.this).applyDefaultRequestOptions(requestOptions).load(user.getPhoto_max())
                 .into(userImage);
+        imagePath = user.getPhoto_max();
     }
 
     @Override
@@ -207,7 +213,13 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
         if(requestCode == IMG_REQUEST && resultCode == RESULT_OK  && data != null)
         {
             Uri path = data.getData();
-            imagePath = getRealPathFromURI_API19(data.getData());
+            if (Build.VERSION.SDK_INT < 11) {
+                imagePath = GetImagePath.getRealPathFromURI_BelowAPI11(getApplicationContext(), path);
+            } else if (Build.VERSION.SDK_INT < 19) {
+                imagePath = GetImagePath.getRealPathFromURI_API11to18(getApplicationContext(), path);
+            } else {
+                imagePath = GetImagePath.getRealPathFromURI_API19(getApplicationContext(), data.getData());
+            }
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), path);
@@ -218,26 +230,39 @@ public class EditUserProfileActivity extends AppCompatActivity implements UserPr
         }
     }
 
-    @SuppressLint("NewApi")
-    public String getRealPathFromURI_API19(Uri uri){
+    @Override
+    public void successMessage(final UserData data) {
+        loadingView.setVisibility(View.GONE);
+        animationView.setVisibility(View.VISIBLE);
+        animationView.playAnimation();
+        animationView.addAnimatorListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
 
-        String filePath = "";
+            }
 
-        String wholeID = DocumentsContract.getDocumentId(uri);
-        String id = wholeID.split(":")[1];
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animationView.setVisibility(View.GONE);
+                userName.getEditText().setText(data.getName());
+                userPhone.getEditText().setText(data.getPhone());
+                userBirthday.getEditText().setText(data.getBirth_date());
+            }
 
-        String[] column = { MediaStore.Images.Media.DATA };
-        String sel = MediaStore.Images.Media._ID + "=?";
+            @Override
+            public void onAnimationCancel(Animator animation) {
 
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column,
-                sel, new String[]{ id }, null);
+            }
 
-        int columnIndex = cursor.getColumnIndex(column[0]);
+            @Override
+            public void onAnimationRepeat(Animator animation) {
 
-        if (cursor.moveToFirst()) {
-            filePath = cursor.getString(columnIndex);
-        }
-        cursor.close();
-        return filePath;
+            }
+        });
+    }
+
+    @Override
+    public void failMessage() {
+
     }
 }

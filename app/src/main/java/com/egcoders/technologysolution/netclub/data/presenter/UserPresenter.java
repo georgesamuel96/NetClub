@@ -1,9 +1,12 @@
 package com.egcoders.technologysolution.netclub.data.presenter;
 
 import android.app.Activity;
+import android.os.Parcelable;
 import android.util.Log;
 
+import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.Utils.Utils;
+import com.egcoders.technologysolution.netclub.data.interfaces.Message;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
 import com.egcoders.technologysolution.netclub.model.post.CheckSavedResponse;
@@ -11,7 +14,9 @@ import com.egcoders.technologysolution.netclub.model.post.Post;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
 import com.egcoders.technologysolution.netclub.model.post.PostResponse;
 import com.egcoders.technologysolution.netclub.model.post.SavePostResponse;
+import com.egcoders.technologysolution.netclub.model.post.UpdatePostResponse;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
+import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 import com.egcoders.technologysolution.netclub.remote.ApiManager;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.google.android.gms.common.api.Api;
@@ -52,10 +57,13 @@ public class UserPresenter implements UserProfile.Presenter {
     private ClientApi clientApi;
     private boolean isLoadFirstTime;
     private FirebaseFirestore firestore;
+    private Utils utils;
+    private Message message;
 
-    public UserPresenter(Activity activity, UserProfile.View view){
+    public UserPresenter(Activity activity, UserProfile.View view, Message message){
         this.view = view;
         this.activity = activity;
+        this.message = message;
         preference = new UserSharedPreference(activity.getApplicationContext());
         token = preference.getUser().getData().getToken();
         user_id = preference.getUser().getData().getId();
@@ -63,6 +71,7 @@ public class UserPresenter implements UserProfile.Presenter {
         isLoadFirstTime = true;
         disposable = new CompositeDisposable();
         firestore = FirebaseFirestore.getInstance();
+        utils = new Utils(activity);
     }
 
     @Override
@@ -73,13 +82,38 @@ public class UserPresenter implements UserProfile.Presenter {
     }
 
     @Override
-    public void setUserDataWithPhoto(UserData user, String imagePath) {
+    public void setUserData(UserData user, String imagePath) {
+        ApiManager.getInstance().updateUserProfile(token, imagePath, user, new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
 
-    }
+                if(response.isSuccessful() && response.body() != null){
+                    UserResponse userResponse = response.body();
+                    if(userResponse.getSuccess()){
+                        userResponse.getData().setSelectedCategory(true);
+                        userResponse.getData().setToken(token);
+                        preference.setUser(userResponse);
+                        message.successMessage(userResponse.getData());
+                    }
+                    else {
+                        message.failMessage();
+                    }
+                }
+                else{
+                    utils.showMessage(activity.getString(R.string.update_user_profile), activity.getString(R.string.something_wrong));
+                }
+            }
 
-    @Override
-    public void setUserDataNoPhoto(UserData user) {
-
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                String message;
+                if(t instanceof SocketTimeoutException)
+                    message = "Please try again.";
+                else
+                    message = t.getMessage();
+                utils.showMessage(activity.getString(R.string.update_user_profile), message);
+            }
+        });
     }
 
     @Override

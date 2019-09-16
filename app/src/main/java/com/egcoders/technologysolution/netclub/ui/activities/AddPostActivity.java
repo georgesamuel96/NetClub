@@ -174,7 +174,8 @@ public class AddPostActivity extends AppCompatActivity implements AddPost.View, 
             } else if (Build.VERSION.SDK_INT < 19) {
                 imagePath = GetImagePath.getRealPathFromURI_API11to18(getApplicationContext(), path);
             } else {
-                imagePath = GetImagePath.getRealPathFromURI_API19(getApplicationContext(), data.getData());            }
+                imagePath = GetImagePath.getRealPathFromURI_API19(getApplicationContext(), data.getData());
+            }
 
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), path);

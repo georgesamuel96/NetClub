@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;
+import com.egcoders.technologysolution.netclub.data.interfaces.Message;
 import com.egcoders.technologysolution.netclub.data.presenter.UserPresenter;
 import com.egcoders.technologysolution.netclub.data.interfaces.UserProfile;
 import com.egcoders.technologysolution.netclub.data.pager.ViewPagerAdapter;
@@ -23,7 +24,7 @@ import com.egcoders.technologysolution.netclub.model.profile.UserData;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class UserProfileActivity extends AppCompatActivity implements UserProfile.View {
+public class UserProfileActivity extends AppCompatActivity implements UserProfile.View, Message {
 
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
@@ -50,7 +51,7 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         setupTabLayout();
         viewPager.setCurrentItem(0);
 
-        userPresenter = new UserPresenter(this, this);
+        userPresenter = new UserPresenter(this, this, this);
         userPresenter.showUserData();
 
         editBtn.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +104,16 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
     @Override
     public void showMoreSavePosts(SavePostData post) {
+
+    }
+
+    @Override
+    public void successMessage(UserData data) {
+
+    }
+
+    @Override
+    public void failMessage() {
 
     }
 }
