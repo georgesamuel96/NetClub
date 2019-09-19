@@ -4,10 +4,12 @@ package com.egcoders.technologysolution.netclub.ui.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,15 +34,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class MentorsFragment extends Fragment {
 
-    private FloatingActionButton fab;
+    /*private FloatingActionButton fab;
     private FirebaseFirestore firestore;
     //private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
@@ -51,20 +51,32 @@ public class MentorsFragment extends Fragment {
     private ArrayList<Mentor> mentorList = new ArrayList<>();
     private MentorAdapter adapter;
     private SharedPreferenceConfig preferenceConfig;
-    private TextView textComingSoon;
+    private TextView textComingSoon;*/
+    private static final String TAG = MentorsFragment.class.getSimpleName();
 
     public MentorsFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_mentors, container, false);
-
-        firestore = FirebaseFirestore.getInstance();
+        Log.d(TAG, "onCreateView");
+        /*firestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         saveMentorInstance = new SaveMentorInstance();
 
@@ -158,12 +170,12 @@ public class MentorsFragment extends Fragment {
             });
             progressBar.setVisibility(View.INVISIBLE);
 
-        }
+        }*/
 
         return view;
     }
 
-    private void loadMoreMentors() {
+    /*private void loadMoreMentors() {
 
         progressBar.setVisibility(View.VISIBLE);
         Query query = firestore.collection("Mentors")
@@ -207,6 +219,6 @@ public class MentorsFragment extends Fragment {
 
     private void addMentor() {
         getActivity().startActivity(new Intent(getContext(), AddMentorActivity.class));
-    }
+    }*/
 
 }

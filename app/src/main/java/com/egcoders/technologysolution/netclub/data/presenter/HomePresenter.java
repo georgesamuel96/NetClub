@@ -42,7 +42,7 @@ public class HomePresenter implements Home.Presenter {
     private Activity activity;
     private UserSharedPreference preference;
     private Utils utils;
-    private String nextPage;
+    public static String nextPage;
     private final String token;
     private CompositeDisposable disposable;
     private ConnectableObservable<List<Post>> observableListPost;

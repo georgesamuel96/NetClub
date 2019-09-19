@@ -4,11 +4,13 @@ package com.egcoders.technologysolution.netclub.ui.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.model.post.PostData;
 import com.egcoders.technologysolution.netclub.ui.activities.AddPostActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,37 +50,45 @@ public class HomeFragment extends Fragment implements Home.View {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        init(view);
+
+        return view;
+    }
+
+    private void init(View view){
         fab = view.findViewById(R.id.fab);
         recyclerView = view.findViewById(R.id.recyclerView);
         refreshLayout = view.findViewById(R.id.refreshList);
         textPosts = view.findViewById(R.id.textPosts);
-        loadingAnimation= view.findViewById(R.id.loadingAnimation);
-
+        loadingAnimation = view.findViewById(R.id.loadingAnimation);
         homePresenter = new HomePresenter(getActivity(), this);
-
-        adapter = new PostAdapter(getActivity(), postsList, 0);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        homePresenter = new HomePresenter(getActivity(), this);
-
-        homePresenter.loadPosts();
-
+        initRV();
+        if(HomePresenter.nextPage == null && postsList.size() == 0) {
+            homePresenter.loadPosts();
+        }
+        else {
+            loadingAnimation.setVisibility(View.GONE);
+        }
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), AddPostActivity.class));
             }
         });
+    }
 
+    private void initRV(){
+        adapter = new PostAdapter(getActivity(), postsList, 0);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         // Get posts when reached to then end of recycler view
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -85,12 +96,11 @@ public class HomeFragment extends Fragment implements Home.View {
                 super.onScrolled(recyclerView, dx, dy);
 
                 Boolean reachedBottom = !recyclerView.canScrollVertically(1);
-                if(reachedBottom && postsList.size() > 0){
+                if (reachedBottom && postsList.size() > 0) {
                     homePresenter.loadMorePosts();
                 }
             }
         });
-
         // Refresh Data
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -102,7 +112,6 @@ public class HomeFragment extends Fragment implements Home.View {
                 refreshLayout.setRefreshing(false);
             }
         });
-        return view;
     }
 
     @Override
