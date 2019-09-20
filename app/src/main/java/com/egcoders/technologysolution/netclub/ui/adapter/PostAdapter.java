@@ -182,7 +182,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
 
-                    // Delete AddPost
+                    // Delete Post
                     if(item.getItemId() == R.id.delete){
 
                         utils.showProgressDialog("Delete post", "Loading");

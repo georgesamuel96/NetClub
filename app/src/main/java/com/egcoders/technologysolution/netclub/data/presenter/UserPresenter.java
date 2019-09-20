@@ -2,6 +2,7 @@ package com.egcoders.technologysolution.netclub.data.presenter;
 
 import android.app.Activity;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.egcoders.technologysolution.netclub.R;
@@ -20,6 +21,8 @@ import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 import com.egcoders.technologysolution.netclub.remote.ApiManager;
 import com.egcoders.technologysolution.netclub.remote.ClientApi;
 import com.google.android.gms.common.api.Api;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -27,7 +30,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -93,6 +98,7 @@ public class UserPresenter implements UserProfile.Presenter {
                         userResponse.getData().setSelectedCategory(true);
                         userResponse.getData().setToken(token);
                         preference.setUser(userResponse);
+                        updateFirebase(userResponse.getData());
                         message.successMessage(userResponse.getData());
                     }
                     else {
@@ -114,6 +120,25 @@ public class UserPresenter implements UserProfile.Presenter {
                 utils.showMessage(activity.getString(R.string.update_user_profile), message);
             }
         });
+    }
+
+    private void updateFirebase(UserData data) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", data.getName());
+        user.put("profile_url", data.getPhoto_max());
+        user.put("userStatue", data.getUserStatus());
+        firestore.collection("Users").document(String.valueOf(data.getId())).update(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()){
+
+                        }
+                        else {
+
+                        }
+                    }
+                });
     }
 
     @Override

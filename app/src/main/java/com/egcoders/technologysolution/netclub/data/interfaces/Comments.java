@@ -8,7 +8,8 @@ public interface Comments {
 
     interface View{
         void showComments(List<Comment> list);
-        void getComment();
+        void showComment(Comment comment);
+        void showError(String message);
     }
 
     interface Presenter{

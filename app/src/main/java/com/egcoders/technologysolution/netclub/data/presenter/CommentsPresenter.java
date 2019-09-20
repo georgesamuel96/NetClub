@@ -3,7 +3,10 @@ package com.egcoders.technologysolution.netclub.data.presenter;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.egcoders.technologysolution.netclub.R;
 import com.egcoders.technologysolution.netclub.Utils.SharedPreferenceConfig;
+import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
+import com.egcoders.technologysolution.netclub.Utils.Utils;
 import com.egcoders.technologysolution.netclub.data.interfaces.Comments;
 import com.egcoders.technologysolution.netclub.model.post.Comment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,13 +29,13 @@ public class CommentsPresenter implements Comments.Presenter {
     private List<Comment> commentsList = new ArrayList<>();
     private volatile int count;
     private Thread[] threads = new Thread[2];
-    private SharedPreferenceConfig preferenceConfig;
+    private UserSharedPreference preference;
 
     public CommentsPresenter(Activity activity, Comments.View view){
         this.activity = activity;
         this.view = view;
         firestore = FirebaseFirestore.getInstance();
-        preferenceConfig = new SharedPreferenceConfig(activity.getApplicationContext());
+        preference = new UserSharedPreference(activity.getApplicationContext());
     }
 
     @Override
@@ -62,9 +65,7 @@ public class CommentsPresenter implements Comments.Presenter {
                                         Map<String, Object> userMap = task.getResult().getData();
                                         comment.setUserName(userMap.get("name").toString());
                                         comment.setUserProfile(userMap.get("profile_url").toString());
-                                        comment.setUserProfileThumb(userMap.get("profileThumb").toString());
                                         comment.setUserStatue(userMap.get("userStatue").toString());
-
                                         commentsList.add(comment);
                                         count--;
                                     }
@@ -91,22 +92,30 @@ public class CommentsPresenter implements Comments.Presenter {
     }
 
     @Override
-    public void addComment(String comment, String postId) {
+    public void addComment(final String content, String postId) {
+        if(content.length() == 0)
+            return;
         Map<String, Object> commentMap = new HashMap<>();
-        String random = Long.toString(System.currentTimeMillis());
+        final String random = Long.toString(System.currentTimeMillis());
         commentMap.put("timeStamp", random);
-        commentMap.put("userId", preferenceConfig.getSharedPrefConfig());
-        commentMap.put("content", comment);
-
+        commentMap.put("userId", String.valueOf(preference.getUser().getData().getId()));
+        commentMap.put("content", content);
         firestore.collection("Posts").document(postId).collection("Comments").document(random)
                 .set(commentMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
-
+                    Comment comment = new Comment();
+                    comment.setUserId(String.valueOf(preference.getUser().getData().getId()));
+                    comment.setUserName(preference.getUser().getData().getName());
+                    comment.setUserProfile(preference.getUser().getData().getPhoto_max());
+                    comment.setTimeStamp(random);
+                    comment.setContent(content);
+                    comment.setUserStatue(preference.getUser().getData().getUserStatus());
+                    view.showComment(comment);
                 }
                 else {
-
+                    view.showError(task.getException().getMessage());
                 }
             }
         });

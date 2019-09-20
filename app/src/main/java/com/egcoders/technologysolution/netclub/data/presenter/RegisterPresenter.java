@@ -2,6 +2,8 @@ package com.egcoders.technologysolution.netclub.data.presenter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+
 import com.egcoders.technologysolution.netclub.ui.activities.ActivateAccountActivity;
 import com.egcoders.technologysolution.netclub.Utils.Utils;
 import com.egcoders.technologysolution.netclub.remote.MainApplication;
@@ -10,8 +12,14 @@ import com.egcoders.technologysolution.netclub.data.interfaces.Register;
 import com.egcoders.technologysolution.netclub.model.profile.UserData;
 import com.egcoders.technologysolution.netclub.model.profile.UserResponse;
 import com.egcoders.technologysolution.netclub.remote.ApiManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,13 +31,14 @@ public class RegisterPresenter implements Register.Presenter {
     private Register.View view;
     private UserSharedPreference preference;
     private Utils utils;
-
+    private FirebaseFirestore firestore;
 
     public RegisterPresenter(Activity activity, Register.View view){
         this.activity = activity;
         this.view = view;
         preference = new UserSharedPreference(activity.getApplicationContext());
         utils = new Utils(activity);
+        firestore = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -45,6 +54,7 @@ public class RegisterPresenter implements Register.Presenter {
                 if(userResponse.getSuccess()){
 
                     utils.hideProgressDialog();
+                    addUserToFirebase(userResponse.getData());
                     login(user);
                 }
                 else {
@@ -68,6 +78,25 @@ public class RegisterPresenter implements Register.Presenter {
                    message = t.getMessage();
 
                 utils.showMessage("Register", message);
+            }
+        });
+    }
+
+    private void addUserToFirebase(UserData data) {
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", data.getName());
+        user.put("profile_url", data.getPhoto_max());
+        user.put("userStatue", data.getUserStatus());
+        firestore.collection("Users").document(String.valueOf(data.getId())).set(user)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+
+                }
+                else {
+
+                }
             }
         });
     }

@@ -9,7 +9,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.egcoders.technologysolution.netclub.Utils.UserSharedPreference;
+import com.egcoders.technologysolution.netclub.Utils.Utils;
 import com.egcoders.technologysolution.netclub.model.post.Comment;
+import com.egcoders.technologysolution.netclub.model.profile.UserData;
 import com.egcoders.technologysolution.netclub.ui.adapter.CommentAdapter;
 import com.egcoders.technologysolution.netclub.data.interfaces.Comments;
 import com.egcoders.technologysolution.netclub.data.presenter.CommentsPresenter;
@@ -31,42 +34,46 @@ public class AddComentActivity extends AppCompatActivity implements Comments.Vie
     private int postId;
     private TextView noComments;
     private EditText commentEditText;
-    private SharedPreferenceConfig preferenceConfig;
+    private UserSharedPreference preference;
     private ImageView addComment;
+    private Utils utils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_coment);
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        init();
+    }
+
+    private void init() {
+        postId = getIntent().getIntExtra("postId", -1);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Comments");
+        noComments = findViewById(R.id.noComments);
+        commentEditText = findViewById(R.id.commentBtn);
+        addComment = findViewById(R.id.addComment);
+        initRV();
+        presenter = new CommentsPresenter(this, this);
+        utils = new Utils(this);
+        presenter.getComments(String.valueOf(postId));
+        preference = new UserSharedPreference(AddComentActivity.this);
+        addComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addComment.setClickable(false);
+                presenter.addComment(commentEditText.getText().toString(), String.valueOf(postId));
+            }
+        });
+    }
 
-        postId = getIntent().getIntExtra("postId", -1);
-
-        noComments = (TextView) findViewById(R.id.noComments);
-        commentEditText = (EditText) findViewById(R.id.commentBtn);
-        addComment = (ImageView) findViewById(R.id.addComment);
-
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+    private void initRV() {
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         adapter = new CommentAdapter(commentList);
         recyclerView.setAdapter(adapter);
-
-        presenter = new CommentsPresenter(this, this);
-
-        //presenter.getComments(postId);
-
-        preferenceConfig = new SharedPreferenceConfig(this);
-
-        addComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getComment();
-            }
-        });
     }
 
     @Override
@@ -92,26 +99,16 @@ public class AddComentActivity extends AppCompatActivity implements Comments.Vie
     }
 
     @Override
-    public void getComment() {
-        String commentText = commentEditText.getText().toString().trim();
-        if(commentText.equals("")){
-            return;
-        }
-        //presenter.addComment(commentText, postId);
-
-        Comment comment = new Comment();
-        comment.setUserId(preferenceConfig.getSharedPrefConfig());
-        comment.setContent(commentText);
-        comment.setTimeStamp(Long.toString(System.currentTimeMillis()));
-        Map<String, Object> userMap = preferenceConfig.getCurrentUser();
-        comment.setUserProfile(userMap.get("profile_url").toString());
-        comment.setUserProfileThumb(userMap.get("profileThumb").toString());
-        comment.setUserName(userMap.get("name").toString());
-        comment.setUserStatue(userMap.get("userStatue").toString());
-        commentList.add(comment);
-        if(commentList.size() == 1)
-            noComments.setVisibility(View.GONE);
-        adapter.notifyDataSetChanged();
+    public void showComment(Comment comment) {
         commentEditText.setText("");
+        commentList.add(comment);
+        adapter.notifyDataSetChanged();
+        addComment.setClickable(true);
+    }
+
+    @Override
+    public void showError(String message) {
+        utils.showMessage(getString(R.string.add_comment), message);
+        addComment.setClickable(true);
     }
 }
