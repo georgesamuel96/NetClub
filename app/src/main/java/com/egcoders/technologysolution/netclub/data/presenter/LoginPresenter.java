@@ -114,14 +114,13 @@ public class LoginPresenter implements Login.Presenter {
     }
 
     private void sendToMain(){
-
         utils.hideProgressDialog();
         Intent intent = new Intent(activity, MainActivity.class);
         activity.startActivity(intent);
+        activity.finish();
     }
 
     private void sendToChooseCategory(){
-
         utils.hideProgressDialog();
         Intent intent = new Intent(activity, CategoriesActivity.class);
         activity.startActivity(intent);
@@ -129,7 +128,6 @@ public class LoginPresenter implements Login.Presenter {
     }
 
     private void sendToActivateAccount(String email){
-
         utils.hideProgressDialog();
         Intent intent = new Intent(activity, ActivateAccountActivity.class);
         intent.putExtra("email", email);

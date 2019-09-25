@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends AppCompatActivity implements UserProfile.View, Message {
 
+    private static final String TAG = UserProfileActivity.class.getSimpleName();
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private TabLayout tabLayout;
@@ -39,21 +41,8 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        viewPager = findViewById(R.id.viewPager);
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout = findViewById(R.id.tabLayout);
-        userImage = findViewById(R.id.userImage);
-        userName = findViewById(R.id.userName);
-        editBtn = findViewById(R.id.editBtn);
-
-        tabLayout.setupWithViewPager(viewPager);
+        init();
         setupTabLayout();
-        viewPager.setCurrentItem(0);
-
-        userPresenter = new UserPresenter(this, this, this);
-        userPresenter.showUserData();
-
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,8 +52,19 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         });
     }
 
-    private void setupTabLayout() {
+    private void init() {
+        viewPager = findViewById(R.id.viewPager);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        tabLayout = findViewById(R.id.tabLayout);
+        userImage = findViewById(R.id.userImage);
+        userName = findViewById(R.id.userName);
+        editBtn = findViewById(R.id.editBtn);
+        userPresenter = new UserPresenter(this, this, this);
+    }
 
+    private void setupTabLayout() {
+        tabLayout.setupWithViewPager(viewPager);
         TextView customTab1 = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         TextView customTab2 = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         customTab1.setText(getString(R.string.posts));
@@ -73,13 +73,11 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
         customTab2.setText(getString(R.string.saved));
         customTab2.setBackgroundResource(R.color.transparent);
         tabLayout.getTabAt(1).setCustomView(customTab2);
-
-
+        viewPager.setCurrentItem(0);
     }
 
     @Override
     public void showUserData(UserData user) {
-
         userName.setText(user.getName());
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.placeholder(R.drawable.profile);
@@ -89,31 +87,32 @@ public class UserProfileActivity extends AppCompatActivity implements UserProfil
 
     @Override
     public void showUserPosts(PostData post) {
-
     }
 
     @Override
     public void showMorePosts(PostData post) {
-
     }
 
     @Override
     public void showUserSavePosts(SavePostData post) {
-
     }
 
     @Override
     public void showMoreSavePosts(SavePostData post) {
-
     }
 
     @Override
     public void successMessage(UserData data) {
-
     }
 
     @Override
     public void failMessage() {
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userPresenter.showUserData();
+        Log.d(TAG, "onStart");
     }
 }

@@ -360,11 +360,12 @@ public class UserPresenter implements UserProfile.Presenter {
                         view.showUserSavePosts(postResponse.getData());
                     }
                     else{
-                        Log.v("Get post", postResponse.getMessage());
+                        view.showUserSavePosts(null);
+                        Log.d(TAG, "onResponse: " + postResponse.getMessage());
                     }
                 }
                 catch (Exception e){
-                    Log.v("Exception", e.getMessage());
+                    Log.d(TAG, "onResponse: Exception: " + e.getMessage());
                 }
             }
 

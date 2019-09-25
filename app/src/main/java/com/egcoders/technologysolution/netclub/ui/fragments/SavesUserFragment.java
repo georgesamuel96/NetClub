@@ -84,7 +84,8 @@ public class SavesUserFragment extends Fragment implements UserProfile.View, Mes
             public void onRefresh() {
                 postsUserList.clear();
                 adapter.notifyDataSetChanged();
-                userPresenter.getUserPosts();
+                loadingAnimation.setVisibility(View.VISIBLE);
+                userPresenter.getUserSavePosts();
                 refreshLayout.setRefreshing(false);
             }
         });
@@ -115,6 +116,11 @@ public class SavesUserFragment extends Fragment implements UserProfile.View, Mes
 
     @Override
     public void showUserSavePosts(SavePostData postData) {
+        if(postData == null){
+            loadingAnimation.setVisibility(View.GONE);
+            tvNoMorePosts.setVisibility(View.VISIBLE);
+            return;
+        }
         for(SavePostDetail postDetail : postData.getData()){
             UserData userData = postDetail.getUser();
             userData.setPhoto_max(getProfileUrl(userData.getPhoto_max()));
@@ -127,9 +133,8 @@ public class SavesUserFragment extends Fragment implements UserProfile.View, Mes
             @Override
             public void run() {
                 loadingAnimation.setVisibility(View.GONE);
+                tvNoMorePosts.setVisibility(View.GONE);
                 RunLayoutAnimation.run(recyclerView, getContext());
-                if(postsUserList.size() == 0)
-                    tvNoMorePosts.setVisibility(View.VISIBLE);
             }
         });
     }

@@ -59,25 +59,62 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        init();
+    }
 
+    private void init() {
+        preference = new UserSharedPreference(MainActivity.this);
+        initToolbar();
+        initNavigationView();
+        initBottombar();
+    }
+
+    private void initBottombar() {
+        homeFragment = new HomeFragment();
+        categoriesFragment = new CategoriesFragment();
+        mentorsFragment = new MentorsFragment();
+        replaceFragment(homeFragment);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.home) {
+                    getSupportActionBar().setTitle("Net Club");
+                    replaceFragment(homeFragment);
+                    return true;
+                } else if (menuItem.getItemId() == R.id.categories) {
+                    getSupportActionBar().setTitle("Categories");
+                    replaceFragment(categoriesFragment);
+                    return true;
+                } else if (menuItem.getItemId() == R.id.mentors) {
+                    getSupportActionBar().setTitle("Mentors");
+                    replaceFragment(mentorsFragment);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
+    private void initNavigationView() {
         drawerLayout = findViewById(R.id.drawer_layout);
         navView = findViewById(R.id.navigation);
         bottomNavigationView = findViewById(R.id.bottom_menu);
         container  = findViewById(R.id.container);
-
         configureNavigationDrawer();
-
-        preference = new UserSharedPreference(MainActivity.this);
-
         headerView = navView.getHeaderView(0);
         headerEmail = headerView.findViewById(R.id.email_header);
         headerName = headerView.findViewById(R.id.name_header);
         headerProfile = headerView.findViewById(R.id.profile_header);
+    }
+
+    private void setNavData() {
         UserData currentUser = preference.getUser().getData();
         headerEmail.setText(currentUser.getEmail());
         headerEmail.setVisibility(View.VISIBLE);
@@ -86,35 +123,9 @@ public class MainActivity extends AppCompatActivity {
         requestOptions.placeholder(R.drawable.profile);
         Glide.with(MainActivity.this).applyDefaultRequestOptions(requestOptions)
                 .load(currentUser.getPhoto_max()).into(headerProfile);
-            homeFragment = new HomeFragment();
-            categoriesFragment = new CategoriesFragment();
-            mentorsFragment = new MentorsFragment();
+    }
 
-            replaceFragment(homeFragment);
-            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-                    if (menuItem.getItemId() == R.id.home) {
-                        getSupportActionBar().setTitle("Net Club");
-                        replaceFragment(homeFragment);
-                        return true;
-                    } else if (menuItem.getItemId() == R.id.categories) {
-                        getSupportActionBar().setTitle("Categories");
-                        replaceFragment(categoriesFragment);
-                        return true;
-                    } else if (menuItem.getItemId() == R.id.mentors) {
-                        getSupportActionBar().setTitle("Mentors");
-                        replaceFragment(mentorsFragment);
-                        return true;
-                    }
-
-                    return false;
-                }
-            });
-        }
-
-   private void replaceFragment(Fragment fragment) {
+    private void replaceFragment(Fragment fragment) {
        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
        fragmentTransaction.replace(R.id.frame, fragment);
        fragmentTransaction.commit();
@@ -215,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
         if(!CheckNetwork.hasNetwork(MainActivity.this)){
             Snackbar.make(container, R.string.network_connection, Snackbar.LENGTH_LONG).show();
         }
+        setNavData();
     }
 
     @Override
